@@ -1,0 +1,17 @@
+ ⚠ Port 3000 is in use by process 75686, usin   ▲ Next.js 15.5.2 (Turbopac❌ tRPC failed on user.getProfile: Unsupported POST-request to query procedure at path "user.getProfile"
+ .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 801ms
+   Reload env: .env.local
+ ○ Compiling / ...
+ ✓ Compiled / in 1875ms
+ GET / 200 in 2095ms
+ ✓ Compiled in 57ms
+ ✓ Compiled / in 16ms
+ GET / 200 in 108ms
+ ✓ Compiled /api/trpc/[trpc] in 315ms
+ POST /api/trpc/user.getProfile 405 in 1134ms
+   Reload env: .env.local
+   Reload env: .env.local
+   Reload env: .env
