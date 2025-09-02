@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Code, Zap, Users, FileText, Video, HelpCircle, ExternalLink } from "lucide-react";
+import { BookOpen, Code, Zap, Users, Video, HelpCircle, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const docCategories = [
@@ -157,7 +157,7 @@ export default function DocsPage() {
               Documentation Categories
             </h2>
             <p className="text-xl text-gray-300">
-              Find exactly what you're looking for
+              Find exactly what you&apos;re looking for
             </p>
           </motion.div>
 
@@ -268,7 +268,7 @@ export default function DocsPage() {
               Still Need Help?
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Can't find what you're looking for? Our support team is here to help 
+              Can&apos;t find what you&apos;re looking for? Our support team is here to help 
               you succeed with systematic trading.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

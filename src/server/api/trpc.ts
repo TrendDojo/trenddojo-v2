@@ -40,9 +40,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: {
-  headers: Headers;
-}) => {
+export const createTRPCContext = async () => {
   // Get the session from the server for App Router
   const session = await getServerSession(authOptions);
 

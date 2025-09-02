@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, TrendingUp, Shield, Zap, BarChart3, Calculator, Target, Users } from "lucide-react";
+import { CheckCircle, TrendingUp, Shield, Zap, BarChart3, Calculator, Target } from "lucide-react";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
 import Link from "next/link";
 
@@ -252,7 +252,7 @@ export default function MarketingHome() {
               Trusted by Professional Traders
             </h2>
             <p className="text-xl text-gray-300">
-              Join thousands who've transformed their trading discipline
+              Join thousands who&apos;ve transformed their trading discipline
             </p>
           </motion.div>
           
@@ -266,7 +266,7 @@ export default function MarketingHome() {
                 viewport={{ once: true }}
                 className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700"
               >
-                <p className="text-gray-300 mb-6 italic">"{testimonial.quote}"</p>
+                <p className="text-gray-300 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div>
                   <p className="text-white font-semibold">{testimonial.author}</p>
                   <p className="text-gray-400 text-sm">{testimonial.role}, {testimonial.company}</p>
@@ -290,7 +290,7 @@ export default function MarketingHome() {
               Start Trading with Confidence
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of traders who've improved their consistency with 
+              Join thousands of traders who&apos;ve improved their consistency with 
               systematic risk management and disciplined execution.
             </p>
             <Link

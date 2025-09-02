@@ -4,10 +4,8 @@ import { type NextRequest } from "next/server";
 import { appRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 
-const createContext = async (req: NextRequest) => {
-  return createTRPCContext({
-    headers: req.headers,
-  });
+const createContext = async (_req: NextRequest) => {
+  return createTRPCContext();
 };
 
 const handler = (req: NextRequest) =>

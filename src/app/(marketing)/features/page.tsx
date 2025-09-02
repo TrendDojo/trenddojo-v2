@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { 
-  Calculator, Shield, TrendingUp, BarChart3, Target, Zap,
-  Settings, AlertTriangle, BookOpen, Link as LinkIcon, 
-  Smartphone, Lock
+  Calculator, Shield, TrendingUp, BarChart3, Zap,
+  Settings, AlertTriangle, Link as LinkIcon, 
+  Lock
 } from "lucide-react";
 
 const heroFeatures = [
@@ -158,7 +158,7 @@ export default function FeaturesPage() {
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Everything you need to trade systematically with discipline. 
-              From position sizing to risk management, we've got you covered.
+              From position sizing to risk management, we&apos;ve got you covered.
             </p>
           </motion.div>
 
