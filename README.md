@@ -1,24 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TrendDojo V2
 
-## Getting Started
+Professional trading platform with systematic risk management and position sizing tools.
 
-First, run the development server:
+## 🚀 Quick Start
 
+This app supports **graceful degradation** - it works with or without a database:
+
+### Marketing Site Only (No Database Required)
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Visit [http://localhost:3000](http://localhost:3000) - marketing pages work fully!
+
+### Full App (With Database)
+1. Set up database (see [DATABASE_SETUP.md](./DATABASE_SETUP.md))
+2. Add `DATABASE_URL` to `.env.local`
+3. Run migrations: `npx prisma migrate dev`
+4. Start: `npm run dev`
+
+## 📦 Deployment
+
+### Vercel (Recommended)
+- **Preview deployments**: Work automatically without database
+- **Production**: Requires database setup (see DATABASE_SETUP.md)
+- Connect GitHub → Auto-deploy on push
+
+### Environment Variables
+```env
+DATABASE_URL="postgresql://..." # Required for full functionality
+NEXTAUTH_URL="your-domain.com"  # Required for auth
+NEXTAUTH_SECRET="your-secret"   # Required for auth
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Professional Marketing Site**: Polygon.io-inspired design
+- **Graceful Degradation**: Runs without database for previews
+- **Risk Management**: Position sizing and portfolio controls
+- **Trading Journal**: Track and analyze performance
+- **Broker Integration**: Alpaca, IBKR, TD Ameritrade support
 
 ## Learn More
 
