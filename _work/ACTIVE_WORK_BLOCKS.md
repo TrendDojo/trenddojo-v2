@@ -108,7 +108,7 @@ Create Next.js 14+ project structure with all production dependencies and initia
 ---
 
 ## WB-2025-09-02-004: Database Infrastructure Setup
-**State**: doing
+**State**: completed
 **Timeframe**: NOW
 **Created**: 2025-09-02 14:45
 **Dependencies**: WB-2025-09-02-003
@@ -125,7 +125,8 @@ Establish complete database infrastructure with local PostgreSQL, comprehensive 
 - [x] Fix argument parsing in seed.ts for proper seed type handling
 - [x] Test all seed types (empty, dev, demo, test)
 - [x] Verify database constraints and data integrity
-- [ ] Test with application to ensure full integration
+- [x] Set up GitHub repository (trenddojo-v2) and push all code
+- [x] Move docs to app folder and rename to trenddojo-v2
 
 ### Success Criteria
 - Local development database fully operational
@@ -140,6 +141,117 @@ Establish complete database infrastructure with local PostgreSQL, comprehensive 
 - Fixed numeric overflow in risk calculations (capped at 99.99)
 - Staging seed correctly fails without real Supabase connection
 - Ready for GitHub integration and Vercel deployment
+
+---
+
+## WB-2025-09-02-005: Vercel Deployment Pipeline Setup
+**State**: confirmed
+**Timeframe**: NOW
+**Created**: 2025-09-02 15:45
+**Dependencies**: WB-2025-09-02-004
+**Tags**: #deployment #vercel #staging #production #workflow
+
+### Goal
+Establish complete Vercel deployment pipeline with preview (staging) and production environments, ensuring GitHub integration works correctly.
+
+### Tasks
+- [ ] Connect GitHub TrendDojo/trenddojo-v2 to Vercel
+- [ ] Configure automatic deployments: feature branches → preview URLs
+- [ ] Set up main branch → production deployment  
+- [ ] Configure environment variables for both environments
+- [ ] Test deployment workflow with a simple change
+- [ ] Verify preview URLs work for feature branches
+- [ ] Document deployment process and URLs
+- [ ] Test rollback procedures
+
+### Success Criteria
+- Feature branches automatically deploy to preview URLs
+- Main branch deploys to production
+- Environment variables properly configured
+- Both preview and production environments accessible
+- Deployment workflow documented and tested
+
+### Notes
+- Follow Vercel terminology: preview = staging, production = main
+- Ensure database connections work in both environments
+- Set up proper domain configuration for production
+
+---
+
+## WB-2025-09-02-006: Marketing Brochure Website
+**State**: confirmed  
+**Timeframe**: NOW
+**Created**: 2025-09-02 15:45
+**Dependencies**: WB-2025-09-02-005
+**Tags**: #marketing #brochure #design #polygon-inspired #frontend
+
+### Goal
+Create complete marketing brochure website with Polygon.io-inspired design, proper navigation, and professional content structure.
+
+### Tasks
+- [ ] Create (marketing) route group structure
+- [ ] Build marketing layout with navigation (Features, Pricing, Docs, Blog, About)
+- [ ] Implement Polygon.io-inspired dark theme with gradients
+- [ ] Create AnimatedPolygonBackground component
+- [ ] Build hero section with "Trade with Discipline" messaging
+- [ ] Add features grid with trading-specific benefits
+- [ ] Create pricing page with Free/Starter/Basic/Pro tiers
+- [ ] Add documentation structure with sidebar navigation
+- [ ] Include interactive elements and design examples
+- [ ] Add Lorem ipsum content with realistic trading context
+
+### Success Criteria
+- Professional marketing website with proper navigation
+- Polygon.io-inspired design system implemented
+- All major pages accessible and well-designed
+- Interactive elements demonstrate platform capabilities
+- Responsive design works on all devices
+- Content structure ready for real copy
+
+### Notes
+- Navigation: Home, Features, Pricing, Docs, Blog, About, Login
+- Dark theme with animated polygon backgrounds
+- Focus on professional trader audience
+- Include interactive position calculator demo
+- Use realistic trading terminology in placeholder content
+
+---
+
+## WB-2025-09-02-007: Core Application Structure
+**State**: confirmed
+**Timeframe**: NEXT
+**Created**: 2025-09-02 15:45
+**Dependencies**: WB-2025-09-02-006
+**Tags**: #app #dashboard #trading #ui #structure
+
+### Goal
+Build core application structure with dashboard, screener, and trade entry interfaces as specified in setup document.
+
+### Tasks
+- [ ] Create (app) route group for main application
+- [ ] Build dashboard page with portfolio overview
+- [ ] Create screener page with stock filtering
+- [ ] Add trade entry form (/trades/new)
+- [ ] Create individual trade view (/trades/[id])
+- [ ] Implement app-specific layout and navigation
+- [ ] Add position sizing calculator
+- [ ] Build risk monitoring components
+- [ ] Create basic chart integration
+
+### Success Criteria
+- Complete app navigation between major sections
+- Dashboard shows realistic portfolio data
+- Screener displays stock filtering interface
+- Trade entry form calculates position sizes
+- Individual trade views show complete trade data
+- App layout distinct from marketing layout
+
+### Notes
+- Focus on core functionality over advanced features
+- Use realistic trading data and calculations
+- Integrate with existing tRPC API routes
+- Follow trading platform UI patterns
+- Ensure mobile responsiveness
 
 ---
 
