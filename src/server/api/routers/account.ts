@@ -4,6 +4,29 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 export const accountRouter = createTRPCRouter({
   // Get all accounts for current user
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    // Graceful degradation: return mock data if database is unavailable
+    if (!ctx.db) {
+      console.log('📱 Returning mock accounts for preview deployment')
+      return [{
+        id: 'mock-account-1',
+        userId: ctx.session.user.id,
+        name: 'Demo Account',
+        broker: 'manual' as const,
+        accountType: 'paper' as const,
+        baseCurrency: 'USD',
+        startingBalance: 10000,
+        currentBalance: 10500,
+        riskSettings: {
+          id: 'mock-risk-1',
+          maxRiskPerTrade: 0.02,
+          maxDrawdown: 0.15,
+        },
+        trades: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }]
+    }
+
     return ctx.db.account.findMany({
       where: { userId: ctx.session.user.id },
       include: {
@@ -29,6 +52,23 @@ export const accountRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Graceful degradation: return mock account creation
+      if (!ctx.db) {
+        console.log('📱 Mock account creation for preview deployment:', input)
+        return {
+          id: `mock-account-${Date.now()}`,
+          userId: ctx.session.user.id,
+          name: input.name,
+          broker: input.broker,
+          accountType: input.accountType,
+          baseCurrency: input.baseCurrency,
+          startingBalance: input.startingBalance,
+          currentBalance: input.startingBalance,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      }
+
       // Check subscription limits
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
@@ -90,6 +130,18 @@ export const accountRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Graceful degradation: return mock update
+      if (!ctx.db) {
+        console.log('📱 Mock account update for preview deployment:', input)
+        return {
+          id: input.id,
+          userId: ctx.session.user.id,
+          name: input.name || 'Updated Account',
+          currentBalance: input.currentBalance || 10000,
+          updatedAt: new Date(),
+        }
+      }
+
       return ctx.db.account.update({
         where: { 
           id: input.id,
@@ -106,6 +158,17 @@ export const accountRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // Graceful degradation: return mock deletion
+      if (!ctx.db) {
+        console.log('📱 Mock account deletion for preview deployment:', input)
+        return {
+          id: input.id,
+          userId: ctx.session.user.id,
+          name: 'Deleted Account',
+          deletedAt: new Date(),
+        }
+      }
+
       // Check if account has active trades
       const activeTrades = await ctx.db.trade.count({
         where: {

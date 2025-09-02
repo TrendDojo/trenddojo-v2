@@ -3,7 +3,7 @@ import { type Session } from "next-auth";
 import { getServerSession } from "next-auth/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { db } from "@/lib/db";
+import { gracefulDb } from "@/lib/db-graceful";
 import { authOptions } from "@/server/auth";
 
 /**
@@ -30,7 +30,8 @@ interface CreateContextOptions {
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
-    db,
+    db: gracefulDb.isAvailable ? gracefulDb.db : null,
+    gracefulDb,
   };
 };
 
