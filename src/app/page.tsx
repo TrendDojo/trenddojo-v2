@@ -25,8 +25,13 @@ export default function Home() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <h1 className="mb-8 text-6xl font-bold text-white">
-            Trend<span className="text-blue-500">Dojo</span>
+            Trend<span className="text-blue-500">Dojo</span> v2
           </h1>
+          <div className="mb-6 rounded-lg bg-green-900/50 border border-green-500 px-4 py-3">
+            <p className="text-green-300">
+              🚀 <strong>Deployment Test:</strong> Vercel connection ready for testing!
+            </p>
+          </div>
           <p className="mb-12 text-xl text-gray-300">
             The Stripe for Trading Strategies
           </p>
