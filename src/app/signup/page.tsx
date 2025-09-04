@@ -6,11 +6,16 @@ import Link from "next/link";
 export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
   const [userInfo, setUserInfo] = useState({ name: "", email: "" });
+
+  // Simulate a list of existing users (in real app, this would be a DB check)
+  const existingEmails = ['test@example.com', 'demo@trenddojo.com', 'user@test.com'];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError("");
     
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
@@ -22,11 +27,20 @@ export default function SignupPage() {
       // In a real app, this would call your authentication API
       await new Promise(resolve => setTimeout(resolve, 1500));
       
+      // Check for duplicate email (simulate API response)
+      if (existingEmails.includes(email.toLowerCase()) || localStorage.getItem(`signup_${email}`)) {
+        setError(`An account with ${email} already exists. Try signing in instead.`);
+        return;
+      }
+      
+      // Store signup locally to simulate persistence
+      localStorage.setItem(`signup_${email}`, JSON.stringify({ name, email, signupDate: new Date().toISOString() }));
+      
       setUserInfo({ name, email });
       setIsSuccess(true);
       
     } catch (error) {
-      // Handle error state here
+      setError("Something went wrong. Please try again.");
       console.error("Signup failed:", error);
     } finally {
       setIsSubmitting(false);
@@ -101,6 +115,15 @@ export default function SignupPage() {
         </div>
         
         <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
+          {error && (
+            <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
+              <p className="text-red-300 text-sm">{error}</p>
+              <Link href="/login" className="text-red-200 hover:text-red-100 underline text-sm mt-2 inline-block">
+                Sign in to existing account
+              </Link>
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
