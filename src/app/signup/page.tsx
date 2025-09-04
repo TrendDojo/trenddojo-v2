@@ -1,4 +1,37 @@
+"use client";
+
+import { useState } from "react";
+
 export default function SignupPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage("");
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
+    
+    // Simulate signup process
+    try {
+      // In a real app, this would call your authentication API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setMessage(`Welcome ${name}! Your free trial has started. Check your email (${email}) for next steps.`);
+      
+      // Reset form
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-6">
       <div className="max-w-md w-full space-y-8">
@@ -12,7 +45,13 @@ export default function SignupPage() {
         </div>
         
         <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
-          <form className="space-y-6">
+          {message && (
+            <div className="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg">
+              <p className="text-green-300 text-sm">{message}</p>
+            </div>
+          )}
+          
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Email Address
@@ -22,7 +61,8 @@ export default function SignupPage() {
                 id="email"
                 name="email"
                 required
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 placeholder="your@email.com"
               />
             </div>
@@ -36,7 +76,8 @@ export default function SignupPage() {
                 id="password"
                 name="password"
                 required
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 placeholder="Create a secure password"
               />
             </div>
@@ -50,16 +91,18 @@ export default function SignupPage() {
                 id="name"
                 name="name"
                 required
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 placeholder="Your full name"
               />
             </div>
             
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
+              disabled={isSubmitting}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
             >
-              Start Free Trial
+              {isSubmitting ? "Creating Account..." : "Start Free Trial"}
             </button>
           </form>
           
