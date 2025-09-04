@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setMessage("");
     
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
@@ -21,16 +22,71 @@ export default function SignupPage() {
       // In a real app, this would call your authentication API
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      setMessage(`Welcome ${name}! Your free trial has started. Check your email (${email}) for next steps.`);
+      setUserInfo({ name, email });
+      setIsSuccess(true);
       
-      // Reset form
-      (e.target as HTMLFormElement).reset();
     } catch (error) {
-      setMessage("Something went wrong. Please try again.");
+      // Handle error state here
+      console.error("Signup failed:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Show success screen after signup
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-6">
+        <div className="max-w-md w-full text-center space-y-8">
+          <div className="bg-green-900/20 border border-green-700 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+            <div className="text-green-400 text-3xl">✓</div>
+          </div>
+          
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Welcome to TrendDojo, {userInfo.name}!
+            </h1>
+            <p className="text-gray-400">
+              Your free trial has started successfully
+            </p>
+          </div>
+          
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h3 className="text-lg font-semibold text-white mb-4">What&apos;s Next?</h3>
+            <div className="space-y-3 text-left">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+                <span className="text-gray-300">Check your email ({userInfo.email}) for verification</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+                <span className="text-gray-300">Complete your profile setup</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
+                <span className="text-gray-300">Start with our position calculator</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <Link
+              href="/demo"
+              className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
+            >
+              Try the Demo
+            </Link>
+            <Link
+              href="/"
+              className="block w-full border border-slate-600 hover:border-slate-500 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-6">
@@ -45,12 +101,6 @@ export default function SignupPage() {
         </div>
         
         <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
-          {message && (
-            <div className="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg">
-              <p className="text-green-300 text-sm">{message}</p>
-            </div>
-          )}
-          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
