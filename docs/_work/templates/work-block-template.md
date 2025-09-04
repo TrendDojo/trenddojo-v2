@@ -37,6 +37,12 @@ Clear description of what success looks like. Be specific and measurable.
 - **completed**: Successfully finished (move to COMPLETED file)
 - **cancelled**: Won't be done (move to COMPLETED with reason)
 
+### Project Boundary Rules
+- **ONLY MODIFY FILES WITHIN THIS PROJECT DIRECTORY**
+- You may READ from other projects for reference
+- NEVER edit files in other projects without explicit user permission
+- If cross-project changes are needed, ask user first
+
 ### Completion Process
 1. User explicitly approves closure
 2. All changes committed to git

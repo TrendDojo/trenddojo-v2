@@ -24,7 +24,14 @@
 - **ALL DOCUMENTATION MUST LIVE IN `/docs/` DIRECTORY**
 - When you add a feature, update relevant docs immediately
 
-### RULE #4: Work Block Completion Requires Git Commit
+### RULE #4: Project Boundary Enforcement
+- **ONLY MODIFY FILES WITHIN THIS PROJECT** - `/Users/duncanmcgill/coding/trenddojo-v2/`
+- **NEVER EDIT** files in other projects (controlla-v2, _shared-framework, etc.)
+- **NEVER MAKE CHANGES** outside this project directory without explicit user permission
+- You may READ from other projects for reference, but changes stay local
+- If cross-project changes are needed, ask user for explicit permission first
+
+### RULE #5: Work Block Completion Requires Git Commit
 - **NEVER CLOSE** a work block without explicit user permission
 - Work blocks can only be marked "completed" after:
   1. User explicitly approves closure
@@ -117,6 +124,8 @@ trenddojo-v2/
 - NEVER ignore risk management changes → ALWAYS get extra review for risk logic
 - NEVER create files outside `/docs/` → ALL documentation lives in `/docs/` directory
 - NEVER fragment features → ALWAYS complete current work block before starting new ones
+- **NEVER MODIFY FILES OUTSIDE THIS PROJECT** → ALWAYS stay within `/Users/duncanmcgill/coding/trenddojo-v2/`
+- NEVER edit other projects without permission → ALWAYS ask user first for cross-project changes
 
 ## ⚠️ Tech Stack Reality Check
 The actual implementation uses:
