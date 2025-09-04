@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
@@ -31,7 +31,8 @@
     "db:status:staging": "dotenv -e .env.staging -- prisma migrate status",
     "db:status:production": "dotenv -e .env.production -- prisma migrate status",
     "deploy-safe": "npm run test:run && npm run build",
-    "build:verify": "npm run build && echo '✅ Build verification passed'",
+    "build:verify": "prisma generate && npm run build && echo '✅ Build verification passed'",
+    "prisma:generate": "prisma generate",
     "db:dev": "node scripts/deployment/db-deploy-dev.js",
     "db:staging": "node scripts/deployment/db-deploy-staging.js",
     "db:prod": "node scripts/deployment/db-deploy-prod.js"
