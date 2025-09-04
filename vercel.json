@@ -1,8 +1,8 @@
 {
   "framework": "nextjs",
-  "buildCommand": "prisma generate && npm run build",
+  "buildCommand": "npx prisma generate && npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install && prisma generate",
+  "installCommand": "npm install && npx prisma generate",
   "outputDirectory": ".next",
   "functions": {
     "src/app/api/**/*.ts": {
