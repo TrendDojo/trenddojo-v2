@@ -1,0 +1,6 @@
+url1032.trenddojo.com.           IN    CNAME   sendgrid.net.
+8516845.trenddojo.com.           IN    CNAME   sendgrid.net.
+em8564.trenddojo.com.            IN    CNAME   u8516845.wl096.sendgrid.net.
+s1._domainkey.trenddojo.com.     IN    CNAME   s1.domainkey.u8516845.wl096.sendgrid.net.
+s2._domainkey.trenddojo.com.     IN    CNAME   s2.domainkey.u8516845.wl096.sendgrid.net.
+_dmarc.trenddojo.com.            IN    TXT     "v=DMARC1; p=none;"

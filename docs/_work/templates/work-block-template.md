@@ -11,6 +11,12 @@
 ### Goal
 Clear description of what success looks like. Be specific and measurable.
 
+### Pre-Work Solution Check (MANDATORY)
+**Before starting any work:**
+- [ ] Read `_shared-framework/news/controlla-solutions.md` - Has Controlla solved this?
+- [ ] Check `_shared-framework/proven-solutions/` - Does a solution already exist?
+- [ ] Document findings: [What existing solutions were found or confirmed none exist]
+
 ### Tasks
 - [ ] Specific task with clear completion criteria
 - [ ] Another task
@@ -44,14 +50,21 @@ Clear description of what success looks like. Be specific and measurable.
 - If cross-project changes are needed, ask user first
 
 ### Completion Process
-1. User explicitly approves closure
-2. All changes committed to git
-3. User confirms commit is satisfactory
-4. Move entire block to COMPLETED_WORK_BLOCKS.md
-5. Add completion metadata:
+1. **Infrastructure Solution Sharing (if applicable)**:
+   - [ ] Did I solve an infrastructure problem? (auth, email, deployment, testing, error handling)
+   - [ ] If yes: Document solution in `_shared-framework/proven-solutions/`
+   - [ ] If yes: Update `_shared-framework/news/trenddojo-solutions.md` to notify other projects
+   - [ ] Document: [What was shared or confirmed nothing to share]
+
+2. User explicitly approves closure
+3. All changes committed to git
+4. User confirms commit is satisfactory
+5. Move entire block to COMPLETED_WORK_BLOCKS.md
+6. Add completion metadata:
    ```
    **Completed**: YYYY-MM-DD HH:MM
    **Duration**: X hours/sessions
    **Outcome**: Success/Partial/Failed
    **Final Notes**: Key learnings or follow-up needed
+   **Solutions Shared**: [None | Brief description of what was documented/shared]
    ```

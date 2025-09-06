@@ -1,0 +1,7 @@
+Type,Name,Content,TTL,Proxy status
+CNAME,url1032,sendgrid.net,Auto,DNS only
+CNAME,8516845,sendgrid.net,Auto,DNS only
+CNAME,em8564,u8516845.wl096.sendgrid.net,Auto,DNS only
+CNAME,s1._domainkey,s1.domainkey.u8516845.wl096.sendgrid.net,Auto,DNS only
+CNAME,s2._domainkey,s2.domainkey.u8516845.wl096.sendgrid.net,Auto,DNS only
+TXT,_dmarc,"v=DMARC1; p=none;",Auto,DNS only

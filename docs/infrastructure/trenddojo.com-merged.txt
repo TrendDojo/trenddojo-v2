@@ -1,0 +1,57 @@
+;;
+;; Domain:     trenddojo.com.
+;; Exported:   2025-09-06 08:07:43
+;; Updated:    2025-09-06 (added SendGrid records)
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+trenddojo.com	3600	IN	SOA	eloise.ns.cloudflare.com. dns.cloudflare.com. 2050881266 10000 2400 604800 3600
+
+;; NS Records
+trenddojo.com.	86400	IN	NS	eloise.ns.cloudflare.com.
+trenddojo.com.	86400	IN	NS	tony.ns.cloudflare.com.
+
+;; A Records
+trenddojo.com.	1	IN	A	216.150.1.1 ; cf_tags=cf-proxied:false
+
+;; CNAME Records
+www.trenddojo.com.	1	IN	CNAME	c0cecd0c2d872647.vercel-dns-016.com. ; cf_tags=cf-proxied:false
+;; SendGrid CNAME Records (added 2025-09-06)
+url1032.trenddojo.com.	3600	IN	CNAME	sendgrid.net.
+8516845.trenddojo.com.	3600	IN	CNAME	sendgrid.net.
+em8564.trenddojo.com.	3600	IN	CNAME	u8516845.wl096.sendgrid.net.
+s1._domainkey.trenddojo.com.	3600	IN	CNAME	s1.domainkey.u8516845.wl096.sendgrid.net.
+s2._domainkey.trenddojo.com.	3600	IN	CNAME	s2.domainkey.u8516845.wl096.sendgrid.net.
+
+;; MX Records
+trenddojo.com.	3600	IN	MX	10 alt4.aspmx.l.google.com.
+trenddojo.com.	3600	IN	MX	10 alt3.aspmx.l.google.com.
+trenddojo.com.	3600	IN	MX	5 alt2.aspmx.l.google.com.
+trenddojo.com.	3600	IN	MX	1 aspmx.l.google.com.
+trenddojo.com.	3600	IN	MX	5 alt1.aspmx.l.google.com.
+
+;; TXT Records
+trenddojo.com.	3600	IN	TXT	"v=spf1 include:_spf.google.com -all"
+trenddojo.com.	3600	IN	TXT	"google-site-verification=5-rx6mse_1r9EiETS8tRqOK48Nd_1XcYmj906vnmxho"
+;; SendGrid DMARC Record (added 2025-09-06)
+_dmarc.trenddojo.com.	3600	IN	TXT	"v=DMARC1; p=none;"
