@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { EnvironmentIndicator } from "@/components/EnvironmentIndicator";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -10,6 +11,25 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "TrendDojo - Systematic Trading Platform",
   description: "The Stripe for Trading Strategies",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.svg",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/assets/icons/favicons/favicon-16x16.svg",
+        sizes: "16x16",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/assets/icons/favicons/favicon-32x32.svg",
+        sizes: "32x32",
+        type: "image/svg+xml",
+      },
+    ],
+    apple: "/assets/icons/favicons/apple-touch-icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -21,6 +41,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
+        <EnvironmentIndicator />
       </body>
     </html>
   );

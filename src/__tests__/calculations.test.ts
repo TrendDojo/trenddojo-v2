@@ -6,7 +6,7 @@ import {
   validateRiskLimits,
 } from "@/lib/calculations";
 
-describe("Financial Calculations", () => {
+describe("Financial Calculations - Critical Trading Safety", () => {
   describe("calculatePositionSize", () => {
     it("should calculate correct position size for long trade", () => {
       const result = calculatePositionSize(
@@ -162,6 +162,124 @@ describe("Financial Calculations", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.violations).toHaveLength(3);
+    });
+  });
+
+  describe("Edge Cases and Financial Safety", () => {
+    it("should handle floating point precision correctly", () => {
+      // Test case that could cause floating point errors
+      const result = calculatePositionSize(33.33, 30.00, 100, 5000);
+      
+      // Risk per share = 33.33 - 30.00 = 3.33
+      // Quantity = 100 / 3.33 = 30.030030...
+      expect(result.quantity).toBe(30.030030); // Properly rounded to 6 decimals
+      expect(result.positionSizeUsd).toBe(1000.90); // 30.030030 * 33.33 = 1000.9009...
+      expect(result.riskPercent).toBe(2); // 100/5000 * 100 = 2%
+    });
+
+    it("should handle very small risk amounts", () => {
+      const result = calculatePositionSize(100, 99.90, 1, 10000);
+      
+      // Risk per share = 0.10
+      // Quantity = 1 / 0.10 = 10
+      expect(result.quantity).toBe(10);
+      expect(result.positionSizeUsd).toBe(1000);
+      expect(result.riskPercent).toBe(0.01); // 1/10000 * 100 = 0.01%
+    });
+
+    it("should handle very large account balances", () => {
+      const result = calculatePositionSize(100, 95, 50000, 1000000);
+      
+      expect(result.quantity).toBe(10000); // 50000 / 5 = 10000 shares
+      expect(result.positionSizeUsd).toBe(1000000); // 10000 * 100 = $1M
+      expect(result.riskPercent).toBe(5); // 50000/1000000 * 100 = 5%
+    });
+
+    it("should maintain precision with penny stocks", () => {
+      const result = calculatePositionSize(0.50, 0.45, 100, 10000);
+      
+      // Risk per share = 0.05
+      // Quantity = 100 / 0.05 = 2000
+      expect(result.quantity).toBe(2000);
+      expect(result.positionSizeUsd).toBe(1000); // 2000 * 0.50 = $1000
+      expect(result.riskPercent).toBe(1); // 100/10000 * 100 = 1%
+    });
+
+    it("should handle commission fees correctly in P&L calculations", () => {
+      // High commission scenario (old-style broker)
+      const result = calculatePnL(100, 105, 100, "long", 50);
+      
+      expect(result.pnlAmount).toBe(450); // (105-100)*100 - 50 = 500 - 50 = 450
+      expect(result.pnlPercent).toBe(4.5); // 450/10000 * 100 = 4.5%
+    });
+
+    it("should handle fractional shares in P&L", () => {
+      // Some brokers allow fractional shares
+      const result = calculatePnL(100, 110, 10.5, "long", 1);
+      
+      expect(result.pnlAmount).toBe(104); // (110-100)*10.5 - 1 = 105 - 1 = 104
+      expect(result.pnlPercent).toBe(9.9); // 104/1050 * 100 = 9.9%
+    });
+
+    it("should validate maximum safe values", () => {
+      // Test near the limits of JavaScript number precision
+      const result = calculatePositionSize(1000, 999, 1000000, 100000000);
+      
+      expect(result.quantity).toBe(1000000); // 1000000 / 1 = 1000000
+      expect(result.positionSizeUsd).toBe(1000000000); // 1M * 1000 = 1B
+      expect(result.riskPercent).toBe(1); // 1M/100M * 100 = 1%
+    });
+  });
+
+  describe("Risk Management Edge Cases", () => {
+    it("should handle zero daily/weekly risk used", () => {
+      const result = validateRiskLimits(2.0, 0, 0, 2.0, 5.0, 10.0);
+      
+      expect(result.isValid).toBe(true);
+      expect(result.violations).toHaveLength(0);
+    });
+
+    it("should handle exact limit values", () => {
+      const result = validateRiskLimits(2.0, 3.0, 8.0, 2.0, 5.0, 10.0);
+      
+      expect(result.isValid).toBe(true); // 2.0 + 3.0 = 5.0 (exactly at limit)
+      expect(result.violations).toHaveLength(0);
+    });
+
+    it("should handle very small risk percentages", () => {
+      const result = validateRiskLimits(0.01, 0.01, 0.01, 0.1, 0.5, 1.0);
+      
+      expect(result.isValid).toBe(true);
+      expect(result.violations).toHaveLength(0);
+    });
+
+    it("should handle precision issues in limit checks", () => {
+      // This could fail due to floating point precision
+      const result = validateRiskLimits(1.1, 3.9, 8.9, 2.0, 5.0, 10.0);
+      
+      expect(result.isValid).toBe(true); // 1.1 + 3.9 = 5.0, 1.1 + 8.9 = 10.0
+    });
+  });
+
+  describe("R-Multiple Critical Scenarios", () => {
+    it("should handle very small R-multiples", () => {
+      const rMultiple = calculateRMultiple(1, 1000);
+      expect(rMultiple).toBe(0); // Should round to 0.00
+    });
+
+    it("should handle very large R-multiples", () => {
+      const rMultiple = calculateRMultiple(50000, 100);
+      expect(rMultiple).toBe(500); // 50000/100 = 500R
+    });
+
+    it("should maintain precision for fractional R-multiples", () => {
+      const rMultiple = calculateRMultiple(333.33, 1000);
+      expect(rMultiple).toBe(0.33); // Should be 0.33R
+    });
+
+    it("should handle breakeven trades", () => {
+      const rMultiple = calculateRMultiple(0, 500);
+      expect(rMultiple).toBe(0); // Breakeven = 0R
     });
   });
 });

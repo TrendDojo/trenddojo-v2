@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, TrendingUp, Shield, Zap, BarChart3, Calculator, Target } from "lucide-react";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
 import Link from "next/link";
+import Image from "next/image";
 
 const features = [
   {
@@ -81,31 +82,48 @@ export default function MarketingHomePage() {
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <AnimatedPolygonBackground />
         
-        <div className="relative z-10 container mx-auto px-6 py-32">
+        <div className="relative z-30 container mx-auto px-6 py-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-6xl md:text-7xl font-bold text-white mb-6">
-              Trade with <span className="text-blue-400">Discipline</span>
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex justify-center mb-8"
+            >
+              <Image
+                src="/assets/logos/td-logo.svg"
+                alt="TrendDojo"
+                width={300}
+                height={66}
+                className="h-16 w-auto"
+                priority
+              />
+            </motion.div>
+
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+              Trade with <span className="text-trenddojo-purple-700">Discipline</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8">
+            <p className="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-md">
               Professional position sizing, risk management, and trade journaling 
-              for serious traders who want consistent results.
+              for <span className="text-trenddojo-purple-700">swing</span> and <span className="text-trenddojo-purple-700">trend following</span> traders — whether professional or amateur, part-time or full-time.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
                 href="/signup"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200"
+                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
               >
                 Start Free Trial
               </Link>
               <Link
                 href="/demo"
-                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm"
+                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
               >
                 View Demo
               </Link>
@@ -118,10 +136,10 @@ export default function MarketingHomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4"
+                  className="bg-white/20 backdrop-blur-md rounded-lg p-4 border border-white/10"
                 >
-                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
+                  <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">{stat.value}</div>
+                  <div className="text-sm text-gray-200">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -130,7 +148,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 bg-slate-900/50">
+      <section className="py-20 bg-slate-950">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -156,11 +174,11 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition-colors duration-300"
+                className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50 hover:border-trenddojo-purple-700/50 hover:bg-slate-800/90 transition-all duration-300"
               >
-                <feature.icon className="w-12 h-12 text-blue-400 mb-4" />
+                <feature.icon className="w-12 h-12 text-trenddojo-purple-700 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -168,7 +186,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* Live Data Showcase */}
-      <section className="py-20">
+      <section className="py-20 bg-slate-900/80">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -180,7 +198,7 @@ export default function MarketingHomePage() {
               <h3 className="text-4xl font-bold text-white mb-6">
                 Institutional-Grade Market Data
               </h3>
-              <p className="text-xl text-gray-300 mb-6">
+              <p className="text-xl text-gray-200 mb-6">
                 Connect to professional data feeds used by hedge funds and institutions. 
                 Get accurate prices, live charts, and instant position calculations.
               </p>
@@ -192,9 +210,9 @@ export default function MarketingHomePage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-center text-gray-300"
+                    className="flex items-center text-gray-200"
                   >
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-trenddojo-purple-700 mr-3 flex-shrink-0" />
                     {item}
                   </motion.li>
                 ))}
@@ -208,27 +226,27 @@ export default function MarketingHomePage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+              <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-white font-semibold text-lg">AAPL</span>
                   <span className="text-green-400 text-3xl font-mono font-bold">$145.32</span>
                 </div>
                 
-                <div className="h-32 bg-slate-900 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-gray-500">📈 Live Chart Placeholder</span>
+                <div className="h-32 bg-slate-950/80 rounded-lg mb-4 flex items-center justify-center border border-slate-700/50">
+                  <span className="text-gray-400">📈 Live Chart Placeholder</span>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <p className="text-gray-400 text-sm">Position Size</p>
+                    <p className="text-gray-300 text-sm">Position Size</p>
                     <p className="text-white font-bold">342 shares</p>
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">Risk</p>
+                    <p className="text-gray-300 text-sm">Risk</p>
                     <p className="text-white font-bold">1.5%</p>
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">R:R Ratio</p>
+                    <p className="text-gray-300 text-sm">R:R Ratio</p>
                     <p className="text-white font-bold">1:2.5</p>
                   </div>
                 </div>
