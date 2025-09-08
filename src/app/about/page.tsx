@@ -79,7 +79,7 @@ export default function AboutPage() {
             className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              About <span className="text-trenddojo-purple-300">TrendDojo</span>
+              About <span className="text-trenddojo-purple-700">TrendDojo</span>
             </h1>
             <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
               We're building the future of systematic trading – where discipline meets technology 

@@ -130,7 +130,7 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              Choose Your Trading <span className="text-trenddojo-purple-300">Plan</span>
+              Choose Your Trading <span className="text-trenddojo-purple-700">Plan</span>
             </h1>
             <p className="text-xl text-slate-200 mb-8 max-w-3xl mx-auto drop-shadow-md">
               From beginner-friendly tools to institutional-grade infrastructure. 

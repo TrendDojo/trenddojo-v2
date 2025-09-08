@@ -98,7 +98,7 @@ export default function BlogPage() {
             className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              TrendDojo <span className="text-trenddojo-purple-300">Blog</span>
+              TrendDojo <span className="text-trenddojo-purple-700">Blog</span>
             </h1>
             <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
               Insights, education, and updates to help you master systematic trading
