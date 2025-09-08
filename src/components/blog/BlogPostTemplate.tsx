@@ -226,10 +226,7 @@ export default function BlogPostTemplate({ postData }: BlogPostTemplateProps) {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12 pt-8 border-t border-slate-200"
         >
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-slate-600">
-              <p>Found this helpful? Share it with other traders.</p>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="flex gap-4">
               <Link
                 href="/blog"
