@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Star, Zap } from "lucide-react";
+import { Check, Star, TrendingUp } from "lucide-react";
 import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
@@ -288,14 +288,12 @@ export default function PricingPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <Zap className="w-16 h-16 text-white mx-auto mb-6" />
+            <TrendingUp className="w-16 h-16 text-white mx-auto mb-6" />
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Win with Smart Position Management
+              You can be wrong more than right and still be profitable
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Many successful traders have more losing trades than winners. The key is proper 
-              position sizing – cut losses small, let winners run big. That's how you stay profitable 
-              even when you're wrong 60% of the time.
+              Smart traders win by cutting losses small and letting winners run big. Smart position management means you can profit even when wrong more than 50% of the time!
             </p>
             <Link
               href="/signup"
