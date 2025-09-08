@@ -1,0 +1,184 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import HamburgerMenu from "./HamburgerMenu";
+import Navigation from "./Navigation";
+import { navigationLinks, ctaButtons } from "@/lib/navigation";
+
+interface TrendDojoHeaderProps {
+  variant: 'homepage' | 'internal' | 'pricing';
+  showBackButton?: boolean;
+  backButtonText?: string;
+  backButtonHref?: string;
+  showLogo?: boolean;
+}
+
+export default function TrendDojoHeader({ 
+  variant,
+  showBackButton = true, 
+  backButtonText = "← Back to Home",
+  backButtonHref = "/",
+  showLogo = true
+}: TrendDojoHeaderProps) {
+
+  const getHeaderStyles = () => {
+    switch (variant) {
+      case 'homepage':
+        return "absolute top-0 left-0 right-0 z-40";
+      case 'internal':
+        return "bg-white border-b border-slate-200 sticky top-0 z-30";
+      case 'pricing':
+        return "bg-white/95 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-30";
+      default:
+        return "bg-white border-b border-slate-200 sticky top-0 z-30";
+    }
+  };
+
+  const getSignInStyles = () => {
+    switch (variant) {
+      case 'homepage':
+        return "text-white/90 hover:text-white font-medium transition-colors px-4 py-2 drop-shadow-sm";
+      case 'internal':
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+      case 'pricing':
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+      default:
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+    }
+  };
+
+  const getSignupStyles = () => {
+    switch (variant) {
+      case 'homepage':
+        return "bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm drop-shadow-sm";
+      case 'internal':
+        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+      case 'pricing':
+        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+      default:
+        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+    }
+  };
+
+  const getBackButtonStyles = () => {
+    switch (variant) {
+      case 'homepage':
+        return "text-white/90 hover:text-white text-sm font-medium transition-colors drop-shadow-sm";
+      case 'internal':
+        return "text-trenddojo-purple-700 hover:text-trenddojo-purple-800 text-sm font-medium transition-colors";
+      case 'pricing':
+        return "text-trenddojo-purple-700 hover:text-trenddojo-purple-800 text-sm font-medium transition-colors";
+      default:
+        return "text-trenddojo-purple-700 hover:text-trenddojo-purple-800 text-sm font-medium transition-colors";
+    }
+  };
+
+  const getHamburgerStyles = () => {
+    switch (variant) {
+      case 'homepage':
+        return "homepage-hamburger";
+      default:
+        return "";
+    }
+  };
+
+  const headerStyles = getHeaderStyles();
+  const signInStyles = getSignInStyles();
+  const signupStyles = getSignupStyles();
+  const backButtonStyles = getBackButtonStyles();
+  const hamburgerStyles = getHamburgerStyles();
+
+  return (
+    <header className={headerStyles}>
+      {/* Homepage variant hamburger styling */}
+      {variant === 'homepage' && (
+        <style jsx>{`
+          .homepage-hamburger button {
+            color: rgba(255, 255, 255, 0.9);
+          }
+          .homepage-hamburger button:hover {
+            color: white;
+          }
+        `}</style>
+      )}
+      
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between py-6">
+          {/* Left side - Logo and Back Button */}
+          <div className="flex items-center space-x-6">
+            {/* Logo */}
+            {showLogo && (
+              <Link href="/" className="flex-shrink-0">
+                <Image
+                  src="/assets/logos/td-logo.svg"
+                  alt="TrendDojo"
+                  width={140}
+                  height={31}
+                  className="h-8 w-auto"
+                />
+              </Link>
+            )}
+            
+            {/* Homepage variant uses flex-1 for spacing when no logo */}
+            {variant === 'homepage' && !showLogo && (
+              <div className="flex-1" />
+            )}
+            
+            {/* Back Button */}
+            {showBackButton && (
+              <Link 
+                href={backButtonHref}
+                className={`hidden sm:block ${backButtonStyles}`}
+              >
+                {backButtonText}
+              </Link>
+            )}
+          </div>
+
+          {/* Right side - Navigation and Menu */}
+          <div className="flex items-center space-x-4">
+            {/* Desktop Navigation */}
+            <Navigation 
+              variant={variant}
+              links={navigationLinks}
+            />
+
+            {/* CTA Buttons */}
+            <div className="hidden md:flex items-center space-x-3">
+              <Link
+                href={ctaButtons.signIn.href}
+                className={signInStyles}
+              >
+                {ctaButtons.signIn.label}
+              </Link>
+              <Link
+                href={ctaButtons.signup.href}
+                className={signupStyles}
+              >
+                {ctaButtons.signup.label}
+              </Link>
+            </div>
+
+            {/* Hamburger Menu - only show when desktop navigation is hidden */}
+            <div className={`lg:hidden ${hamburgerStyles}`}>
+              <HamburgerMenu />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Back Button */}
+        {showBackButton && variant !== 'homepage' && (
+          <div className="sm:hidden pb-4">
+            <Link 
+              href={backButtonHref}
+              className={backButtonStyles}
+            >
+              {backButtonText}
+            </Link>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
