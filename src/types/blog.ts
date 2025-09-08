@@ -13,7 +13,7 @@ export interface PostFrontmatter {
   fullArticleIntro?: string; // Optional longer intro for the post page
   readTime: number;     // Manually set reading time
   author?: string;      // Optional author name
-  [key: string]: any;  // Allows for any other fields if needed
+  [key: string]: unknown;  // Allows for any other fields if needed
 }
 
 // Represents the data structure often used for listing posts (includes id/slug)
@@ -24,7 +24,7 @@ export interface PostData extends PostFrontmatter {
 // Represents the full data for a single post page, including processed MDX content
 export interface FullPostData {
   id: string;         // Slug
-  mdxSource: any;     // Serialized MDX result from next-mdx-remote/serialize
+  mdxSource: unknown;     // Serialized MDX result from next-mdx-remote/serialize
   frontmatter: PostFrontmatter; // The parsed frontmatter object
   content?: string;   // Raw MDX content as fallback
 }

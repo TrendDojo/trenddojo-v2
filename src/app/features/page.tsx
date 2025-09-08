@@ -169,7 +169,7 @@ export default function FeaturesPage() {
             </h1>
             <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
               Everything you need to trade systematically with discipline. 
-              From position sizing to risk management, we've got you covered.
+              From position sizing to risk management, we&apos;ve got you covered.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

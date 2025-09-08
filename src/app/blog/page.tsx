@@ -2,12 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { Clock, Calendar, User, ArrowRight } from "lucide-react";
 import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
-import { getSortedPostsData } from "@/lib/blogPosts";
 import type { PostData } from "@/types/blog";
 import { format, parseISO } from 'date-fns';
 

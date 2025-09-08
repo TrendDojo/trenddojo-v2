@@ -152,7 +152,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-slate-900 mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">9. Children&apos;s Privacy</h2>
               <p className="text-slate-700">
                 TrendDojo is not intended for individuals under 18 years of age. We do not knowingly collect personal information from children. If we discover that a child has provided us with personal information, we will delete it immediately.
               </p>
@@ -167,7 +167,7 @@ export default function PrivacyPolicy() {
                 <li>Email notification to your registered address</li>
                 <li>In-app notifications</li>
                 <li>Website banners</li>
-                <li>Updated "Last modified" date on this page</li>
+                <li>Updated &ldquo;Last modified&rdquo; date on this page</li>
               </ul>
             </section>
 

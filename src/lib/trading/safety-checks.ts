@@ -69,7 +69,8 @@ export async function performTradeSafetyCheck(
 
   // 2. User Authentication & Authorization
   if (userId) {
-    const session = await getServerSession(authConfig)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const session = await getServerSession(authConfig as any) as any
     if (!session?.user || session.user.id !== userId) {
       result.reasons.push('User not authenticated or session mismatch')
       return result
@@ -97,16 +98,18 @@ export async function performTradeSafetyCheck(
   const riskCheck = await checkRiskLimits(request, userId)
   if (!riskCheck.withinLimits) {
     result.reasons.push(...riskCheck.violations)
-    if (riskCheck.warnings.length > 0) {
-      result.warnings.push(...riskCheck.warnings)
-    }
     return result
+  }
+  
+  // Add warnings even if risk check passes
+  if (riskCheck.warnings.length > 0) {
+    result.warnings.push(...riskCheck.warnings)
   }
 
   // 5. Market Hours & Symbol Availability
   const marketCheck = checkMarketAvailability(request.symbol)
   if (!marketCheck.available) {
-    result.reasons.push(marketCheck.reason)
+    result.reasons.push(marketCheck.reason || 'Market unavailable')
     return result
   }
 
@@ -190,7 +193,7 @@ async function checkRiskLimits(
   }
 
   // Warning for large orders
-  if (orderValue > limits.maxOrderValue * 0.8) {
+  if (orderValue >= limits.maxOrderValue * 0.8) {
     warnings.push('Large order detected - please review carefully')
   }
 
@@ -209,7 +212,7 @@ async function checkRiskLimits(
 /**
  * Check if market is open and symbol is tradeable
  */
-function checkMarketAvailability(symbol: string): { available: boolean; reason?: string } {
+function checkMarketAvailability(_symbol: string): { available: boolean; reason?: string } {
   // Simplified market hours check (in production, this would be more sophisticated)
   const now = new Date()
   const day = now.getDay()
@@ -239,7 +242,7 @@ function checkMarketAvailability(symbol: string): { available: boolean; reason?:
 /**
  * Get trading limits for a user (mock implementation)
  */
-async function getTradingLimits(userId?: string): Promise<TradingLimits> {
+async function getTradingLimits(_userId?: string): Promise<TradingLimits> {
   // In production, this would fetch from database based on user's subscription tier
   // For now, return default limits
   return {
@@ -263,7 +266,7 @@ export class TradingSafetyContext {
   /**
    * Execute a trade with full safety checks
    */
-  async executeTrade(request: TradeRequest): Promise<{ success: boolean; result?: any; error?: string }> {
+  async executeTrade(request: TradeRequest): Promise<{ success: boolean; result?: unknown; error?: string }> {
     try {
       // Perform safety checks
       const safetyCheck = await performTradeSafetyCheck(request, this.userId)

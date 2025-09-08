@@ -42,41 +42,44 @@ function getCategoryColor(category: string): string {
 
 // MDX Components
 const mdxComponents = {
-  h1: (props: any) => (
+  h1: (props: React.HTMLProps<HTMLHeadingElement>) => (
     <h1 className="text-4xl font-bold text-slate-900 mt-8 mb-6 first:mt-0" {...props} />
   ),
-  h2: (props: any) => (
+  h2: (props: React.HTMLProps<HTMLHeadingElement>) => (
     <h2 className="text-3xl font-bold text-slate-900 mt-8 mb-4" {...props} />
   ),
-  h3: (props: any) => (
+  h3: (props: React.HTMLProps<HTMLHeadingElement>) => (
     <h3 className="text-2xl font-semibold text-slate-900 mt-6 mb-3" {...props} />
   ),
-  p: (props: any) => (
+  p: (props: React.HTMLProps<HTMLParagraphElement>) => (
     <p className="text-slate-700 leading-relaxed mb-6" {...props} />
   ),
-  ul: (props: any) => (
+  ul: (props: React.HTMLProps<HTMLUListElement>) => (
     <ul className="list-disc list-inside text-slate-700 mb-6 space-y-2" {...props} />
   ),
-  ol: (props: any) => (
+  ol: (props: React.OlHTMLAttributes<HTMLOListElement>) => (
     <ol className="list-decimal list-inside text-slate-700 mb-6 space-y-2" {...props} />
   ),
-  li: (props: any) => (
+  li: (props: React.HTMLProps<HTMLLIElement>) => (
     <li className="mb-2" {...props} />
   ),
-  a: (props: any) => (
+  a: (props: React.HTMLProps<HTMLAnchorElement>) => (
     <a className="text-trenddojo-purple-700 hover:text-trenddojo-purple-800 underline transition-colors" {...props} />
   ),
-  blockquote: (props: any) => (
+  blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => (
     <blockquote className="border-l-4 border-trenddojo-purple-700 bg-slate-50 p-6 my-6 italic text-slate-700" {...props} />
   ),
-  code: (props: any) => (
+  code: (props: React.HTMLProps<HTMLElement>) => (
     <code className="bg-slate-100 text-trenddojo-purple-800 px-2 py-1 rounded text-sm font-mono" {...props} />
   ),
-  pre: (props: any) => (
+  pre: (props: React.HTMLProps<HTMLPreElement>) => (
     <pre className="bg-slate-900 text-slate-100 p-6 rounded-lg overflow-x-auto mb-6 font-mono text-sm" {...props} />
   ),
-  img: (props: any) => {
-    const { src, alt, ...rest } = props;
+  img: (props: React.HTMLProps<HTMLImageElement>) => {
+    const { src, alt } = props;
+    if (!src) {
+      return null;
+    }
     return (
       <div className="my-8">
         <Image
@@ -85,7 +88,6 @@ const mdxComponents = {
           width={800}
           height={400}
           className="rounded-lg shadow-sm w-full h-auto"
-          {...rest}
         />
       </div>
     );
@@ -101,7 +103,7 @@ export default function BlogPostTemplate({ postData }: BlogPostTemplateProps) {
   let displayDate = '';
   try {
     displayDate = format(parseISO(frontmatter.lastUpdated), 'MMMM d, yyyy');
-  } catch (_e) {
+  } catch {
     displayDate = 'Recently published';
   }
 

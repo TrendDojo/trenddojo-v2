@@ -47,7 +47,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-slate-700 mb-4">
-                By accessing or using TrendDojo's services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using our services.
+                By accessing or using TrendDojo&apos;s services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using our services.
               </p>
               <p className="text-slate-700">
                 These terms constitute a legal agreement between you and TrendDojo. Please read them carefully.
@@ -199,7 +199,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">8. Intellectual Property</h2>
               
-              <h3 className="text-xl font-medium text-slate-800 mb-3">TrendDojo's Rights:</h3>
+              <h3 className="text-xl font-medium text-slate-800 mb-3">TrendDojo&apos;s Rights:</h3>
               <ul className="list-disc pl-6 mb-4 text-slate-700 space-y-2">
                 <li>All software, algorithms, and content are proprietary to TrendDojo</li>
                 <li>Trademarks, logos, and brand elements are protected</li>
@@ -239,7 +239,7 @@ export default function TermsOfService() {
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                 <h4 className="font-medium text-red-800 mb-2">Important Limitations:</h4>
                 <p className="text-red-700 text-sm mb-2">
-                  TrendDojo's liability is limited to the subscription fees paid in the 12 months preceding any claim. 
+                  TrendDojo&apos;s liability is limited to the subscription fees paid in the 12 months preceding any claim. 
                   We are not liable for trading losses, missed opportunities, or consequential damages.
                 </p>
                 <p className="text-red-700 text-sm">

@@ -21,10 +21,11 @@ export class TrendDojoEmailService extends BaseEmailService {
   protected async getHtmlTemplate(
     templateType: string, 
     locale: string, 
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): Promise<EmailTemplate | null> {
     
-    const baseData = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseData: any = {
       appName: 'TrendDojo',
       baseUrl: this.getEnvironment().baseUrl,
       supportEmail: 'support@trenddojo.com',
@@ -81,7 +82,7 @@ export class TrendDojoEmailService extends BaseEmailService {
     }
   }
 
-  private getWelcomeEmailHtml(data: any): string {
+  private getWelcomeEmailHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -133,7 +134,7 @@ export class TrendDojoEmailService extends BaseEmailService {
     `
   }
 
-  private getTradeConfirmationText(data: any): string {
+  private getTradeConfirmationText(data: Record<string, unknown>): string {
     return `
 Trade Confirmation - ${data.symbol}
 
@@ -152,7 +153,7 @@ View full details at: ${data.baseUrl}/trades/${data.tradeId}
     `.trim()
   }
 
-  private getTradeConfirmationHtml(data: any): string {
+  private getTradeConfirmationHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -225,7 +226,7 @@ View full details at: ${data.baseUrl}/trades/${data.tradeId}
     `
   }
 
-  private getPriceAlertHtml(data: any): string {
+  private getPriceAlertHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -264,7 +265,7 @@ View full details at: ${data.baseUrl}/trades/${data.tradeId}
     `
   }
 
-  private getPortfolioAlertHtml(data: any): string {
+  private getPortfolioAlertHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -302,7 +303,7 @@ View full details at: ${data.baseUrl}/trades/${data.tradeId}
     `
   }
 
-  private getPasswordResetHtml(data: any): string {
+  private getPasswordResetHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -340,7 +341,7 @@ View full details at: ${data.baseUrl}/trades/${data.tradeId}
     `
   }
 
-  private getEmailVerificationHtml(data: any): string {
+  private getEmailVerificationHtml(data: Record<string, unknown>): string {
     return `
       <!DOCTYPE html>
       <html>

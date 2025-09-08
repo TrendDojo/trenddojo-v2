@@ -170,7 +170,7 @@ export default function PricingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className={`relative rounded-2xl p-8 border-2 ${
+                className={`relative rounded-2xl p-8 border-2 flex flex-col h-full ${
                   tier.popular
                     ? 'border-trenddojo-purple-700 bg-gradient-to-b from-trenddojo-purple-50 to-white shadow-xl'
                     : 'border-slate-200 bg-white hover:border-trenddojo-purple-200 shadow-lg hover:shadow-xl'
@@ -194,31 +194,33 @@ export default function PricingPage() {
                   <p className="text-slate-600 text-sm leading-relaxed">{tier.description}</p>
                 </div>
 
-                <ul className="space-y-4 mb-8">
-                  {tier.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-trenddojo-purple-700 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-700 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                  {tier.limitations && (
-                    <>
-                      <li className="border-t border-slate-200 pt-4 mt-4">
-                        <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Limitations
-                        </span>
+                <div className="flex-grow">
+                  <ul className="space-y-4 mb-8">
+                    {tier.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-trenddojo-purple-700 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-700 text-sm">{feature}</span>
                       </li>
-                      {tier.limitations.map((limitation, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <div className="w-5 h-5 mt-0.5 flex-shrink-0 flex items-center justify-center">
-                            <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
-                          </div>
-                          <span className="text-slate-500 text-sm">{limitation}</span>
+                    ))}
+                    {tier.limitations && (
+                      <>
+                        <li className="border-t border-slate-200 pt-4 mt-4">
+                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                            Limitations
+                          </span>
                         </li>
-                      ))}
-                    </>
-                  )}
-                </ul>
+                        {tier.limitations.map((limitation, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <div className="w-5 h-5 mt-0.5 flex-shrink-0 flex items-center justify-center">
+                              <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                            </div>
+                            <span className="text-slate-500 text-sm">{limitation}</span>
+                          </li>
+                        ))}
+                      </>
+                    )}
+                  </ul>
+                </div>
 
                 <Link
                   href={tier.href}

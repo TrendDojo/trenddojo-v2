@@ -10,7 +10,7 @@ export function getSortedPostsData(): PostData[] {
   let fileNames: string[] = [];
   try {
     fileNames = fs.readdirSync(postsDirectory);
-  } catch (_err) {
+  } catch {
     console.warn("Blog directory not found or empty:", postsDirectory);
     return [];
   }
@@ -76,7 +76,7 @@ export function getAllPostIds() {
    let fileNames: string[] = [];
    try {
       fileNames = fs.readdirSync(postsDirectory);
-   } catch (_err) {
+   } catch {
        console.warn("Blog directory not found or empty:", postsDirectory);
        return []; 
    }

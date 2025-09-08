@@ -18,14 +18,14 @@ export interface EmailTemplate {
   text: string
   html?: string
   templateId?: string
-  dynamicTemplateData?: Record<string, any>
+  dynamicTemplateData?: Record<string, unknown>
 }
 
 export interface EmailOptions {
   to: string | string[]
   templateType: string
   locale?: string
-  data?: Record<string, any>
+  data?: Record<string, unknown>
   attachments?: Array<{
     content: string
     filename: string
@@ -170,7 +170,7 @@ export class BaseEmailService {
   async sendTradingAlert(
     to: string | string[], 
     alertType: string, 
-    data: Record<string, any>
+    data: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; messageId?: string }> {
     return this.send({
       to,
@@ -191,7 +191,7 @@ export class BaseEmailService {
    */
   async sendTradeConfirmation(
     to: string, 
-    tradeData: Record<string, any>
+    tradeData: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; messageId?: string }> {
     return this.send({
       to,
@@ -236,7 +236,7 @@ export class BaseEmailService {
   /**
    * Helper to detect user's preferred locale
    */
-  static getUserLocale(user: any, defaultLocale: string = 'en'): string {
+  static getUserLocale(user: { preferredLanguage?: string; profile?: { language?: string }; locale?: string } | undefined, defaultLocale: string = 'en'): string {
     return user?.preferredLanguage || 
            user?.profile?.language ||
            user?.locale ||

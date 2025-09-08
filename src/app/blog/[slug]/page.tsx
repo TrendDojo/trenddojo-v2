@@ -4,9 +4,9 @@ import { getAllPostIds, getPostData } from '@/lib/blogPosts'
 import BlogPostTemplate from '@/components/blog/BlogPostTemplate'
 
 interface BlogPostParams {
-  params: {
+  params: Promise<{
     slug: string;
-  }
+  }>
 }
 
 // Generate static paths for all blog posts
@@ -24,7 +24,8 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: BlogPostParams): Promise<Metadata> {
-   const postData = await getPostData(params.slug);
+   const { slug } = await params;
+   const postData = await getPostData(slug);
    if (!postData) {
     return { title: 'Post Not Found' }; 
    }
@@ -43,7 +44,8 @@ export async function generateMetadata({ params }: BlogPostParams): Promise<Meta
 }
 
 export default async function BlogPostPage({ params }: BlogPostParams) {
-  const postData = await getPostData(params.slug);
+  const { slug } = await params;
+  const postData = await getPostData(slug);
   
   if (!postData) {
     notFound();

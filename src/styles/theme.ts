@@ -120,15 +120,15 @@ export const themeClasses = {
   shadowText: 'drop-shadow-lg',
 } as const
 
-// CSS Custom Properties for dynamic theming
+// CSS Custom Properties for dynamic theming (simplified for build stability)
 export const cssVariables = `
 :root {
-  --color-bg-primary: ${trendDojoTheme.background.primary};
-  --color-bg-secondary: ${trendDojoTheme.background.secondary};
-  --color-text-primary: ${trendDojoTheme.text.primary};
-  --color-text-secondary: ${trendDojoTheme.text.secondary};
-  --color-accent: ${trendDojoTheme.text.accent};
-  --color-purple-600: ${trendDojoTheme.purple.600};
-  --color-purple-700: ${trendDojoTheme.purple.700};
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e2e8f0;
+  --color-accent: #8b5cf6;
+  --color-purple-600: #9333ea;
+  --color-purple-700: #7c3aed;
 }
-`
+`;

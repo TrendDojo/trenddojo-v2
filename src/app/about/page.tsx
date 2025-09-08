@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { TrendingUp, Shield, Users, Target, BarChart3, Zap } from "lucide-react";
+import { TrendingUp, Shield, Users, Target } from "lucide-react";
 import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
@@ -82,7 +81,7 @@ export default function AboutPage() {
               About <span className="text-trenddojo-purple-700">TrendDojo</span>
             </h1>
             <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
-              We're building the future of systematic trading – where discipline meets technology 
+              We&apos;re building the future of systematic trading – where discipline meets technology 
               to help traders achieve consistent, long-term success.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -115,7 +114,7 @@ export default function AboutPage() {
             >
               <h2 className="text-4xl font-bold text-slate-900 mb-6">Our Mission</h2>
               <p className="text-lg text-slate-700 mb-6 leading-relaxed">
-                Most traders fail not because they can't pick winners, but because they lack the 
+                Most traders fail not because they can&apos;t pick winners, but because they lack the 
                 discipline and systems needed for consistent execution. Emotions, poor risk management, 
                 and inconsistent strategies destroy more trading accounts than market crashes.
               </p>
@@ -127,8 +126,8 @@ export default function AboutPage() {
               </p>
               <div className="bg-trenddojo-purple-50 border-l-4 border-trenddojo-purple-700 p-6 rounded-r-lg">
                 <p className="text-trenddojo-purple-900 font-medium">
-                  "Trading is not about predicting the future. It's about having a process that works 
-                  over time and the discipline to follow it consistently."
+                  &ldquo;Trading is not about predicting the future. It&apos;s about having a process that works 
+                  over time and the discipline to follow it consistently.&rdquo;
                 </p>
               </div>
             </motion.div>
@@ -286,7 +285,7 @@ export default function AboutPage() {
           >
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your Trading?</h2>
             <p className="text-xl text-slate-300 mb-8">
-              Join thousands of traders who've discovered the power of systematic, disciplined trading. 
+              Join thousands of traders who&apos;ve discovered the power of systematic, disciplined trading. 
               Start your free trial today and experience the difference proper tools and discipline can make.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

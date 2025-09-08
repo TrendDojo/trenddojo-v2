@@ -18,7 +18,11 @@ interface FloatingCircle {
   duration: number;
 }
 
-export default function AnimatedPolygonBackground() {
+interface AnimatedPolygonBackgroundProps {
+  density?: number;
+}
+
+export default function AnimatedPolygonBackground({ density = 1.0 }: AnimatedPolygonBackgroundProps) {
   const [polygons, setPolygons] = useState<Polygon[]>([]);
   const [circles, setCircles] = useState<FloatingCircle[]>([]);
 
@@ -27,8 +31,9 @@ export default function AnimatedPolygonBackground() {
     const generatePolygons = () => {
       const newPolygons: Polygon[] = [];
       
-      // Big blob in top-left (60 shapes - maximum density)
-      for (let i = 0; i < 60; i++) {
+      // Big blob in top-left (adjustable density)
+      const topLeftShapes = Math.floor(60 * density);
+      for (let i = 0; i < topLeftShapes; i++) {
         // Bias shapes toward top-left of the blob (closer to 40,40)
         const topLeftBias = Math.random() * 0.7 + 0.3; // 0.3-1.0 bias toward top-left
         const centerX = Math.random() * (400 * topLeftBias) + 40;  // More shapes toward left
@@ -62,8 +67,9 @@ export default function AnimatedPolygonBackground() {
         });
       }
       
-      // Bottom-right blob (50 shapes - maximum density)
-      for (let i = 60; i < 110; i++) {
+      // Bottom-right blob (adjustable density)
+      const bottomRightShapes = Math.floor(50 * density);
+      for (let i = topLeftShapes; i < topLeftShapes + bottomRightShapes; i++) {
         // Bias shapes toward bottom-right of the blob (closer to 1120,760)
         const bottomRightBias = Math.random() * 0.7 + 0.3; // 0.3-1.0 bias toward bottom-right
         const centerX = Math.random() * 240 + 880 + (240 * (1 - bottomRightBias));  // More shapes toward right
@@ -97,8 +103,10 @@ export default function AnimatedPolygonBackground() {
         });
       }
       
-      // Scattered shapes across entire space (120 shapes - insane density!)
-      for (let i = 110; i < 230; i++) {
+      // Scattered shapes across entire space (adjustable density)
+      const scatteredShapes = Math.floor(120 * density);
+      const startIndex = topLeftShapes + bottomRightShapes;
+      for (let i = startIndex; i < startIndex + scatteredShapes; i++) {
         const centerX = Math.random() * 1200;      // X: anywhere across full width
         const centerY = Math.random() * 800;       // Y: anywhere across full height
         const size = Math.random() * 8 + 4;        // Very small shapes: 4-12px
@@ -133,8 +141,9 @@ export default function AnimatedPolygonBackground() {
     const generateCircles = () => {
       const newCircles: FloatingCircle[] = [];
       
-      // Circles for big blob in top-left (30 circles - maximum density)
-      for (let i = 0; i < 30; i++) {
+      // Circles for big blob in top-left (adjustable density)
+      const topLeftCircles = Math.floor(30 * density);
+      for (let i = 0; i < topLeftCircles; i++) {
         // Bias circles toward top-left of the blob
         const topLeftBias = Math.random() * 0.7 + 0.3;
         const cx = Math.random() * (360 * topLeftBias) + 60;
@@ -150,8 +159,9 @@ export default function AnimatedPolygonBackground() {
         });
       }
       
-      // Circles for bottom-right blob (25 circles - maximum density)
-      for (let i = 30; i < 55; i++) {
+      // Circles for bottom-right blob (adjustable density)
+      const bottomRightCircles = Math.floor(25 * density);
+      for (let i = topLeftCircles; i < topLeftCircles + bottomRightCircles; i++) {
         // Bias circles toward bottom-right of the blob
         const bottomRightBias = Math.random() * 0.7 + 0.3;
         const cx = Math.random() * 220 + 900 + (220 * (1 - bottomRightBias));
@@ -168,7 +178,8 @@ export default function AnimatedPolygonBackground() {
       }
       
       // Scattered tiny circles across entire space (40 circles - reduced density)
-      for (let i = 55; i < 95; i++) {
+      const scatteredStart = topLeftCircles + bottomRightCircles; // Start after the blob circles
+      for (let i = scatteredStart; i < scatteredStart + 40; i++) {
         newCircles.push({
           id: i,
           cx: Math.random() * 1200,       // X: anywhere across full width
@@ -183,7 +194,7 @@ export default function AnimatedPolygonBackground() {
 
     generatePolygons();
     generateCircles();
-  }, []);
+  }, [density]);
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-trenddojo-bg-primary">
