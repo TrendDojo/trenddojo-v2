@@ -147,7 +147,7 @@ const integrations = [
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900">
       <TrendDojoHeader variant="internal" showBackButton={false} />
 
       {/* Hero Section with Animated Polygons */}
@@ -207,7 +207,7 @@ export default function FeaturesPage() {
 
       {/* Detailed Features */}
       {detailedFeatures.map((category, categoryIndex) => (
-        <section key={category.category} className={categoryIndex % 2 === 1 ? "py-20 bg-slate-900/30" : "py-20"}>
+        <section key={category.category} className={categoryIndex % 2 === 1 ? "py-20 bg-slate-800" : "py-20 bg-slate-900"}>
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -220,7 +220,7 @@ export default function FeaturesPage() {
               <h2 className="text-4xl font-bold text-white mb-4">
                 {category.category}
               </h2>
-              <p className="text-xl text-gray-300">
+              <p className="text-xl text-slate-300">
                 {category.category === "Risk Management" && "Protect your capital with systematic risk controls"}
                 {category.category === "Trade Execution" && "Execute trades with speed and precision"}
                 {category.category === "Analytics & Insights" && "Track performance and improve your edge"}
@@ -244,7 +244,7 @@ export default function FeaturesPage() {
                       {feature.highlight}
                     </span>
                   </div>
-                  <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                  <p className="text-slate-300 leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -253,7 +253,7 @@ export default function FeaturesPage() {
       ))}
 
       {/* Integrations */}
-      <section className="py-20 bg-slate-900/50">
+      <section className="py-20 bg-slate-800">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -266,7 +266,7 @@ export default function FeaturesPage() {
             <h2 className="text-4xl font-bold text-white mb-4">
               Broker Integrations
             </h2>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl text-slate-300">
               Connect to your favorite brokers and trade from one unified platform
             </p>
           </motion.div>
@@ -282,7 +282,7 @@ export default function FeaturesPage() {
                 className="bg-slate-800/50 rounded-lg p-6 border border-slate-700 text-center"
               >
                 <h3 className="text-lg font-semibold text-white mb-2">{integration.name}</h3>
-                <p className="text-gray-400 text-sm mb-3">{integration.description}</p>
+                <p className="text-slate-400 text-sm mb-3">{integration.description}</p>
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                   integration.status === 'live' 
                     ? 'bg-green-600/20 text-green-300' 
@@ -297,7 +297,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Security */}
-      <section className="py-20">
+      <section className="py-20 bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -310,7 +310,7 @@ export default function FeaturesPage() {
               <h2 className="text-4xl font-bold text-white mb-6">
                 Bank-Level Security
               </h2>
-              <p className="text-xl text-gray-300 mb-6">
+              <p className="text-xl text-slate-200 mb-6">
                 Your trading data and account information are protected with the same 
                 security standards used by major financial institutions.
               </p>
@@ -328,7 +328,7 @@ export default function FeaturesPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-center text-gray-300"
+                    className="flex items-center text-slate-200"
                   >
                     <Lock className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                     {item}
@@ -352,7 +352,7 @@ export default function FeaturesPage() {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold">End-to-End Encryption</h4>
-                    <p className="text-gray-400 text-sm">All data encrypted in transit and at rest</p>
+                    <p className="text-slate-300 text-sm">All data encrypted in transit and at rest</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -361,7 +361,7 @@ export default function FeaturesPage() {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold">OAuth Integration</h4>
-                    <p className="text-gray-400 text-sm">Secure broker connections without passwords</p>
+                    <p className="text-slate-300 text-sm">Secure broker connections without passwords</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -370,7 +370,7 @@ export default function FeaturesPage() {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold">Fraud Detection</h4>
-                    <p className="text-gray-400 text-sm">AI-powered monitoring for suspicious activity</p>
+                    <p className="text-slate-300 text-sm">AI-powered monitoring for suspicious activity</p>
                   </div>
                 </div>
               </div>
