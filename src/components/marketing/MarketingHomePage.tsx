@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { CheckCircle, TrendingUp, Shield, Zap, BarChart3, Calculator, Target } from "lucide-react";
 import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
+import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
+import MarketingFooter from "@/components/marketing/MarketingFooter";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -79,10 +81,11 @@ export default function MarketingHomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-screen flex items-center">
+      <section className="relative overflow-hidden min-h-screen flex items-center bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
+        <TrendDojoHeader variant="homepage" showLogo={false} showBackButton={false} />
         <AnimatedPolygonBackground />
         
-        <div className="relative z-30 container mx-auto px-6 py-32">
+        <div className="relative z-30 container mx-auto px-6 py-40">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,10 +97,10 @@ export default function MarketingHomePage() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex justify-center mb-8"
+              className="flex justify-center mb-12"
             >
               <Image
-                src="/assets/logos/td-logo.svg"
+                src="/assets/logos/td-logo-s.svg"
                 alt="TrendDojo"
                 width={300}
                 height={66}
@@ -106,15 +109,15 @@ export default function MarketingHomePage() {
               />
             </motion.div>
 
-            <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 drop-shadow-lg">
               Trade with <span className="text-trenddojo-purple-700">Discipline</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-md">
+            <p className="text-xl md:text-2xl text-gray-200 mb-12 drop-shadow-md">
               Professional position sizing, risk management, and trade journaling 
               for <span className="text-trenddojo-purple-700">swing</span> and <span className="text-trenddojo-purple-700">trend following</span> traders — whether professional or amateur, part-time or full-time.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link
                 href="/signup"
                 className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
@@ -136,7 +139,7 @@ export default function MarketingHomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                  className="bg-white/20 backdrop-blur-md rounded-lg p-4 border border-white/10"
+                  className="bg-slate-800/50 backdrop-blur-md rounded-lg p-4 border border-slate-600/25"
                 >
                   <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">{stat.value}</div>
                   <div className="text-sm text-gray-200">{stat.label}</div>
@@ -257,7 +260,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-slate-900/50">
+      <section className="py-20 bg-slate-100">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -266,10 +269,10 @@ export default function MarketingHomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-slate-900 mb-6">
               Trusted by Professional Traders
             </h2>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl text-slate-700">
               Join thousands who&apos;ve transformed their trading discipline
             </p>
           </motion.div>
@@ -282,12 +285,12 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700"
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-slate-200 hover:border-trenddojo-purple-700/60 hover:shadow-lg transition-all duration-300"
               >
-                <p className="text-gray-300 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
+                <p className="text-slate-700 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div>
-                  <p className="text-white font-semibold">{testimonial.author}</p>
-                  <p className="text-gray-400 text-sm">{testimonial.role}, {testimonial.company}</p>
+                  <p className="text-slate-900 font-semibold">{testimonial.author}</p>
+                  <p className="text-slate-600 text-sm">{testimonial.role}, {testimonial.company}</p>
                 </div>
               </motion.div>
             ))}
@@ -296,7 +299,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-20 bg-gradient-to-r from-trenddojo-primary-600 to-trenddojo-purple-700">
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -313,13 +316,15 @@ export default function MarketingHomePage() {
             </p>
             <Link
               href="/signup"
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 inline-block"
+              className="bg-white text-trenddojo-purple-700 hover:bg-gray-100 hover:text-trenddojo-purple-800 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 inline-block shadow-lg"
             >
               Get Started Free
             </Link>
           </motion.div>
         </div>
       </section>
+
+      <MarketingFooter />
     </>
   );
 }
