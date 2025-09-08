@@ -290,17 +290,18 @@ export default function PricingPage() {
           >
             <Zap className="w-16 h-16 text-white mx-auto mb-6" />
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Need Enterprise Features?
+              Win with Smart Position Management
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Custom integrations, dedicated support, and volume pricing for institutions 
-              and professional trading firms.
+              Many successful traders have more losing trades than winners. The key is proper 
+              position sizing – cut losses small, let winners run big. That's how you stay profitable 
+              even when you're wrong 60% of the time.
             </p>
             <Link
-              href="/contact?type=enterprise"
+              href="/signup"
               className="bg-white text-trenddojo-purple-700 hover:bg-gray-100 hover:text-trenddojo-purple-800 px-8 py-4 rounded-lg font-semibold transition-colors duration-200 inline-block shadow-lg"
             >
-              Contact Sales
+              Start Trading Smarter
             </Link>
           </motion.div>
         </div>
