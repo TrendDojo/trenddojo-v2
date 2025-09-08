@@ -293,7 +293,7 @@ export default function PricingPage() {
               You can be wrong more than right and still be profitable
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Smart traders win by cutting losses small and letting winners run big. Smart position management means you can profit even when wrong more than 50% of the time!
+              Smart position management means you can profit even when wrong more than 50% of the time!
             </p>
             <Link
               href="/signup"
