@@ -1,11 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { 
   Calculator, Shield, TrendingUp, BarChart3, Zap,
   Settings, AlertTriangle, Link as LinkIcon, 
   Lock
 } from "lucide-react";
+import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
+import MarketingFooter from "@/components/marketing/MarketingFooter";
+import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
 
 const heroFeatures = [
   {
@@ -143,23 +147,44 @@ const integrations = [
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-screen pt-16">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800">
-        <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-slate-50">
+      <TrendDojoHeader variant="internal" showBackButton={false} />
+
+      {/* Hero Section with Animated Polygons */}
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 overflow-hidden">
+        {/* Animated Polygon Background */}
+        <div className="absolute inset-0 opacity-60">
+          <AnimatedPolygonBackground density={1.0} />
+        </div>
+        
+        <div className="relative z-10 container mx-auto px-6 py-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center max-w-4xl mx-auto mb-16"
           >
-            <h1 className="text-5xl font-bold text-white mb-6">
-              Professional Trading Tools
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+              Professional <span className="text-trenddojo-purple-700">Features</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
               Everything you need to trade systematically with discipline. 
-              From position sizing to risk management, we&apos;ve got you covered.
+              From position sizing to risk management, we've got you covered.
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/signup"
+                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
+              >
+                Start Free Trial
+              </Link>
+              <Link
+                href="/demo"
+                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
+              >
+                View Demo
+              </Link>
+            </div>
           </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -171,9 +196,9 @@ export default function FeaturesPage() {
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-slate-700 text-center"
               >
-                <feature.icon className="w-16 h-16 text-blue-400 mx-auto mb-6" />
+                <feature.icon className="w-16 h-16 text-trenddojo-purple-400 mx-auto mb-6" />
                 <h3 className="text-2xl font-semibold text-white mb-4">{feature.title}</h3>
-                <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                <p className="text-slate-300 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -191,7 +216,7 @@ export default function FeaturesPage() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <category.icon className="w-16 h-16 text-blue-400 mx-auto mb-6" />
+              <category.icon className="w-16 h-16 text-trenddojo-purple-400 mx-auto mb-6" />
               <h2 className="text-4xl font-bold text-white mb-4">
                 {category.category}
               </h2>
@@ -215,7 +240,7 @@ export default function FeaturesPage() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-xl font-semibold text-white">{feature.name}</h3>
-                    <span className="bg-blue-600/20 text-blue-300 text-xs px-2 py-1 rounded-full">
+                    <span className="bg-trenddojo-purple-600/20 text-trenddojo-purple-300 text-xs px-2 py-1 rounded-full">
                       {feature.highlight}
                     </span>
                   </div>
@@ -237,7 +262,7 @@ export default function FeaturesPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <LinkIcon className="w-16 h-16 text-blue-400 mx-auto mb-6" />
+            <LinkIcon className="w-16 h-16 text-trenddojo-purple-400 mx-auto mb-6" />
             <h2 className="text-4xl font-bold text-white mb-4">
               Broker Integrations
             </h2>
@@ -281,7 +306,7 @@ export default function FeaturesPage() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <Lock className="w-16 h-16 text-blue-400 mb-6" />
+              <Lock className="w-16 h-16 text-trenddojo-purple-400 mb-6" />
               <h2 className="text-4xl font-bold text-white mb-6">
                 Bank-Level Security
               </h2>
@@ -331,8 +356,8 @@ export default function FeaturesPage() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
-                    <Settings className="w-6 h-6 text-blue-400" />
+                  <div className="w-12 h-12 bg-trenddojo-purple-600/20 rounded-lg flex items-center justify-center">
+                    <Settings className="w-6 h-6 text-trenddojo-purple-400" />
                   </div>
                   <div>
                     <h4 className="text-white font-semibold">OAuth Integration</h4>
@@ -355,7 +380,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-20 bg-gradient-to-r from-trenddojo-primary-600 to-trenddojo-purple-700">
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -371,22 +396,24 @@ export default function FeaturesPage() {
               trading tools designed for consistent results.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
+              <Link
                 href="/signup"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
+                className="bg-white text-trenddojo-purple-700 hover:bg-gray-100 hover:text-trenddojo-purple-800 px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
               >
                 Start Free Trial
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/demo"
                 className="border border-white/20 hover:border-white/40 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200 backdrop-blur-sm"
               >
                 View Demo
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
+
+      <MarketingFooter />
     </div>
   );
 }
