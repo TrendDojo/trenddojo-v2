@@ -1,13 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 
 export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <TrendDojoHeader variant="internal" />
+      <TrendDojoHeader variant="internal" showBackButton={false} />
 
       <div className="container mx-auto px-6 py-12 max-w-4xl">
         <motion.div
