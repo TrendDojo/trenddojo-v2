@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Clock, Calendar, User, ArrowRight } from "lucide-react";
 import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
+import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
 import { getSortedPostsData } from "@/lib/blogPosts";
 import type { PostData } from "@/types/blog";
 import { format, parseISO } from 'date-fns';
@@ -82,9 +83,14 @@ export default function BlogPage() {
     <div className="min-h-screen bg-slate-50">
       <TrendDojoHeader variant="internal" showBackButton={false} />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 py-20">
-        <div className="container mx-auto px-6">
+      {/* Hero Section with Animated Polygons */}
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 overflow-hidden">
+        {/* Animated Polygon Background */}
+        <div className="absolute inset-0 opacity-60">
+          <AnimatedPolygonBackground density={1.2} />
+        </div>
+        
+        <div className="relative z-10 container mx-auto px-6 py-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -97,6 +103,20 @@ export default function BlogPage() {
             <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
               Insights, education, and updates to help you master systematic trading
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/signup"
+                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
+              >
+                Start Trading Systematically
+              </Link>
+              <Link
+                href="/demo"
+                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
+              >
+                See Platform Demo
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
