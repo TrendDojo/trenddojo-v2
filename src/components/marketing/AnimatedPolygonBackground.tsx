@@ -209,18 +209,18 @@ export default function AnimatedPolygonBackground() {
             strokeWidth="1"
             strokeOpacity="0.2"
             initial={{ 
-              opacity: 0, 
-              scale: 0.8,
+              opacity: polygon.opacity * 0.8, 
+              scale: 0.9,
               rotate: 0
             }}
             animate={{ 
-              opacity: [0.1, polygon.opacity, 0.1],
-              scale: [0.8, 1.2, 0.8],
+              opacity: [polygon.opacity * 0.6, polygon.opacity, polygon.opacity * 0.3],
+              scale: [0.9, 1.2, 0.9],
               rotate: [0, 360, 0]
             }}
             transition={{
               duration: 8 + Math.random() * 4,
-              delay: polygon.id * 0.3,
+              delay: Math.min(polygon.id * 0.1, 2),
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -236,14 +236,14 @@ export default function AnimatedPolygonBackground() {
             r={circle.r}
             fill="#8b5cf6"
             fillOpacity="0.75"
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0.4 }}
             animate={{ 
-              opacity: [0, 0.9, 0],
+              opacity: [0.3, 0.9, 0.2],
               y: [0, -20, 0]
             }}
             transition={{
               duration: circle.duration,
-              delay: circle.id * 0.5,
+              delay: Math.min(circle.id * 0.2, 1.5),
               repeat: Infinity,
               ease: "easeInOut"
             }}

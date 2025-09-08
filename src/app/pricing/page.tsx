@@ -2,6 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Check, Star, Zap } from "lucide-react";
+import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
+import MarketingFooter from "@/components/marketing/MarketingFooter";
+import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBackground";
 import Link from "next/link";
 
 const pricingTiers = [
@@ -110,80 +113,121 @@ const faqs = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen pt-16">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800">
-        <div className="container mx-auto px-6 text-center">
+    <div className="min-h-screen bg-slate-50">
+      <TrendDojoHeader variant="pricing" showBackButton={false} />
+
+      {/* Hero Section with Polygons */}
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 overflow-hidden">
+        {/* Polygon Background - Much Higher Density and Brightness */}
+        <div className="absolute inset-0 opacity-70">
+          <AnimatedPolygonBackground density={1.5} />
+        </div>
+        
+        <div className="relative z-10 container mx-auto px-6 py-20 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl font-bold text-white mb-6">
-              Choose Your Trading Edge
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+              Choose Your Trading <span className="text-trenddojo-purple-400">Plan</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Start free, then scale with professional tools as your trading grows. 
-              All plans include our core risk management and position sizing features.
+            <p className="text-xl text-slate-200 mb-8 max-w-3xl mx-auto drop-shadow-md">
+              From beginner-friendly tools to institutional-grade infrastructure. 
+              Start free and scale as your trading grows.
             </p>
-            <div className="flex justify-center items-center space-x-4 text-sm text-gray-400">
-              <span>✓ 30-day money back guarantee</span>
-              <span>✓ No setup fees</span>
-              <span>✓ Cancel anytime</span>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Link
+                href="/demo"
+                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
+              >
+                View Live Demo
+              </Link>
+              <Link
+                href="#plans"
+                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
+              >
+                Compare Plans
+              </Link>
+            </div>
+            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-slate-300">
+              <span className="flex items-center">✓ 30-day money back guarantee</span>
+              <span className="flex items-center">✓ No setup fees</span>
+              <span className="flex items-center">✓ Cancel anytime</span>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-20">
+      <section id="plans" className="py-20 bg-white">
         <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
             {pricingTiers.map((tier, index) => (
               <motion.div
                 key={tier.name}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`relative rounded-2xl p-8 ${
-                  tier.popular 
-                    ? 'bg-blue-600/10 border-2 border-blue-500' 
-                    : 'bg-slate-800/50 border border-slate-700'
-                } hover:border-slate-600 transition-colors duration-300`}
+                viewport={{ once: true }}
+                className={`relative rounded-2xl p-8 border-2 ${
+                  tier.popular
+                    ? 'border-trenddojo-purple-700 bg-gradient-to-b from-trenddojo-purple-50 to-white shadow-xl'
+                    : 'border-slate-200 bg-white hover:border-trenddojo-purple-200 shadow-lg hover:shadow-xl'
+                } transition-all duration-300`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
-                      <Star className="w-4 h-4 mr-1" />
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <div className="bg-trenddojo-purple-700 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-1">
+                      <Star className="w-4 h-4" />
                       Most Popular
                     </div>
                   </div>
                 )}
                 
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{tier.name}</h3>
                   <div className="mb-4">
-                    <span className="text-4xl font-bold text-white">${tier.price}</span>
-                    {tier.price > 0 && <span className="text-gray-400">/month</span>}
+                    <span className="text-4xl font-bold text-slate-900">${tier.price}</span>
+                    {tier.price > 0 && <span className="text-slate-500 ml-2">/month</span>}
                   </div>
-                  <p className="text-gray-400">{tier.description}</p>
+                  <p className="text-slate-600 text-sm leading-relaxed">{tier.description}</p>
                 </div>
 
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center text-gray-300">
-                      <Check className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      {feature}
+                <ul className="space-y-4 mb-8">
+                  {tier.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-trenddojo-purple-700 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-700 text-sm">{feature}</span>
                     </li>
                   ))}
+                  {tier.limitations && (
+                    <>
+                      <li className="border-t border-slate-200 pt-4 mt-4">
+                        <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          Limitations
+                        </span>
+                      </li>
+                      {tier.limitations.map((limitation, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <div className="w-5 h-5 mt-0.5 flex-shrink-0 flex items-center justify-center">
+                            <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                          </div>
+                          <span className="text-slate-500 text-sm">{limitation}</span>
+                        </li>
+                      ))}
+                    </>
+                  )}
                 </ul>
 
                 <Link
                   href={tier.href}
-                  className={`w-full block text-center py-3 px-6 rounded-lg font-semibold transition-colors duration-200 ${
+                  className={`block w-full text-center px-6 py-3 rounded-lg font-semibold transition-colors duration-200 ${
                     tier.popular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-slate-700 hover:bg-slate-600 text-white'
+                      ? 'bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 text-white'
+                      : tier.name === 'Free'
+                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                      : 'bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white'
                   }`}
                 >
                   {tier.cta}
@@ -195,8 +239,8 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-slate-900/50">
-        <div className="container mx-auto px-6">
+      <section className="py-20 bg-slate-100">
+        <div className="container mx-auto px-6 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -204,15 +248,15 @@ export default function PricingPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-slate-900 mb-6">
               Frequently Asked Questions
             </h2>
-            <p className="text-xl text-gray-300">
-              Everything you need to know about our pricing and features
+            <p className="text-xl text-slate-700">
+              Everything you need to know about TrendDojo pricing and features
             </p>
           </motion.div>
 
-          <div className="max-w-3xl mx-auto">
+          <div className="space-y-6">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
@@ -220,12 +264,12 @@ export default function PricingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-slate-800/50 rounded-lg p-6 mb-6 border border-slate-700"
+                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
               >
-                <h3 className="text-xl font-semibold text-white mb-3">
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">
                   {faq.question}
                 </h3>
-                <p className="text-gray-400 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   {faq.answer}
                 </p>
               </motion.div>
@@ -235,17 +279,17 @@ export default function PricingPage() {
       </section>
 
       {/* Enterprise CTA */}
-      <section className="py-20">
+      <section className="py-20 bg-gradient-to-r from-trenddojo-primary-600 to-trenddojo-purple-700">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-12 text-center"
+            className="text-center"
           >
             <Zap className="w-16 h-16 text-white mx-auto mb-6" />
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Need Enterprise Features?
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
@@ -254,13 +298,15 @@ export default function PricingPage() {
             </p>
             <Link
               href="/contact?type=enterprise"
-              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-200 inline-block"
+              className="bg-white text-trenddojo-purple-700 hover:bg-gray-100 hover:text-trenddojo-purple-800 px-8 py-4 rounded-lg font-semibold transition-colors duration-200 inline-block shadow-lg"
             >
               Contact Sales
             </Link>
           </motion.div>
         </div>
       </section>
+
+      <MarketingFooter />
     </div>
   );
 }
