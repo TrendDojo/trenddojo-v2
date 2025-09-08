@@ -35,40 +35,6 @@ Create essential pattern documentation to support production-ready development w
 
 ---
 
-## WB-2025-09-02-002: Production Deployment Pipeline Setup
-**State**: confirmed  
-**Timeframe**: NOW
-**Created**: 2025-09-02 13:45
-**Dependencies**: None
-**Tags**: #infrastructure #deployment #github #vercel #supabase
-
-### Goal
-Establish complete GitHub → Vercel → Supabase deployment pipeline with staging and production environments.
-
-### Tasks
-- [ ] GitHub repository setup with branch protection
-- [ ] Vercel project configuration (staging + production)
-- [ ] Supabase project setup (staging + production databases)
-- [ ] Environment variable management (Vercel secrets)
-- [ ] GitHub Actions workflow for CI/CD
-- [ ] Staging deployment automation
-- [ ] Production promotion workflow
-- [ ] Database migration strategy
-
-### Success Criteria
-- Feature branches deploy to Vercel preview URLs
-- Main branch automatically deploys to staging
-- Production requires manual promotion
-- Environment variables properly configured
-- Database migrations work in both environments
-
-### Notes
-- Follow Controlla's successful deployment pattern
-- Ensure staging mirrors production exactly
-- Set up proper monitoring and error tracking
-- Document deployment procedures for team
-
----
 
 ## WB-2025-09-02-003: Initial Project Structure & Dependencies
 **State**: confirmed
