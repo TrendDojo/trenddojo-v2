@@ -38,9 +38,9 @@ Create essential pattern documentation to support production-ready development w
 
 ## WB-2025-09-02-003: Initial Project Structure & Dependencies
 **State**: confirmed
-**Timeframe**: NOW  
+**Timeframe**: LATER  
 **Created**: 2025-09-02 13:45
-**Dependencies**: WB-2025-09-02-002
+**Dependencies**: WB-2025-09-08-001
 **Tags**: #setup #nextjs #typescript #database
 
 ### Goal
@@ -73,4 +73,48 @@ Create Next.js 14+ project structure with all production dependencies and initia
 
 ---
 
-*Last updated: 2025-09-02*
+## WB-2025-09-08-001: Database Migration Pipeline Integration
+**State**: confirmed
+**Timeframe**: NEXT
+**Created**: 2025-09-08 13:30
+**Dependencies**: WB-2025-09-02-002 (completed)
+**Tags**: #infrastructure #database #prisma #supabase #deployment
+
+### Goal
+Integrate database migration handling into the existing CI/CD pipeline to support database-dependent features safely.
+
+### Tasks
+- [ ] **Supabase Project Setup**: Create staging and production database projects
+- [ ] **Database Environment Variables**: Configure DATABASE_URL for staging/production
+- [ ] **Migration Safety Checks**: Add Prisma schema validation to CI pipeline
+- [ ] **Deployment Migration Step**: Add `prisma migrate deploy` to GitHub Actions
+- [ ] **Staging Database Integration**: Ensure staging deploys run migrations automatically
+- [ ] **Production Migration Strategy**: Manual migration approval before production deployment
+- [ ] **Database Connection Testing**: Verify database connectivity in CI pipeline
+- [ ] **Rollback Strategy**: Document database rollback procedures
+
+### Success Criteria
+- Staging deployments automatically run database migrations
+- Production deployments require explicit migration approval
+- CI pipeline validates Prisma schema changes before deployment
+- Database connection is verified before app deployment
+- Migration failures block deployment
+- Clear rollback documentation for database issues
+
+### Implementation Plan
+1. **Phase 1**: Supabase staging/production setup with environment variables
+2. **Phase 2**: Add migration validation to existing CI pipeline
+3. **Phase 3**: Integrate automatic migrations for staging
+4. **Phase 4**: Manual migration approval workflow for production
+5. **Phase 5**: Database connection testing and error handling
+
+### Notes
+- Builds on the existing successful CI/CD pipeline (WB-2025-09-02-002)
+- Must not break current deployment functionality
+- Focus on safety - better to block deployment than corrupt data
+- Consider migration performance impact on deployment time
+- Document migration best practices for development workflow
+
+---
+
+*Last updated: 2025-09-08*
