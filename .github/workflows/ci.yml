@@ -34,6 +34,12 @@ jobs:
     - name: Run TypeScript check
       run: npx tsc --noEmit
 
+    - name: Validate Prisma schema
+      run: npx prisma validate
+
+    - name: Check Prisma migrations
+      run: npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script
+
     - name: Run unit tests
       run: npm run test:run
       env:
@@ -111,7 +117,21 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run staging database migrations
+      run: npx prisma migrate deploy
+      env:
+        DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
     - name: Deploy to Vercel Staging
       uses: amondnet/vercel-action@v20
       with:
@@ -136,7 +156,26 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Check production database connection
+      run: npx prisma db execute --stdin <<< "SELECT 1;"
+      env:
+        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+    - name: Run production database migrations
+      run: npx prisma migrate deploy
+      env:
+        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
     - name: Deploy to Vercel Production
       uses: amondnet/vercel-action@v20
       with:

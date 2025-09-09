@@ -54,6 +54,16 @@ echo "Running ESLint..."
 npm run lint
 print_status $? "ESLint checks"
 
+# Validate Prisma schema
+echo "Validating Prisma schema..."
+npx prisma validate
+print_status $? "Prisma schema validation"
+
+# Check Prisma migrations
+echo "Checking migration consistency..."
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > /dev/null 2>&1
+print_status $? "Migration consistency check"
+
 echo ""
 echo "🧪 Step 3: Test Suite"
 echo "---------------------"

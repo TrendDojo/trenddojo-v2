@@ -6,6 +6,8 @@ GitHub Actions deployment failing with: `Error: Project not found ({"VERCEL_PROJ
 ## Required GitHub Secrets
 The following secrets need to be configured in GitHub repository settings:
 
+### Vercel Deployment Secrets
+
 ### 1. VERCEL_TOKEN
 - **Location**: Vercel Dashboard → Settings → Tokens
 - **Create**: Generate new token with appropriate permissions
@@ -24,6 +26,18 @@ The following secrets need to be configured in GitHub repository settings:
 ### 4. TEAM_ID
 - **Should be**: Same value as ORG_ID
 - **Format**: `team_xxxxxxxxxxxxxxxxxxxxxxxxx`
+
+### Database Migration Secrets
+
+### 5. STAGING_DATABASE_URL
+- **Location**: Supabase staging project → Settings → Database → Connection string
+- **Format**: `postgresql://postgres:[PASSWORD]@db.[STAGING-REF].supabase.co:5432/postgres`
+- **Usage**: For running migrations in staging deployments
+
+### 6. PRODUCTION_DATABASE_URL
+- **Location**: Supabase production project → Settings → Database → Connection string
+- **Format**: `postgresql://postgres:[PASSWORD]@db.[PROD-REF].supabase.co:5432/postgres`
+- **Usage**: For running migrations in production deployments
 
 ## How to Get Correct Values
 
