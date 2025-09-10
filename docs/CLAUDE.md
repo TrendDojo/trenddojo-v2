@@ -20,13 +20,12 @@
 - **WARNING**: Not following these standards creates security vulnerabilities and technical debt
 - Over-communicate security rather than under-communicate
 
-### RULE #3: [UNIVERSAL] Framework Updates & Cross-Project News Check
+### RULE #3: [UNIVERSAL] Framework Updates Check (Single Source)
 **MANDATORY at start of every work block:**
-- [ ] Read `_shared-framework/CLAUDE.md` - Check version vs local copy for rule updates
-- [ ] Check `_shared-framework/news/trenddojo-solutions.md` for new infrastructure solutions  
-- [ ] Check `_shared-framework/proven-solutions/` for existing patterns
-- [ ] Document findings: [No updates] OR [Updates found - need to sync]
-- If rule updates found: Copy updated universal rules to local CLAUDE.md
+- [ ] Check `_shared-framework/CHANGELOG.md` "Recent Updates" section (top of file)
+- [ ] If framework version newer than local: Update your CLAUDE.md
+- [ ] If relevant solutions listed: Read specified proven-solutions files
+- [ ] Document: [No updates] OR [Found: (list updates taking action on)]
 
 ### RULE #4: [UNIVERSAL] Documentation Integrity & Group Alignment
 **Before every work block:**
