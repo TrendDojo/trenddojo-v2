@@ -1,7 +1,7 @@
 # Trading-Specific Patterns - TrendDojo
 
 *Specialized patterns for financial trading applications and risk management*
-*Last Updated: 2025-09-05*
+*Last Updated: 2025-09-10*
 
 ## Risk Management Patterns
 
@@ -19,7 +19,8 @@ interface PositionSizing {
   shareQuantity: number; // riskAmount / priceRisk
 }
 
-// Always calculate on server-side for accuracy
+// @business-critical: Position sizing affects capital at risk
+// MUST have unit tests before deployment
 function calculatePositionSize(params: PositionSizing): number {
   const riskAmount = params.accountBalance * params.riskPercentage;
   const priceRisk = Math.abs(params.entryPrice - params.stopLoss);
@@ -354,7 +355,17 @@ class ReliableMarketData {
 }
 ```
 
+## 🔍 Business-Critical Functions
+
+All functions in this document marked with `@business-critical` comments MUST:
+1. Have comprehensive unit tests (>95% coverage)
+2. Include edge case testing
+3. Have integration tests with mock broker APIs
+4. Be reviewed before deployment
+5. Never be deployed without explicit approval
+
 ## Usage History
 <!-- Add entries when this doc contributes to completing a task -->
 <!-- Format: - YYYY-MM-DD: Used for WB-XXXX-XX-XXX (Brief description) -->
 - 2025-09-05: Created for documentation harmonization (Trading-specific patterns and risk management)
+- 2025-09-10: Enhanced with business-critical flagging system

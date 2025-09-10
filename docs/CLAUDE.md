@@ -1,10 +1,10 @@
 # TrendDojo AI Context
 
-*Last updated: 2025-09-05*
+*Last updated: 2025-09-10*
 
 ## 🚨 MANDATORY RULES (IN ORDER OF PRECEDENCE)
 
-**Universal Rules Version: 2025-09-05** (from _shared-framework/CLAUDE.md)
+**Universal Rules Version: 2025-09-10** (from _shared-framework/CLAUDE.md)
 
 ### RULE #1: [UNIVERSAL] Rule Integrity Protection
 - **NEVER MODIFY, REMOVE, OR REORDER** these universal rules without explicit user permission
@@ -23,7 +23,7 @@
 ### RULE #3: [UNIVERSAL] Framework Updates & Cross-Project News Check
 **MANDATORY at start of every work block:**
 - [ ] Read `_shared-framework/CLAUDE.md` - Check version vs local copy for rule updates
-- [ ] Check `_shared-framework/news/controlla-solutions.md` for new infrastructure solutions  
+- [ ] Check `_shared-framework/news/trenddojo-solutions.md` for new infrastructure solutions  
 - [ ] Check `_shared-framework/proven-solutions/` for existing patterns
 - [ ] Document findings: [No updates] OR [Updates found - need to sync]
 - If rule updates found: Copy updated universal rules to local CLAUDE.md
@@ -39,7 +39,7 @@
   - README.md exists with required sections
   - docs/architecture.md exists, docs/decisions/ ADR folder exists
 
-**Weekly (First work block of week):**
+**Every 5th work block:**
 - [ ] **Group Health Check**: Read `_shared-framework/DOCUMENTATION-HEALTH.md`
 - [ ] Note any TrendDojo files flagged as stale/missing timestamps
 - [ ] Address flagged issues in current or next work block
@@ -51,13 +51,15 @@
 - All documentation uses `.md` format
 
 ### RULE #6: [UNIVERSAL] Complete Features, Don't Fragment
+- **MANDATORY PRE-WORK**: Follow @claude/development-workflow.md checklist before coding
 - Finish current work block before starting new features
+- **IDENTIFY BUSINESS-CRITICAL LOGIC**: Add `@business-critical` comments during development
+- **MANDATORY BEFORE COMMIT**: Verify all `@business-critical` code has unit tests
 - Update docs in same commit as feature implementation
 - **PUSH BACK**: "That needs a new work block. Let's finish current work first."
-- **TrendDojo Addition**: Test → Deploy → Document completion
 
 ### RULE #7: [UNIVERSAL] Project Boundary Enforcement
-- **ONLY MODIFY FILES WITHIN THIS PROJECT** - `/Users/duncanmcgill/coding/trenddojo-v2/`
+- **ONLY MODIFY FILES WITHIN THIS PROJECT** - `/coding/trenddojo-v2/`
 - **NEVER EDIT** files in other projects without explicit user permission
 - **TRENDDOJO EXCEPTIONS**: You MAY modify these specific shared framework files:
   - `_shared-framework/news/trenddojo-solutions.md` (share infrastructure solutions)
@@ -68,33 +70,54 @@
 ### RULE #8: [UNIVERSAL] Work Block Completion Requires Git Commit
 - **NEVER CLOSE** a work block without explicit user permission
 - Work blocks can only be marked "completed" after:
-  1. User explicitly approves closure
-  2. All changes are committed to git
-  3. User confirms the commit is satisfactory
+  1. **All `@business-critical` code has unit tests**
+  2. User explicitly approves closure
+  3. All changes are committed to git
+  4. User confirms the commit is satisfactory
 - Always ask: "Ready to commit these changes?" before closing
 
 ### RULE #9: [UNIVERSAL] Cross-Project Infrastructure News System
 - **CENTRALIZED LOCATION**: All cross-project news managed in `_shared-framework/news/`
 - **MANDATORY WORK BLOCK WORKFLOW**:
-  - **START**: Check news files for existing solutions (covered in RULE #1)
+  - **START**: Check news files for existing solutions (covered in RULE #3)
   - **END**: After solving infrastructure problems (auth, email, deployment, testing, error handling):
     1. Document solution in `_shared-framework/proven-solutions/`
     2. Update `_shared-framework/news/trenddojo-solutions.md` with brief summary
 - **SCOPE**: Infrastructure solutions only - skip business logic and domain-specific features
 
-### RULE #10: [LOCAL] Financial Accuracy First - No Exceptions
-- All financial calculations MUST have unit tests before deployment
-- Position sizing, P&L, risk calculations require validation
-- Backend validation mandatory for all financial operations
-- Never deploy financial logic without explicit approval
-- **NEVER test against live trading APIs during development**
+### RULE #10: [UNIVERSAL] Critical System Accuracy - No Exceptions
+- All business-critical logic MUST have unit tests before deployment
+- **BUSINESS-CRITICAL IDENTIFICATION**: Look for `@business-critical` comments in code
+- Backend validation mandatory for all flagged critical operations
+- Never deploy critical system logic without explicit approval
+- **NEVER test against live/production APIs during development**
 
-### RULE #11: [LOCAL] Production Safety & Documentation
-- All broker integrations require comprehensive mocks for development
-- Risk management changes need extra review
+### RULE #11: [UNIVERSAL] Production Safety & Documentation Standards
+- All external integrations require comprehensive mocks for development
+- Critical system changes need extra review (payments, auth, data processing)
 - Staging environment mirrors production exactly
-- **ALL DOCUMENTATION MUST LIVE IN `/docs/` DIRECTORY**
+- **ALL DOCUMENTATION MUST LIVE IN PROJECT `/docs/` DIRECTORY**
 - When you add a feature, update relevant docs immediately
+
+## 🔍 Business-Critical Flagging System
+**Required comment format:**
+```javascript
+// @business-critical: [reason]
+// MUST have unit tests before deployment
+function criticalFunction() { ... }
+```
+
+**TrendDojo Critical Areas:**
+- Trading algorithm calculations
+- Position sizing logic
+- Risk management functions
+- P&L calculations
+- Order execution logic
+- Portfolio valuation
+- Stop loss/take profit triggers
+- Authentication/authorization
+- Payment processing
+- API rate limiting
 
 ## 📋 Project Overview
 **Name:** TrendDojo
@@ -196,8 +219,9 @@ trenddojo-v2/
 - NEVER implement APIs without architecture patterns → ALWAYS check ARCHITECTURE-PATTERNS.md  
 - NEVER build UX without UX patterns → ALWAYS check UX-PATTERNS.md
 - NEVER implement trading features without TRADING-PATTERNS.md → ALWAYS follow established risk management
-- **NEVER MODIFY FILES OUTSIDE THIS PROJECT** → ALWAYS stay within `/Users/duncanmcgill/coding/trenddojo-v2/`
+- **NEVER MODIFY FILES OUTSIDE THIS PROJECT** → ALWAYS stay within `/coding/trenddojo-v2/`
 - NEVER edit other projects without permission → ALWAYS ask user first for cross-project changes
+- **NEVER CHANGE VISUAL APPEARANCE WITHOUT PERMISSION** → ALWAYS ask user before modifying styling, themes, colors, layouts, or any visual elements during bug fixes or component work
 
 ## ⚠️ Tech Stack Reality Check
 The actual implementation uses:
@@ -207,4 +231,4 @@ The actual implementation uses:
 - **Status**: Marketing brochure complete, core features pending
 
 ---
-*Framework Reference: `../../../_shared-framework/` for business context*
+*Framework Reference: `/coding/_shared-framework/` for business context*
