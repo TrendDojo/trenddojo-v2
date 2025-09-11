@@ -1,5 +1,5 @@
-// TrendDojo Trading Platform - Complete Schema Refactor
-// Portfolio > Strategy > Position > Execution hierarchy
+// TrendDojo - Safe Migration Schema
+// Keeps existing tables while adding new structure
 
 generator client {
   provider = "prisma-client-js"
@@ -14,16 +14,20 @@ model User {
   id                            String    @id @default(cuid())
   email                         String    @unique
   name                          String?
-  subscriptionTier              String    @default("free") // 'free', 'starter', 'basic', 'pro'
-  subscriptionStatus            String    @default("active") // 'active', 'cancelled', 'past_due'
+  subscriptionTier              String    @default("free")
+  subscriptionStatus            String    @default("active")
   airwallexCustomerId           String?
   airwallexPaymentMethodId      String?
   subscriptionExpiresAt         DateTime?
   createdAt                     DateTime  @default(now())
   updatedAt                     DateTime  @updatedAt
 
-  // Relations
+  // Relations - KEEP OLD
+  accounts                      Account[]
+  
+  // Relations - ADD NEW
   portfolios                    Portfolio[]
+  
   riskSettings                  RiskSettings[]
   brokerConnections             BrokerConnection[]
   tradeChecklistItems           TradeChecklistItem[]
@@ -31,35 +35,58 @@ model User {
   @@map("users")
 }
 
-// Renamed from Account
+// KEEP EXISTING Account table
+model Account {
+  id              String    @id @default(cuid())
+  userId          String
+  name            String
+  broker          String?
+  accountType     String?
+  baseCurrency    String    @default("USD")
+  startingBalance Decimal?  @db.Decimal(15, 2)
+  currentBalance  Decimal?  @db.Decimal(15, 2)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  riskSettings    RiskSettings[]
+  trades          Trade[]
+  strategies      Strategy[]
+  
+  @@map("accounts")
+}
+
+// ADD NEW Portfolio (duplicate of Account for now)
 model Portfolio {
   id              String    @id @default(cuid())
   userId          String
   name            String
-  broker          String?   // 'alpaca', 'ibkr', 'manual'
-  accountType     String?   // 'live', 'paper', 'tracking'
+  broker          String?
+  accountType     String?
   baseCurrency    String    @default("USD")
   startingBalance Decimal?  @db.Decimal(15, 2)
   currentBalance  Decimal?  @db.Decimal(15, 2)
+  accountId       String?   // Link to original account for migration
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   // Relations
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  riskSettings    RiskSettings[]
   strategies      Strategy[]
-  tradePlans      TradePlan[] // All trade ideas/journal entries
+  tradePlans      TradePlan[]
   
   @@map("portfolios")
 }
 
+// KEEP Strategy as-is (already added)
 model Strategy {
   id                String    @id @default(cuid())
-  portfolioId       String
+  accountId         String?   // OLD - keep for now
+  portfolioId       String?   // NEW
   name              String
   description       String?
-  status            String    @default("active") // 'active', 'paused', 'closed', 'testing'
-  type              String?   // 'momentum', 'mean_reversion', 'breakout', 'swing', 'scalp'
+  status            String    @default("active")
+  type              String?
   
   // Allocation and Risk
   allocatedCapital  Decimal?  @db.Decimal(15, 2)
@@ -72,7 +99,7 @@ model Strategy {
   exitRules         Json?
   positionSizingRules Json?
   
-  // Performance Tracking (calculated from positions)
+  // Performance Tracking
   totalPositions    Int       @default(0)
   openPositions     Int       @default(0)
   closedPositions   Int       @default(0)
@@ -94,47 +121,113 @@ model Strategy {
   updatedAt         DateTime  @updatedAt
   closedAt          DateTime?
   
-  // Relations
-  portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  // Relations - BOTH
+  account           Account?  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  portfolio         Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  trades            Trade[]
   positions         Position[]
   
+  @@index([accountId])
   @@index([portfolioId])
   @@index([status])
   @@map("strategies")
 }
 
-// NEW: Represents an aggregate holding in a symbol
+// KEEP EXISTING Trade table
+model Trade {
+  id                          String    @id @default(cuid())
+  accountId                   String
+  strategyId                  String?
+  symbol                      String
+  assetType                   String?
+  direction                   String?
+  
+  // Keep all existing fields...
+  positionGroupId             String?
+  parentTradeId               String?
+  timeframe                   String?
+  positionLabel               String?
+  
+  plannedEntry                Decimal?  @db.Decimal(15, 6)
+  actualEntry                 Decimal?  @db.Decimal(15, 6)
+  entryDate                   DateTime?
+  quantity                    Decimal?  @db.Decimal(15, 6)
+  positionSizeUsd             Decimal?  @db.Decimal(15, 2)
+  
+  stopLoss                    Decimal   @db.Decimal(15, 6)
+  initialStop                 Decimal?  @db.Decimal(15, 6)
+  targetPrice                 Decimal?  @db.Decimal(15, 6)
+  targetPrice2                Decimal?  @db.Decimal(15, 6)
+  riskAmount                  Decimal?  @db.Decimal(15, 2)
+  riskPercent                 Decimal?  @db.Decimal(5, 2)
+  riskRewardRatio             Decimal?  @db.Decimal(5, 2)
+  
+  maintainRiskOnStopAdjust    Boolean   @default(true)
+  originalQuantity            Decimal?  @db.Decimal(15, 6)
+  stopAdjustmentHistory       Json?
+  
+  broker                      String?
+  brokerOrderId               String?
+  brokerSyncStatus            String?
+  brokerFillPrice             Decimal?  @db.Decimal(15, 6)
+  brokerCommission            Decimal?  @db.Decimal(10, 2)
+  
+  exitPrice                   Decimal?  @db.Decimal(15, 6)
+  exitDate                    DateTime?
+  exitReason                  String?
+  
+  pnlAmount                   Decimal?  @db.Decimal(15, 2)
+  pnlPercent                  Decimal?  @db.Decimal(10, 2)
+  rMultiple                   Decimal?  @db.Decimal(5, 2)
+  
+  status                      String?
+  strategyType                String?
+  setupQuality                Int?
+  marketCondition             String?
+  
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  // Relations
+  account                     Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  strategy                    Strategy? @relation(fields: [strategyId], references: [id], onDelete: SetNull)
+  parentTrade                 Trade?    @relation("TradeParent", fields: [parentTradeId], references: [id])
+  childTrades                 Trade[]   @relation("TradeParent")
+  tradeNotes                  TradeNote[]
+  tradeChecklistResponses     TradeChecklistResponse[]
+  
+  @@index([strategyId])
+  @@map("trades")
+}
+
+// ADD NEW Position table
 model Position {
   id                String    @id @default(cuid())
   strategyId        String
+  tradeId           String?   // Link to original trade for migration
   symbol            String
-  assetType         String    @default("stock") // 'stock', 'crypto', 'forex', 'option', 'future'
-  direction         String    @default("long")  // 'long', 'short'
-  status            String    @default("open")  // 'open', 'closed', 'partial'
+  assetType         String    @default("stock")
+  direction         String    @default("long")
+  status            String    @default("open")
   
-  // Current state (calculated from executions)
   currentQuantity   Decimal   @default(0) @db.Decimal(15, 6)
   avgEntryPrice     Decimal?  @db.Decimal(15, 6)
   avgExitPrice      Decimal?  @db.Decimal(15, 6)
   
-  // Risk Management
   stopLoss          Decimal?  @db.Decimal(15, 6)
   takeProfit        Decimal?  @db.Decimal(15, 6)
   trailingStop      Decimal?  @db.Decimal(15, 6)
   
-  // P&L Tracking
   realizedPnl       Decimal   @default(0) @db.Decimal(15, 2)
   unrealizedPnl     Decimal   @default(0) @db.Decimal(15, 2)
   totalFees         Decimal   @default(0) @db.Decimal(15, 2)
   netPnl            Decimal   @default(0) @db.Decimal(15, 2)
   
-  // Metrics
   maxGainPercent    Decimal?  @db.Decimal(5, 2)
   maxLossPercent    Decimal?  @db.Decimal(5, 2)
   holdingDays       Int?
   rMultiple         Decimal?  @db.Decimal(5, 2)
   
-  // Timestamps
   openedAt          DateTime  @default(now())
   closedAt          DateTime?
   lastExecutionAt   DateTime?
@@ -142,7 +235,7 @@ model Position {
   // Relations
   strategy          Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
   executions        Execution[]
-  tradePlans        TradePlan[] // Can have multiple plans over time
+  tradePlans        TradePlan[]
   notes             PositionNote[]
   
   @@index([strategyId])
@@ -151,34 +244,30 @@ model Position {
   @@map("positions")
 }
 
-// NEW: Individual fills/transactions
+// ADD NEW Execution table
 model Execution {
   id                String    @id @default(cuid())
   positionId        String
   
-  type              String    // 'buy', 'sell', 'dividend', 'interest', 'fee_only'
+  type              String
   quantity          Decimal   @db.Decimal(15, 6)
   price             Decimal   @db.Decimal(15, 6)
   
-  // Fees breakdown (all part of execution)
   commission        Decimal   @default(0) @db.Decimal(10, 4)
   exchangeFees      Decimal   @default(0) @db.Decimal(10, 4)
-  secFees           Decimal   @default(0) @db.Decimal(10, 4)  // SEC fees
-  tafFees           Decimal   @default(0) @db.Decimal(10, 4)  // FINRA TAF
+  secFees           Decimal   @default(0) @db.Decimal(10, 4)
+  tafFees           Decimal   @default(0) @db.Decimal(10, 4)
   clearingFees      Decimal   @default(0) @db.Decimal(10, 4)
   otherFees         Decimal   @default(0) @db.Decimal(10, 4)
-  totalFees         Decimal   @default(0) @db.Decimal(10, 4)  // Sum of all fees
+  totalFees         Decimal   @default(0) @db.Decimal(10, 4)
   
-  // Net amounts
-  grossValue        Decimal   @db.Decimal(15, 2) // quantity * price
-  netValue          Decimal   @db.Decimal(15, 2) // gross +/- fees (depending on buy/sell)
+  grossValue        Decimal   @db.Decimal(15, 2)
+  netValue          Decimal   @db.Decimal(15, 2)
   
-  // Broker integration
-  brokerName        String?   // Which broker executed
-  brokerExecId      String?   // Broker's execution ID
-  brokerOrderId     String?   // Broker's order ID
+  brokerName        String?
+  brokerExecId      String?
+  brokerOrderId     String?
   
-  // Timestamps
   executedAt        DateTime
   settlementDate    DateTime?
   createdAt         DateTime  @default(now())
@@ -191,59 +280,51 @@ model Execution {
   @@map("executions")
 }
 
-// Renamed from Trade - Now represents planning/journaling
+// ADD NEW TradePlan table
 model TradePlan {
   id                String    @id @default(cuid())
   portfolioId       String
-  positionId        String?   // Links to actual position when executed
+  positionId        String?
+  tradeId           String?   // Link to original trade
   
-  // Planning
   symbol            String
-  direction         String    // 'long', 'short'
-  timeframe         String?   // '5min', '1h', '4h', '1d', '1w'
+  direction         String
+  timeframe         String?
   
-  // The Thesis
-  thesis            String    @db.Text
-  setupType         String?   // 'breakout', 'pullback', 'reversal', etc.
+  thesis            String?   @db.Text
+  setupType         String?
   
-  // Planned levels
-  plannedEntry      Decimal   @db.Decimal(15, 6)
-  plannedStop       Decimal   @db.Decimal(15, 6)
+  plannedEntry      Decimal?  @db.Decimal(15, 6)
+  plannedStop       Decimal?  @db.Decimal(15, 6)
   plannedTarget     Decimal?  @db.Decimal(15, 6)
   plannedTarget2    Decimal?  @db.Decimal(15, 6)
   plannedTarget3    Decimal?  @db.Decimal(15, 6)
   
-  // Planned risk
   plannedQuantity   Decimal?  @db.Decimal(15, 6)
   plannedRiskAmount Decimal?  @db.Decimal(15, 2)
   plannedRiskPercent Decimal? @db.Decimal(5, 2)
   riskRewardRatio   Decimal?  @db.Decimal(5, 2)
   
-  // Analysis
-  setupQuality      Int?      // 1-5 score
-  confidence        Int?      // 1-10 score
-  marketCondition   String?   // 'trending', 'ranging', 'volatile'
+  setupQuality      Int?
+  confidence        Int?
+  marketCondition   String?
   
-  // Outcome tracking
-  status            String    @default("idea") // 'idea', 'pending', 'executed', 'cancelled', 'expired'
-  outcome           String?   // 'win', 'loss', 'breakeven', 'partial'
+  status            String    @default("idea")
+  outcome           String?
   
-  // Review
-  executionQuality  Int?      // 1-5 - How well did I execute?
+  executionQuality  Int?
   lessons           String?   @db.Text
   mistakes          String?   @db.Text
   
-  // Timestamps
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  executedAt        DateTime? // When actually entered
-  reviewedAt        DateTime? // When reviewed
+  executedAt        DateTime?
+  reviewedAt        DateTime?
   
   // Relations
   portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   position          Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
   notes             TradePlanNote[]
-  checklistResponses TradeChecklistResponse[]
   
   @@index([portfolioId])
   @@index([symbol])
@@ -251,41 +332,50 @@ model TradePlan {
   @@map("trade_plans")
 }
 
-// Notes for trade plans (journal entries)
+// Keep all other models unchanged...
+
+model TradeNote {
+  id        String   @id @default(cuid())
+  tradeId   String
+  noteType  String
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  trade     Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  
+  @@map("trade_notes")
+}
+
 model TradePlanNote {
   id          String    @id @default(cuid())
   tradePlanId String
-  noteType    String    // 'analysis', 'entry', 'management', 'exit', 'review'
+  noteType    String
   content     String    @db.Text
-  imageUrl    String?   // For chart screenshots
+  imageUrl    String?
   createdAt   DateTime  @default(now())
 
-  // Relations
   tradePlan   TradePlan @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
   
   @@map("trade_plan_notes")
 }
 
-// Notes for actual positions
 model PositionNote {
   id          String    @id @default(cuid())
   positionId  String
-  noteType    String    // 'management', 'observation', 'adjustment'
+  noteType    String
   content     String    @db.Text
   createdAt   DateTime  @default(now())
 
-  // Relations
   position    Position  @relation(fields: [positionId], references: [id], onDelete: Cascade)
   
   @@map("position_notes")
 }
 
-// Keep existing supporting models with updated relations
-
 model RiskSettings {
   id                       String    @id @default(cuid())
   userId                   String
-  portfolioId              String
+  accountId                String
   maxRiskPerTrade          Decimal   @default(1.0) @db.Decimal(5, 2)
   maxDailyRisk             Decimal   @default(3.0) @db.Decimal(5, 2)
   maxWeeklyRisk            Decimal   @default(6.0) @db.Decimal(5, 2)
@@ -297,22 +387,36 @@ model RiskSettings {
 
   // Relations
   user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  portfolio                Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  account                  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   
   @@map("risk_settings")
 }
 
+model TradeChecklistResponse {
+  id               String   @id @default(cuid())
+  tradeId          String
+  checklistItemId  String
+  response         Boolean?
+  createdAt        DateTime @default(now())
+
+  // Relations
+  trade            Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  checklistItem    TradeChecklistItem @relation(fields: [checklistItemId], references: [id])
+  
+  @@map("trade_checklist_responses")
+}
+
+// Keep all other models as-is...
 model BrokerConnection {
   id          String    @id @default(cuid())
   userId      String
   broker      String
-  credentials String    // Encrypted JSON
+  credentials String
   isPaper     Boolean   @default(true)
   isActive    Boolean   @default(true)
   lastSync    DateTime?
   createdAt   DateTime  @default(now())
 
-  // Relations
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("broker_connections")
@@ -326,25 +430,10 @@ model TradeChecklistItem {
   orderIndex Int?
   createdAt  DateTime @default(now())
 
-  // Relations
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   responses  TradeChecklistResponse[]
   
   @@map("trade_checklist_items")
-}
-
-model TradeChecklistResponse {
-  id               String    @id @default(cuid())
-  tradePlanId      String
-  checklistItemId  String
-  response         Boolean?
-  createdAt        DateTime  @default(now())
-
-  // Relations
-  tradePlan        TradePlan @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
-  checklistItem    TradeChecklistItem @relation(fields: [checklistItemId], references: [id])
-  
-  @@map("trade_checklist_responses")
 }
 
 model SubscriptionLimit {
@@ -362,7 +451,6 @@ model SubscriptionLimit {
   @@map("subscription_limits")
 }
 
-// Keep market data tables unchanged
 model MarketDataCache {
   symbol    String
   timeframe String

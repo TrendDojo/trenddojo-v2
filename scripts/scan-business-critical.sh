@@ -29,12 +29,10 @@ TEMP_FILE=$(mktemp)
 CRITICAL_COUNT=0
 TESTED_COUNT=0
 
-# Search for business-critical comments
-rg "@business-critical" \
+# Search for business-critical comments in src directory
+rg "@business-critical" "src" \
   --type ts \
-  --type tsx \
   --type js \
-  --type jsx \
   -n \
   --no-heading \
   2>/dev/null > "$TEMP_FILE" || true

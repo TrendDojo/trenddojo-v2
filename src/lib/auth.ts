@@ -98,6 +98,8 @@ export const authConfig = {
             return null
           }
 
+          // @business-critical: Trading permission calculation affects real money access
+          // MUST have unit tests before deployment
           // Determine trading permissions based on subscription and environment
           const subscriptionTier = user.subscriptionTier || 'free'
           const isProduction = (process.env.NODE_ENV as string) === 'production'
@@ -158,6 +160,8 @@ export const authConfig = {
     ] : [])
   ],
   callbacks: {
+    // @business-critical: JWT token contains trading permissions
+    // MUST have unit tests before deployment
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user, account: _account }: { token: any; user?: any; account?: any }) {
       // Initial sign in

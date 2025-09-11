@@ -1,5 +1,12 @@
-import { beforeAll, afterEach, afterAll } from "vitest";
+import { beforeAll, afterEach, afterAll, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
+import { prismaMock, dbMock } from "./mocks/prisma";
+
+// Mock the Prisma client
+vi.mock("@/lib/db", () => ({
+  prisma: prismaMock,
+  db: dbMock,
+}));
 
 // Basic test setup without MSW for now
 beforeAll(() => {
@@ -9,6 +16,8 @@ beforeAll(() => {
 afterEach(() => {
   // Clean up after each test
   cleanup();
+  // Clear all mocks after each test
+  vi.clearAllMocks();
 });
 
 afterAll(() => {

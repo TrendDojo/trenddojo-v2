@@ -12,6 +12,8 @@ export interface PositionCalculation {
 }
 
 /**
+ * @business-critical: Position size calculation determines capital at risk
+ * MUST have unit tests before deployment
  * Calculate position size based on fixed risk amount
  * @param entryPrice - Planned entry price
  * @param stopLoss - Stop loss price
@@ -53,6 +55,8 @@ export function calculatePositionSize(
 }
 
 /**
+ * @business-critical: P&L calculation affects user financial reporting
+ * MUST have unit tests before deployment
  * Calculate P&L for a closed position
  * @param entryPrice - Actual entry price
  * @param exitPrice - Exit price

@@ -1,0 +1,307 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                            String    @id @default(cuid())
+  email                         String    @unique
+  name                          String?
+  subscriptionTier              String    @default("free") // 'free', 'starter', 'basic', 'pro'
+  subscriptionStatus            String    @default("active") // 'active', 'cancelled', 'past_due'
+  airwallexCustomerId           String?
+  airwallexPaymentMethodId      String?
+  subscriptionExpiresAt         DateTime?
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
+
+  // Relations
+  accounts                      Account[]
+  riskSettings                  RiskSettings[]
+  brokerConnections             BrokerConnection[]
+  tradeChecklistItems           TradeChecklistItem[]
+  
+  @@map("users")
+}
+
+model Account {
+  id              String    @id @default(cuid())
+  userId          String
+  name            String
+  broker          String?   // 'alpaca', 'ibkr', 'manual'
+  accountType     String?   // 'live', 'paper', 'tracking'
+  baseCurrency    String    @default("USD")
+  startingBalance Decimal?  @db.Decimal(15, 2)
+  currentBalance  Decimal?  @db.Decimal(15, 2)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  riskSettings    RiskSettings[]
+  trades          Trade[]
+  strategies      Strategy[]
+  
+  @@map("accounts")
+}
+
+model Strategy {
+  id                String    @id @default(cuid())
+  accountId         String
+  name              String
+  description       String?
+  status            String    @default("active") // 'active', 'paused', 'closed', 'testing'
+  type              String?   // 'momentum', 'mean_reversion', 'breakout', 'swing', 'scalp'
+  
+  // Allocation and Risk
+  allocationAmount  Decimal?  @db.Decimal(15, 2)
+  allocationPercent Decimal?  @db.Decimal(5, 2)
+  maxPositions      Int       @default(5)
+  maxRiskPerPosition Decimal? @db.Decimal(5, 2) @default(2.0)
+  maxDrawdown       Decimal?  @db.Decimal(5, 2) @default(10.0)
+  
+  // Rules Configuration
+  entryRules        Json?
+  exitRules         Json?
+  positionSizingRules Json?
+  
+  // Performance Tracking
+  totalTrades       Int       @default(0)
+  winningTrades     Int       @default(0)
+  losingTrades      Int       @default(0)
+  totalPnl          Decimal   @default(0) @db.Decimal(15, 2)
+  totalPnlPercent   Decimal   @default(0) @db.Decimal(10, 2)
+  avgWin            Decimal?  @db.Decimal(15, 2)
+  avgLoss           Decimal?  @db.Decimal(15, 2)
+  winRate           Decimal?  @db.Decimal(5, 2)
+  profitFactor      Decimal?  @db.Decimal(5, 2)
+  sharpeRatio       Decimal?  @db.Decimal(5, 2)
+  lastCalculated    DateTime?
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  closedAt          DateTime?
+  
+  // Relations
+  account           Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  trades            Trade[]
+  
+  @@index([accountId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("strategies")
+}
+
+model SubscriptionLimit {
+  tier                     String   @id
+  maxAccounts              Int
+  maxPositions             Int
+  maxScreenerResults       Int
+  screenerRefreshSeconds   Int
+  hasFundamentals          Boolean
+  hasRealtimeData          Boolean
+  hasApiAccess             Boolean
+  hasBrokerIntegration     Boolean
+  monthlyPrice             Decimal  @db.Decimal(6, 2)
+  
+  @@map("subscription_limits")
+}
+
+model RiskSettings {
+  id                       String   @id @default(cuid())
+  userId                   String
+  accountId                String
+  maxRiskPerTrade          Decimal  @default(1.0) @db.Decimal(5, 2) // percentage
+  maxDailyRisk             Decimal  @default(3.0) @db.Decimal(5, 2)
+  maxWeeklyRisk            Decimal  @default(6.0) @db.Decimal(5, 2)
+  maxOpenPositions         Int      @default(5)
+  maxCorrelatedPositions   Int      @default(3)
+  positionSizingMethod     String   @default("fixed_risk") // 'fixed_risk', 'kelly', 'fixed_units'
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  // Relations
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account                  Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@map("risk_settings")
+}
+
+model BrokerConnection {
+  id          String    @id @default(cuid())
+  userId      String
+  broker      String    // 'alpaca', 'td_ameritrade', 'interactive_brokers'
+  credentials String    // Encrypted JSON
+  isPaper     Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  lastSync    DateTime?
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("broker_connections")
+}
+
+model Trade {
+  id                          String    @id @default(cuid())
+  accountId                   String
+  strategyId                  String?   // NEW: Link to strategy (nullable for backward compatibility)
+  symbol                      String
+  assetType                   String?   // 'stock', 'crypto', 'forex', 'option'
+  direction                   String?   // 'long', 'short'
+  
+  // Position Grouping
+  positionGroupId             String?   // Groups related positions (pyramiding)
+  parentTradeId               String?   // For scale-in positions
+  timeframe                   String?   // '5min', '1h', '4h', '1d', '1w'
+  positionLabel               String?   // User's custom label "AAPL Swing #1"
+  
+  // Entry
+  plannedEntry                Decimal?  @db.Decimal(15, 6)
+  actualEntry                 Decimal?  @db.Decimal(15, 6)
+  entryDate                   DateTime?
+  quantity                    Decimal?  @db.Decimal(15, 6)
+  positionSizeUsd             Decimal?  @db.Decimal(15, 2)
+  
+  // Risk Management
+  stopLoss                    Decimal   @db.Decimal(15, 6) // NOT NULL in original
+  initialStop                 Decimal?  @db.Decimal(15, 6)
+  targetPrice                 Decimal?  @db.Decimal(15, 6)
+  targetPrice2                Decimal?  @db.Decimal(15, 6)
+  riskAmount                  Decimal?  @db.Decimal(15, 2)
+  riskPercent                 Decimal?  @db.Decimal(5, 2)
+  riskRewardRatio             Decimal?  @db.Decimal(5, 2)
+  
+  // Dynamic Position Sizing
+  maintainRiskOnStopAdjust    Boolean   @default(true)
+  originalQuantity            Decimal?  @db.Decimal(15, 6)
+  stopAdjustmentHistory       Json?     // Track all stop/size adjustments
+  
+  // Broker Integration
+  broker                      String?   // 'alpaca', 'manual', etc
+  brokerOrderId               String?
+  brokerSyncStatus            String?   // 'synced', 'pending', 'error', 'imported'
+  brokerFillPrice             Decimal?  @db.Decimal(15, 6)
+  brokerCommission            Decimal?  @db.Decimal(10, 2)
+  
+  // Exit
+  exitPrice                   Decimal?  @db.Decimal(15, 6)
+  exitDate                    DateTime?
+  exitReason                  String?   // 'stop_loss', 'target', 'manual', 'trailing_stop'
+  
+  // Results
+  pnlAmount                   Decimal?  @db.Decimal(15, 2)
+  pnlPercent                  Decimal?  @db.Decimal(10, 2)
+  rMultiple                   Decimal?  @db.Decimal(5, 2) // profit/initial_risk
+  
+  // Status
+  status                      String?   // 'planning', 'pending', 'active', 'closed'
+  
+  // Metadata
+  strategyType                String?
+  setupQuality                Int?      // CHECK (setup_quality BETWEEN 1 AND 5)
+  marketCondition             String?   // 'trending', 'ranging', 'volatile'
+  
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  // Relations
+  account                     Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  strategy                    Strategy? @relation(fields: [strategyId], references: [id], onDelete: SetNull)
+  parentTrade                 Trade?    @relation("TradeParent", fields: [parentTradeId], references: [id])
+  childTrades                 Trade[]   @relation("TradeParent")
+  tradeNotes                  TradeNote[]
+  tradeChecklistResponses     TradeChecklistResponse[]
+  
+  @@index([strategyId])
+  @@map("trades")
+}
+
+model TradeNote {
+  id        String   @id @default(cuid())
+  tradeId   String
+  noteType  String   // 'entry', 'management', 'exit', 'review'
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  trade     Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  
+  @@map("trade_notes")
+}
+
+model TradeChecklistItem {
+  id         String   @id @default(cuid())
+  userId     String
+  question   String
+  isRequired Boolean  @default(true)
+  orderIndex Int?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  responses  TradeChecklistResponse[]
+  
+  @@map("trade_checklist_items")
+}
+
+model TradeChecklistResponse {
+  id               String   @id @default(cuid())
+  tradeId          String
+  checklistItemId  String
+  response         Boolean?
+  createdAt        DateTime @default(now())
+
+  // Relations
+  trade            Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  checklistItem    TradeChecklistItem @relation(fields: [checklistItemId], references: [id])
+  
+  @@map("trade_checklist_responses")
+}
+
+model MarketDataCache {
+  symbol    String
+  timeframe String   // '15m', '1h', '4h', '1d', '1w', '1M'
+  open      Decimal  @db.Decimal(15, 6)
+  high      Decimal  @db.Decimal(15, 6)
+  low       Decimal  @db.Decimal(15, 6)
+  close     Decimal  @db.Decimal(15, 6)
+  volume    BigInt
+  timestamp DateTime
+
+  @@id([symbol, timeframe, timestamp])
+  @@index([symbol, timestamp])
+  @@index([timeframe, timestamp])
+  @@map("market_data_cache")
+}
+
+model StockFundamentals {
+  symbol           String   @id
+  marketCap        BigInt?
+  peRatio          Decimal? @db.Decimal(10, 2)
+  pegRatio         Decimal? @db.Decimal(10, 2)
+  pbRatio          Decimal? @db.Decimal(10, 2)
+  psRatio          Decimal? @db.Decimal(10, 2)
+  dividendYield    Decimal? @db.Decimal(5, 2)
+  eps              Decimal? @db.Decimal(10, 2)
+  revenue          BigInt?
+  grossMargin      Decimal? @db.Decimal(5, 2)
+  operatingMargin  Decimal? @db.Decimal(5, 2)
+  profitMargin     Decimal? @db.Decimal(5, 2)
+  roe              Decimal? @db.Decimal(5, 2)
+  roa              Decimal? @db.Decimal(5, 2)
+  debtToEquity     Decimal? @db.Decimal(10, 2)
+  currentRatio     Decimal? @db.Decimal(5, 2)
+  quickRatio       Decimal? @db.Decimal(5, 2)
+  lastUpdated      DateTime @default(now())
+
+  @@map("stock_fundamentals")
+}

@@ -2,21 +2,41 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
-    // Simulate login process
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
     
-    // In a real app, this would authenticate and redirect
-    alert("Login functionality will be available soon!");
-    
-    setIsSubmitting(false);
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      
+      if (result?.error) {
+        setError("Invalid email or password. For development, use any email with password 'password123'");
+      } else if (result?.ok) {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An error occurred during sign in");
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -32,6 +52,19 @@ export default function LoginPage() {
         </div>
         
         <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
+          {/* Development Mode Notice */}
+          <div className="mb-6 p-4 bg-blue-900/50 border border-blue-700 rounded-lg">
+            <p className="text-blue-300 text-sm">
+              <strong>Development Mode:</strong> Sign in with any email and password "password123"
+            </p>
+          </div>
+          
+          {error && (
+            <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
+              <p className="text-red-300 text-sm">{error}</p>
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
@@ -45,6 +78,7 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 placeholder="your@email.com"
+                defaultValue="test@example.com"
               />
             </div>
             
@@ -60,6 +94,7 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 placeholder="Enter your password"
+                defaultValue="password123"
               />
             </div>
             

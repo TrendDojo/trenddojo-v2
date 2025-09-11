@@ -197,6 +197,11 @@ async function createTestUsers() {
 
   const users = [
     {
+      email: 'test@example.com',
+      name: 'Test User',
+      subscriptionTier: 'free' as const,
+    },
+    {
       email: 'empty@demo.test',
       name: 'Empty User',
       subscriptionTier: 'free' as const,

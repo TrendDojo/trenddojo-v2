@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { EnvironmentIndicator } from "@/components/EnvironmentIndicator";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -40,8 +41,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
-        <EnvironmentIndicator />
+        <Providers>
+          {children}
+          <EnvironmentIndicator />
+        </Providers>
       </body>
     </html>
   );
