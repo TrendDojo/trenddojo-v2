@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const portfolioId = searchParams.get('portfolioId')
 
-    let where: any = {}
+    const where: Record<string, any> = {}
     
     if (strategyId) {
       where.strategyId = strategyId
@@ -63,11 +63,12 @@ export async function GET(request: NextRequest) {
 
     // Calculate current P&L for open positions
     const positionsWithPnl = positions.map(position => {
-      if (position.status === 'open' && position.currentQuantity > 0) {
+      if (position.status === 'open' && Number(position.currentQuantity) > 0) {
         // In production, fetch current price from market data
         // For now, simulate with random change
-        const currentPrice = position.avgEntryPrice! * (1 + (Math.random() - 0.5) * 0.1)
-        const unrealizedPnl = (currentPrice - position.avgEntryPrice!) * Number(position.currentQuantity)
+        const avgEntry = Number(position.avgEntryPrice)
+        const currentPrice = avgEntry * (1 + (Math.random() - 0.5) * 0.1)
+        const unrealizedPnl = (currentPrice - avgEntry) * Number(position.currentQuantity)
         
         return {
           ...position,
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }
@@ -179,76 +180,8 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// POST /api/positions/close - Close position
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { id, exitPrice } = body
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Position ID required' },
-        { status: 400 }
-      )
-    }
-
-    // Get position with executions
-    const position = await prisma.position.findUnique({
-      where: { id },
-      include: { executions: true },
-    })
-
-    if (!position) {
-      return NextResponse.json(
-        { error: 'Position not found' },
-        { status: 404 }
-      )
-    }
-
-    if (position.status === 'closed') {
-      return NextResponse.json(
-        { error: 'Position already closed' },
-        { status: 400 }
-      )
-    }
-
-    // Calculate realized P&L
-    const totalBuyValue = position.executions
-      .filter(e => e.type === 'buy')
-      .reduce((sum, e) => sum + Number(e.netValue), 0)
-    
-    const totalSellValue = position.executions
-      .filter(e => e.type === 'sell')
-      .reduce((sum, e) => sum + Number(e.netValue), 0)
-    
-    const finalSellValue = Number(position.currentQuantity) * (exitPrice || Number(position.avgEntryPrice))
-    const realizedPnl = totalSellValue + finalSellValue - totalBuyValue
-
-    // Update position
-    const updatedPosition = await prisma.position.update({
-      where: { id },
-      data: {
-        status: 'closed',
-        currentQuantity: 0,
-        avgExitPrice: exitPrice || position.avgEntryPrice,
-        realizedPnl,
-        netPnl: realizedPnl - Number(position.totalFees),
-        closedAt: new Date(),
-      },
-    })
-
-    // Update strategy metrics
-    await updateStrategyMetrics(position.strategyId)
-
-    return NextResponse.json(updatedPosition)
-  } catch (error) {
-    console.error('Error closing position:', error)
-    return NextResponse.json(
-      { error: 'Failed to close position' },
-      { status: 500 }
-    )
-  }
-}
+// Close position endpoint would be implemented as a separate route
+// e.g., /api/positions/[id]/close
 
 // Helper function to update strategy performance metrics
 async function updateStrategyMetrics(strategyId: string) {

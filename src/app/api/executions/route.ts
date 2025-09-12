@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const portfolioId = searchParams.get('portfolioId')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    let where: any = {}
+    const where: Record<string, any> = {}
     
     if (positionId) {
       where.positionId = positionId
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }
@@ -131,76 +131,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// POST /api/executions/bulk - Import multiple executions
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { positionId, executions } = body
-
-    if (!positionId || !Array.isArray(executions)) {
-      return NextResponse.json(
-        { error: 'Position ID and executions array required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate and prepare all executions
-    const preparedExecutions = executions.map(exec => {
-      const validated = CreateExecutionSchema.parse({ ...exec, positionId })
-      
-      const totalFees = 
-        validated.commission +
-        validated.exchangeFees +
-        validated.secFees +
-        validated.tafFees +
-        validated.clearingFees +
-        validated.otherFees
-
-      const grossValue = validated.quantity * validated.price
-      const netValue = validated.type === 'buy' 
-        ? grossValue + totalFees
-        : grossValue - totalFees
-
-      return {
-        ...validated,
-        totalFees,
-        grossValue,
-        netValue,
-      }
-    })
-
-    // Create all executions in a transaction
-    const createdExecutions = await prisma.$transaction(
-      preparedExecutions.map(exec => 
-        prisma.execution.create({ data: exec })
-      )
-    )
-
-    // Update position metrics
-    await updatePositionFromExecution(positionId)
-
-    return NextResponse.json(
-      { 
-        message: `Created ${createdExecutions.length} executions`,
-        executions: createdExecutions,
-      },
-      { status: 201 }
-    )
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid execution data', details: error.errors },
-        { status: 400 }
-      )
-    }
-    
-    console.error('Error creating bulk executions:', error)
-    return NextResponse.json(
-      { error: 'Failed to create executions' },
-      { status: 500 }
-    )
-  }
-}
+// Bulk create endpoint would go here if needed
+// Currently handled via POST with multiple executions
 
 // Helper function to update position metrics from executions
 async function updatePositionFromExecution(positionId: string) {

@@ -79,7 +79,7 @@ export const authConfig = {
           const user = await prisma.user.findUnique({
             where: { email: email.toLowerCase() },
             include: {
-              accounts: true,
+              portfolios: true,
               riskSettings: true
             }
           })
@@ -139,7 +139,7 @@ export const authConfig = {
           // When a user signs in with Google, create/update their profile
           const existingUser = await prisma.user.findUnique({
             where: { email: profile.email },
-            include: { accounts: true, riskSettings: true }
+            include: { portfolios: true, riskSettings: true }
           })
 
           const subscriptionTier = existingUser?.subscriptionTier || 'free'

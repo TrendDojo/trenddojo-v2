@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { getServerSession } from 'next-auth'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
@@ -15,8 +14,8 @@ const CreateStrategySchema = z.object({
   maxPositions: z.number().int().positive().default(5),
   maxRiskPercent: z.number().min(0).max(100).default(2),
   maxDrawdown: z.number().min(0).max(100).default(10),
-  entryRules: z.record(z.any()).optional(),
-  exitRules: z.record(z.any()).optional(),
+  entryRules: z.record(z.string(), z.any()).optional(),
+  exitRules: z.record(z.string(), z.any()).optional(),
 })
 
 // GET /api/strategies - List strategies for a portfolio
@@ -89,7 +88,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }

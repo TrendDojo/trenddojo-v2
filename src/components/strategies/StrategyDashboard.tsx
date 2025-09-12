@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, TrendingUp, TrendingDown, Activity, DollarSign, BarChart3, Settings, Pause, Play, X } from 'lucide-react'
+import { Plus, TrendingUp, Activity, DollarSign, BarChart3, Settings, Pause, Play, X } from 'lucide-react'
 
 interface Strategy {
   id: string
@@ -16,7 +16,12 @@ interface Strategy {
   netPnl: number
   winRate?: number
   profitFactor?: number
-  positions?: any[]
+  positions?: Array<{
+    id: string
+    symbol: string
+    currentQuantity: number
+    unrealizedPnl?: number
+  }>
 }
 
 interface StrategyDashboardProps {
