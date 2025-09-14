@@ -76,6 +76,52 @@ export const authConfig = {
 
           const { email } = parsed.data
 
+          // In development mode, create a user on the fly for any email
+          if (process.env.NODE_ENV === 'development' && parsed.data.password === 'password123') {
+            // Try to find existing user first
+            let user = await prisma.user.findUnique({
+              where: { email: email.toLowerCase() },
+              include: {
+                portfolios: true,
+                riskSettings: true
+              }
+            })
+
+            // If user doesn't exist in dev mode, create one
+            if (!user) {
+              console.log("[AUTH] Creating development user:", email)
+              user = await prisma.user.create({
+                data: {
+                  email: email.toLowerCase(),
+                  name: email.split('@')[0],
+                  subscriptionTier: 'free'
+                },
+                include: {
+                  portfolios: true,
+                  riskSettings: true
+                }
+              })
+            }
+
+            // @business-critical: Trading permission calculation affects real money access
+            // MUST have unit tests before deployment
+            const subscriptionTier = user.subscriptionTier || 'free'
+            const tradingUser = {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: 'user',
+              subscriptionTier,
+              tradingEnabled: true,
+              paperTradingEnabled: true,
+              realTradingEnabled: false // Never allow real trading in dev mode
+            }
+
+            console.log(`[AUTH] Dev user logged in: ${email} (${subscriptionTier})`)
+            return tradingUser
+          }
+
+          // Production mode - strict user lookup
           const user = await prisma.user.findUnique({
             where: { email: email.toLowerCase() },
             include: {
@@ -89,10 +135,7 @@ export const authConfig = {
             return null
           }
 
-          // Note: Email verification is handled separately in this implementation
-
           // TODO: Implement password checking when password field is added to User schema
-          // For now, allow all existing users (development/staging mode)
           if (process.env.NODE_ENV === 'production') {
             console.warn("[AUTH] Password authentication not yet implemented for production")
             return null

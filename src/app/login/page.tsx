@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Panel, Alert } from "@/components/ui/Panel";
+import { Button } from "@/components/ui/Button";
+import { theme } from "@/lib/theme";
 
 export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,34 +43,47 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-6">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Sign In
-          </h1>
-          <p className="text-gray-400">
-            Welcome back to TrendDojo
-          </p>
-        </div>
-        
-        <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
-          {/* Development Mode Notice */}
-          <div className="mb-6 p-4 bg-blue-900/50 border border-blue-700 rounded-lg">
-            <p className="text-blue-300 text-sm">
-              <strong>Development Mode:</strong> Sign in with any email and password "password123"
+    <div className="min-h-screen dark:bg-slate-900 bg-gray-100">
+      {/* Logo in top left */}
+      <div className="absolute top-0 left-0 p-6">
+        <Link href="/">
+          <img 
+            src="/assets/logos/td-logo-s.svg" 
+            alt="TrendDojo" 
+            className="h-8 w-auto"
+          />
+        </Link>
+      </div>
+      
+      {/* Main content */}
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">
+              Sign In
+            </h1>
+            <p className="dark:text-gray-400 text-gray-600">
+              Welcome back to TrendDojo
             </p>
           </div>
+        
+        <Panel variant="default" padding="xl" rounded="xl">
+          {/* Development Mode Notice */}
+          <Alert intent="info" className="mb-6">
+            <p className="dark:text-blue-300 text-blue-700 text-sm">
+              <strong>Development Mode:</strong> Sign in with any email and password "password123"
+            </p>
+          </Alert>
           
           {error && (
-            <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
-              <p className="text-red-300 text-sm">{error}</p>
-            </div>
+            <Alert intent="danger" className="mb-6">
+              <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
+            </Alert>
           )}
           
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="email" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
                 Email Address
               </label>
               <input
@@ -76,14 +92,14 @@ export default function LoginPage() {
                 name="email"
                 required
                 disabled={isSubmitting}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                className={theme.inputs.base}
                 placeholder="your@email.com"
                 defaultValue="test@example.com"
               />
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="password" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
                 Password
               </label>
               <input
@@ -92,7 +108,7 @@ export default function LoginPage() {
                 name="password"
                 required
                 disabled={isSubmitting}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                className={theme.inputs.base}
                 placeholder="Enter your password"
                 defaultValue="password123"
               />
@@ -102,32 +118,34 @@ export default function LoginPage() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 bg-slate-700 border border-slate-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 bg-slate-700/50 rounded focus:ring-2 focus:ring-blue-500 accent-blue-600"
                 />
-                <span className="ml-2 text-sm text-gray-400">Remember me</span>
+                <span className="ml-2 text-sm dark:text-gray-400 text-gray-600">Remember me</span>
               </label>
               <a href="#" className="text-sm text-blue-400 hover:text-blue-300">
                 Forgot password?
               </a>
             </div>
             
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
+              loading={isSubmitting}
+              fullWidth
+              variant="primary"
             >
-              {isSubmitting ? "Signing In..." : "Sign In"}
-            </button>
+              Sign In
+            </Button>
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="dark:text-gray-400 text-gray-600 text-sm">
               Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-blue-400 hover:text-blue-300">
                 Start free trial
               </Link>
             </p>
           </div>
+          </Panel>
         </div>
       </div>
     </div>

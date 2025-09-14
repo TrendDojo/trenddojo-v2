@@ -85,14 +85,6 @@ export function EnvironmentIndicator() {
         </div>
       )}
 
-      {/* Paper Trading Indicator */}
-      {config.paperTradingMode && !config.realMoneyMode && !config.isProduction && (
-        <div className="fixed top-0 right-4 z-40 mt-2">
-          <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-            📊 PAPER TRADING
-          </div>
-        </div>
-      )}
     </>
   )
 }

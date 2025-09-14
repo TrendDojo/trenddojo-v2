@@ -379,6 +379,27 @@ model MarketDataCache {
   @@map("market_data_cache")
 }
 
+model StockTechnicals {
+  symbol           String   @id
+  price            Decimal? @db.Decimal(15, 6)
+  sma_20           Decimal? @db.Decimal(15, 6)
+  sma_50           Decimal? @db.Decimal(15, 6)
+  sma_200          Decimal? @db.Decimal(15, 6)
+  ema_12           Decimal? @db.Decimal(15, 6)
+  ema_26           Decimal? @db.Decimal(15, 6)
+  rsi              Decimal? @db.Decimal(5, 2)
+  macd             Decimal? @db.Decimal(15, 6)
+  macd_signal      Decimal? @db.Decimal(15, 6)
+  macd_histogram   Decimal? @db.Decimal(15, 6)
+  atr_20           Decimal? @db.Decimal(15, 6)
+  bb_upper         Decimal? @db.Decimal(15, 6)
+  bb_middle        Decimal? @db.Decimal(15, 6)
+  bb_lower         Decimal? @db.Decimal(15, 6)
+  updated_at       DateTime @default(now())
+
+  @@map("stock_technicals")
+}
+
 model StockFundamentals {
   symbol           String   @id
   marketCap        BigInt?

@@ -156,4 +156,117 @@ Create Next.js 14+ project structure with all production dependencies and initia
 
 ---
 
-*Last updated: 2025-09-10*
+## WB-2025-09-14-001: Abstract Market Data Provider Implementation
+**State**: confirmed
+**Timeframe**: NEXT
+**Created**: 2025-09-14 10:30
+**Dependencies**: None
+**Tags**: #infrastructure #market-data #yahoo-finance #abstraction
+
+### Goal
+Implement a fully abstracted market data system with Yahoo Finance as the initial provider, ensuring seamless provider swapping without core code changes.
+
+### Architecture Design
+```
+IMarketDataProvider (interface)
+    ↓
+├── YahooFinanceProvider (initial)
+├── PolygonProvider (future pro tier)
+├── AlphaVantageProvider (future backup)
+└── MockProvider (development/testing)
+    ↓
+MarketDataService (orchestrator)
+    ↓
+PostgreSQL Cache (persistence)
+```
+
+### Tasks
+- [ ] **Define IMarketDataProvider interface**: Standard methods for all providers
+  - `getCurrentPrice(symbol: string): Promise<number>`
+  - `getHistoricalData(symbol, timeframe, range): Promise<Candle[]>`
+  - `getBulkPrices(symbols: string[]): Promise<Map<string, number>>`
+  - `subscribeToPrice(symbol, callback): Subscription`
+  - `getTechnicalIndicators(symbol): Promise<TechnicalData>`
+  - `getProviderStatus(): ProviderStatus`
+
+- [ ] **Implement YahooFinanceProvider**: First concrete implementation
+  - Yahoo Finance REST API integration
+  - Rate limiting (2000 req/hour free tier)
+  - Error handling and retry logic
+  - Response normalization to standard format
+
+- [ ] **Create MarketDataService orchestrator**: Provider-agnostic service layer
+  - Provider selection based on user tier
+  - Automatic fallback to backup providers
+  - Request deduplication and batching
+  - Cache-first strategy with PostgreSQL
+
+- [ ] **Implement caching layer**: Reduce API calls and improve performance
+  - Time-based cache invalidation by timeframe
+  - Bulk update optimization
+  - Stale-while-revalidate pattern
+  - Cache warming for active symbols
+
+- [ ] **Add MockProvider for development**: Predictable test data
+  - Realistic price movements
+  - Configurable latency simulation
+  - Error scenario testing
+  - No external dependencies
+
+- [ ] **Write comprehensive tests**: Ensure reliability
+  - Unit tests for each provider
+  - Integration tests with cache
+  - Provider failover testing
+  - Rate limit handling tests
+
+- [ ] **Create provider documentation**: Implementation guide
+  - Interface contract documentation
+  - Provider implementation checklist
+  - Testing requirements
+  - Migration guide for new providers
+
+### Implementation Details
+
+**Key Abstraction Points:**
+- All providers return normalized `PriceData` and `Candle` types
+- Error types are standardized across providers
+- Provider-specific config isolated to provider classes
+- Core business logic never imports provider implementations directly
+
+**Provider Configuration:**
+```typescript
+// @business-critical: Provider configuration
+interface ProviderConfig {
+  type: 'yahoo' | 'polygon' | 'alphavantage' | 'mock';
+  apiKey?: string;
+  tier: 'free' | 'basic' | 'pro';
+  rateLimit: number;
+  timeout: number;
+  retryAttempts: number;
+}
+```
+
+**Cache Strategy:**
+- 1-minute cache for current prices (free tier)
+- 5-minute cache for historical data
+- Immediate cache for pro tier (WebSocket updates)
+- 24-hour cache for technical indicators
+
+### Success Criteria
+- Yahoo Finance provider fully functional
+- Can swap to MockProvider without code changes
+- All financial calculations work with any provider
+- Test coverage >95% for market data module
+- Performance: <100ms for cached data, <2s for fresh data
+- Documentation complete for adding new providers
+
+### Notes
+- Yahoo Finance chosen for initial implementation (free, reliable)
+- Architecture supports future WebSocket providers (Polygon.io)
+- Cache layer critical for performance and API limit management
+- Provider abstraction enables A/B testing different data sources
+- Must handle provider-specific quirks without leaking abstractions
+
+---
+
+*Last updated: 2025-09-14*

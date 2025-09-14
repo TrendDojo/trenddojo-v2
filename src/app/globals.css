@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-size: 15px; /* Base font size - 15px as requested */
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
