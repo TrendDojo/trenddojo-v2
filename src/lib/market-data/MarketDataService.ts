@@ -417,7 +417,7 @@ export class MarketDataService {
           high: price.price,
           low: price.price,
           close: price.price,
-          volume: price.volume,
+          volume: price.volume || 0,
         },
       });
     } catch (error) {
@@ -447,11 +447,11 @@ export class MarketDataService {
       if (cached.length > 0) {
         return cached.map(c => ({
           timestamp: c.timestamp,
-          open: c.open.toNumber(),
-          high: c.high.toNumber(),
-          low: c.low.toNumber(),
-          close: c.close.toNumber(),
-          volume: c.volume?.toNumber() || 0,
+          open: Number(c.open),
+          high: Number(c.high),
+          low: Number(c.low),
+          close: Number(c.close),
+          volume: c.volume ? Number(c.volume) : 0,
         }));
       }
     } catch (error) {

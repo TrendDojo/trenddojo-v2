@@ -1,2 +1,3 @@
 export { AppLayout, useLayout } from './AppLayout';
-export { Sidebar, MenuButton } from './Sidebar';
+export { Sidebar } from './Sidebar';
+export { PageContent } from './PageContent';
