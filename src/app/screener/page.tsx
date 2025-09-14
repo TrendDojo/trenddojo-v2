@@ -60,6 +60,8 @@ export default function ScreenerPage() {
   const [showPresetsDropdown, setShowPresetsDropdown] = useState(false);
   const [showCustomDropdown, setShowCustomDropdown] = useState(false);
   const [showProviderDropdown, setShowProviderDropdown] = useState(false);
+  const [presetsTab, setPresetsTab] = useState<'custom' | 'library'>('library');
+  const [filtersTab, setFiltersTab] = useState<'price-volume' | 'technical' | 'fundamentals'>('price-volume');
 
   // Fetch market data and load saved filters on component mount
   useEffect(() => {
@@ -458,19 +460,88 @@ export default function ScreenerPage() {
                 </Button>
                 
                 {showPresetsDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white dark:bg-slate-800 rounded-lg shadow-lg border dark:border-slate-700 border-gray-200 z-20">
-                    {savedFilters.map((preset) => (
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-lg shadow-lg border dark:border-slate-700 border-gray-200 z-20">
+                    {/* Tabs */}
+                    <div className="flex border-b dark:border-slate-700 border-gray-200">
                       <button
-                        key={preset.id || preset.name}
-                        onClick={() => applyPreset(preset)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border-b dark:border-slate-700 border-gray-100 last:border-0"
+                        onClick={() => setPresetsTab('library')}
+                        className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                          presetsTab === 'library'
+                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
+                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                        }`}
                       >
-                        <div className="font-medium dark:text-white text-gray-900">{preset.name}</div>
-                        {preset.description && (
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{preset.description}</div>
-                        )}
+                        Library
                       </button>
-                    ))}
+                      <button
+                        onClick={() => setPresetsTab('custom')}
+                        className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                          presetsTab === 'custom'
+                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
+                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                        }`}
+                      >
+                        Custom
+                      </button>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="max-h-80 overflow-y-auto">
+                      {presetsTab === 'library' ? (
+                        <>
+                          {DEFAULT_FILTERS.map((preset) => (
+                            <button
+                              key={preset.id || preset.name}
+                              onClick={() => applyPreset(preset)}
+                              className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border-b dark:border-slate-700 border-gray-100 last:border-0"
+                            >
+                              <div className="font-medium dark:text-white text-gray-900">{preset.name}</div>
+                              {preset.description && (
+                                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{preset.description}</div>
+                              )}
+                            </button>
+                          ))}
+                        </>
+                      ) : (
+                        <>
+                          {savedFilters.filter(f => !f.isDefault).length > 0 ? (
+                            savedFilters.filter(f => !f.isDefault).map((preset) => (
+                              <button
+                                key={preset.id || preset.name}
+                                onClick={() => applyPreset(preset)}
+                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border-b dark:border-slate-700 border-gray-100 last:border-0"
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <div className="font-medium dark:text-white text-gray-900">{preset.name}</div>
+                                    {preset.description && (
+                                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{preset.description}</div>
+                                    )}
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      ScreenerFilterService.deleteFilter(preset.id!);
+                                      setSavedFilters(ScreenerFilterService.getLocalFilters());
+                                    }}
+                                    className="ml-2 p-1 hover:bg-red-100 dark:hover:bg-red-950/30 rounded transition-colors"
+                                  >
+                                    <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-4 py-8 text-center">
+                              <p className="text-sm text-gray-500 dark:text-gray-400">No custom filters saved yet</p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Use "Save Current" to create custom filters</p>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -496,7 +567,45 @@ export default function ScreenerPage() {
                 </Button>
                 
                 {showCustomDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-96 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 rounded-lg shadow-xl border dark:border-slate-700 border-gray-200 z-20">
+                  <div className="absolute top-full left-0 mt-2 w-96 bg-white dark:bg-slate-800 rounded-lg shadow-xl border dark:border-slate-700 border-gray-200 z-20">
+                    {/* Tabs */}
+                    <div className="flex border-b dark:border-slate-700 border-gray-200">
+                      <button
+                        onClick={() => setFiltersTab('price-volume')}
+                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                          filtersTab === 'price-volume'
+                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
+                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                        }`}
+                      >
+                        Price & Volume
+                      </button>
+                      <button
+                        onClick={() => setFiltersTab('technical')}
+                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                          filtersTab === 'technical'
+                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
+                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                        }`}
+                      >
+                        Technical
+                      </button>
+                      <button
+                        onClick={() => setFiltersTab('fundamentals')}
+                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                          filtersTab === 'fundamentals'
+                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
+                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                        }`}
+                      >
+                        Fundamentals
+                      </button>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="max-h-[500px] overflow-y-auto">
+                      {filtersTab === 'price-volume' && (
+                        <>
                     {/* Price Filters Section */}
                     <div className="border-b dark:border-slate-700 border-gray-200 p-4">
                       <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Price Range</h4>
@@ -561,6 +670,11 @@ export default function ScreenerPage() {
                       </div>
                     </div>
 
+                        </>
+                      )}
+                      
+                      {filtersTab === 'technical' && (
+                        <>
                     {/* Price Change Section */}
                     <div className="border-b dark:border-slate-700 border-gray-200 p-4">
                       <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Price Change %</h4>
@@ -600,63 +714,6 @@ export default function ScreenerPage() {
                           className="px-3 py-2 text-sm bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-700 dark:text-red-400 rounded-lg transition-colors"
                         >
                           -10%
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Sector Selection */}
-                    <div className="border-b dark:border-slate-700 border-gray-200 p-4">
-                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Sector</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          'Technology', 'Healthcare', 'Financial', 'Consumer',
-                          'Industrial', 'Energy', 'Materials', 'Real Estate',
-                          'Utilities', 'Communications', 'Basic Materials', 'Services'
-                        ].map((sector) => (
-                          <button
-                            key={sector}
-                            onClick={() => addCustomFilter('sector', sector, sector)}
-                            className="px-3 py-2 text-sm text-left bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                          >
-                            {sector}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Market Cap Section */}
-                    <div className="border-b dark:border-slate-700 border-gray-200 p-4">
-                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Market Cap</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => addCustomFilter('marketCap', 'Micro < $300M', { maxMarketCap: '0.3' })}
-                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                        >
-                          Micro (&lt;$300M)
-                        </button>
-                        <button
-                          onClick={() => addCustomFilter('marketCap', 'Small $300M-$2B', { minMarketCap: '0.3', maxMarketCap: '2' })}
-                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                        >
-                          Small ($300M-$2B)
-                        </button>
-                        <button
-                          onClick={() => addCustomFilter('marketCap', 'Mid $2B-$10B', { minMarketCap: '2', maxMarketCap: '10' })}
-                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                        >
-                          Mid ($2B-$10B)
-                        </button>
-                        <button
-                          onClick={() => addCustomFilter('marketCap', 'Large > $10B', { minMarketCap: '10' })}
-                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                        >
-                          Large (&gt;$10B)
-                        </button>
-                        <button
-                          onClick={() => addCustomFilter('marketCap', 'Mega > $200B', { minMarketCap: '200' })}
-                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                        >
-                          Mega (&gt;$200B)
                         </button>
                       </div>
                     </div>
@@ -715,6 +772,70 @@ export default function ScreenerPage() {
                           Volume Above Average
                         </button>
                       </div>
+                    </div>
+                        </>
+                      )}
+                      
+                      {filtersTab === 'fundamentals' && (
+                        <>
+                    {/* Sector Selection */}
+                    <div className="p-4">
+                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Sector</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          'Technology', 'Healthcare', 'Financial', 'Consumer',
+                          'Industrial', 'Energy', 'Materials', 'Real Estate',
+                          'Utilities', 'Communications', 'Basic Materials', 'Services'
+                        ].map((sector) => (
+                          <button
+                            key={sector}
+                            onClick={() => addCustomFilter('sector', sector, sector)}
+                            className="px-3 py-2 text-sm text-left bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                          >
+                            {sector}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Market Cap Section */}
+                    <div className="p-4">
+                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Market Cap</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => addCustomFilter('marketCap', 'Micro < $300M', { maxMarketCap: '0.3' })}
+                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                        >
+                          Micro (&lt;$300M)
+                        </button>
+                        <button
+                          onClick={() => addCustomFilter('marketCap', 'Small $300M-$2B', { minMarketCap: '0.3', maxMarketCap: '2' })}
+                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                        >
+                          Small ($300M-$2B)
+                        </button>
+                        <button
+                          onClick={() => addCustomFilter('marketCap', 'Mid $2B-$10B', { minMarketCap: '2', maxMarketCap: '10' })}
+                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                        >
+                          Mid ($2B-$10B)
+                        </button>
+                        <button
+                          onClick={() => addCustomFilter('marketCap', 'Large > $10B', { minMarketCap: '10' })}
+                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                        >
+                          Large (&gt;$10B)
+                        </button>
+                        <button
+                          onClick={() => addCustomFilter('marketCap', 'Mega > $200B', { minMarketCap: '200' })}
+                          className="px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
+                        >
+                          Mega (&gt;$200B)
+                        </button>
+                      </div>
+                    </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
