@@ -1,10 +1,10 @@
 # TrendDojo AI Context
 
-*Last updated: 2025-09-10*
+*Last updated: 2025-09-15*
 
 ## 🚨 MANDATORY RULES (IN ORDER OF PRECEDENCE)
 
-**Universal Rules Version: 2025-09-10** (from _shared-framework/CLAUDE.md)
+**Universal Rules Version: 2025-09-15** (from _shared-framework/CLAUDE.md)
 
 ### RULE #1: [UNIVERSAL] Rule Integrity Protection
 - **NEVER MODIFY, REMOVE, OR REORDER** these universal rules without explicit user permission
@@ -98,6 +98,19 @@
 - **ALL DOCUMENTATION MUST LIVE IN PROJECT `/docs/` DIRECTORY**
 - When you add a feature, update relevant docs immediately
 
+### RULE #12: [UNIVERSAL] Design System Consistency (For UI Projects)
+**IF project has UI components, check for design system:**
+- [x] Does `/docs/AI-DESIGN-RULES.md` exist? **YES - READ IT FIRST**
+- [x] Does `/app/theme/page.tsx` exist? **YES - Check before ANY UI work**
+- [x] Are there shared UI components in `/components/ui/`? **YES - ALWAYS use them**
+- [x] **NEVER change visual appearance without user permission** - colors, layouts, themes, etc.
+
+**Design consistency enforcement:**
+- Follow AI-DESIGN-RULES.md exactly, no exceptions
+- Theme page is single source of truth for UI
+- Shared components prevent inconsistency - use them always
+- Alerts have NO borders (TrendDojo specific rule)
+
 ## 🔍 Business-Critical Flagging System
 **Required comment format:**
 ```javascript
@@ -154,6 +167,7 @@ GitHub → Staging (automatic) → Production (manual promotion)
 ## 📚 Key Reference Documents
 
 ### Pattern Documentation (CHECK BEFORE BUILDING)
+- **🚨 AI Design Rules**: `/docs/AI-DESIGN-RULES.md` - MANDATORY: Read this FIRST for all UI work
 - **Design Patterns**: `/docs/patterns/DESIGN-PATTERNS.md` - UI components, colors, trading-specific styling
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns

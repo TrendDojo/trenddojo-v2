@@ -1,7 +1,7 @@
 # Design Patterns - TrendDojo
 
 *Quick reference for component selection and visual design decisions*
-*Last Updated: 2025-09-05*
+*Last Updated: 2025-09-15*
 
 ## Component Selection Rules
 
@@ -10,25 +10,69 @@
 2. Similar component exists? Extend it, don't duplicate
 3. Creating new? Add to this doc immediately
 
-### Core UI Components
-- **Modals**: Use Shadcn/ui Dialog components for overlays
-- **Forms**: Use React Hook Form with tRPC integration
-- **Tables**: Use Shadcn/ui Table with built-in sorting/filtering
-- **Buttons**: Use Shadcn/ui Button component with variants
-- **Inputs**: Use Shadcn/ui form components (Input, Select, TextArea)
+### Core UI Components (Updated Design System)
+
+#### Shared Components (`/src/components/ui/`)
+**ALWAYS USE THESE SHARED COMPONENTS - DO NOT CREATE INLINE STYLES**
+
+- **Panels/Cards**: `<Card>` from `/components/ui/Panel.tsx`
+  - Default rounded: `rounded-xl`
+  - Default padding: `p-6` (use `padding` prop to override)
+  - Use for all content containers
+  
+- **Buttons**: `<Button>` from `/components/ui/Button.tsx`
+  - Variants: `primary`, `secondary`, `ghost`, `danger`, `success`
+  - Sizes: `sm`, `md`, `lg`
+  - Props: `loading`, `fullWidth`, `disabled`
+  - NEVER use inline button styles
+  
+- **Alerts**: `<Alert>` from `/components/ui/Panel.tsx`
+  - Intents: `info`, `warning`, `error`, `success`
+  - Includes icon by default (use `icon={false}` to hide)
+  - Use for all notification/message boxes
+  
+- **Forms**: Components from `/components/ui/FormField.tsx`
+  - `<FormField>` - Wrapper with label, helper, error
+  - `<Input>` - Text inputs with error state
+  - `<Textarea>` - Multi-line text
+  - `<Select>` - Dropdowns
+  - `<Checkbox>` - Checkbox with label
+  - `<Radio>` - Radio button with label
+  
+- **Modals**: `<Modal>` from `/components/ui/Modal.tsx`
+  - Sizes: `sm`, `md`, `lg`, `xl`, `full`
+  - Built-in header, footer, close button
+  - `<ConfirmModal>` for confirmations
+  - `<ModalFooter>` for standard button layout
+
+#### Component Rules
+1. **Check theme page first**: `/app/theme/page.tsx` is the source of truth
+2. **Never duplicate**: If a similar component exists, extend it
+3. **Consistent spacing**: Use Tailwind spacing scale (p-2, p-4, p-6, p-8)
+4. **Consistent rounding**: Default to `rounded-xl` for cards, `rounded-lg` for buttons
 
 ## Color Hierarchy
 
-### Brand Colors - Trading Theme
-- **Green (#22c55e)**: Profitable trades, positive P&L, buy signals
-- **Red (#ef4444)**: Losing trades, negative P&L, sell signals
-- **Blue (#3b82f6)**: Information, neutral analysis, settings
-- **Gold (#f59e0b)**: Premium features, alerts, important metrics
-- **Gray**: Secondary UI elements, disabled states
+### Brand Colors - Updated Standardized System
+
+#### Primary Colors
+- **Primary (Indigo-600)**: Main brand color, primary actions, CTAs
+- **Teal-500**: Positive values, gains, upward trends, profits
+- **Purple-600**: Negative values, losses, downward trends
+- **Amber-500**: Warnings, alerts (NOT yellow)
+- **Rose-500**: Danger, errors, destructive actions
+- **Emerald-500**: Success states, confirmations
+- **Blue-500**: Information, help (NOT cyan)
+
+#### Background Colors
+- **Dark Mode Panels**: `bg-slate-800/50` (default), `bg-slate-800/30` (subtle)
+- **Light Mode Panels**: `bg-white` (default), `bg-gray-50` (subtle)
+- **Page Background**: `bg-slate-900` (dark), `bg-gray-50` (light)
 
 ### Critical Rules
-- **GREEN = PROFIT, RED = LOSS** (universal trading convention)
-- **NEVER** use red/green for non-financial elements
+- **TEAL = PROFIT, PURPLE = LOSS** (TrendDojo convention)
+- **NEVER** mix teal/purple with non-financial elements
+- **CONSISTENCY**: Use amber (not yellow) for warnings, rose (not red) for errors
 - **ALWAYS** include dark mode variants
 - All financial data must use semantic color classes
 
@@ -92,7 +136,24 @@
 - Green/red contrast must be maintained in dark mode
 - Chart backgrounds: dark gray/black, not pure black
 
+## Design System Enforcement
+
+### Implementation Process
+1. **Audit Phase**: Review all pages for inconsistencies
+2. **Component Creation**: Build shared UI components
+3. **Migration**: Update all pages to use shared components
+4. **Documentation**: Update theme page as source of truth
+5. **Enforcement**: All new features must use shared components
+
+### Maintenance Rules
+- **Theme page (`/app/theme/page.tsx`)** is the source of truth
+- Check theme page before creating any new UI element
+- If not on theme page, don't use it
+- If needed but missing, add to theme page first
+- Regular audits to catch drift (monthly)
+
 ## Usage History
 <!-- Add entries when this doc contributes to completing a task -->
 <!-- Format: - YYYY-MM-DD: Used for WB-XXXX-XX-XXX (Brief description) -->
 - 2025-09-05: Created for documentation harmonization (Trading-specific design patterns)
+- 2025-09-15: Updated with standardized design system and shared components (WB-2025-09-15-002)

@@ -1,8 +1,77 @@
 # TrendDojo Active Work Blocks
 
-## WB-2025-09-10-001: Business-Critical Code Testing Coverage
-**State**: doing
+## 🌿 Git Branching Strategy for Work Blocks
+
+### Approach: Inline on Main
+- **Default**: Work directly on `main` branch for most work blocks
+- **Rationale**: Faster iteration, less overhead for single-developer project
+- **When to branch**: Only for experimental features or breaking changes
+- **Commit frequently**: Small, atomic commits with clear messages
+- **Work block references**: Include WB-ID in commit messages
+
+### When to Create Feature Branches
+1. **Experimental features** that might be reverted
+2. **Breaking changes** that need gradual migration
+3. **Parallel work** by multiple developers
+4. **Large refactors** that span multiple days
+
+### Commit Message Format
+```
+WB-YYYY-MM-DD-NNN: Brief description
+
+- Detail 1
+- Detail 2
+```
+
+## WB-2025-09-15-002: Design System Consistency Refactor
+**State**: completed
 **Timeframe**: NOW
+**Created**: 2025-09-15 14:35
+**Completed**: 2025-09-15 16:00
+**Dependencies**: None
+**Tags**: #design-system #ui #refactor #consistency
+
+### Goal
+Establish and enforce consistent design language across all app components, ensuring the theme page serves as the single source of truth for UI patterns.
+
+### Problem Statement
+- Dashboard panels have one style
+- Broker/settings pages have different panel styles
+- Message boxes (info/warning/error) are inconsistent
+- Buttons vary across pages
+- No shared component library enforcing consistency
+
+### Tasks
+- [x] **Audit current inconsistencies**: Document all design variations (created DESIGN-AUDIT.md)
+- [x] **Create shared components**:
+  - [x] `<Panel>` - Consistent card/panel component (Panel.tsx with variants)
+  - [x] `<Alert>` - Info/warning/error messages (Alert component in Panel.tsx)
+  - [x] `<Button>` - Primary/secondary/danger variants (Button.tsx enhanced)
+  - [x] `<FormField>` - Consistent form inputs (FormField.tsx created)
+  - [x] `<Modal>` - Standard modal wrapper (Modal.tsx created)
+- [x] **Update theme page**: Make it the definitive reference (added all components)
+- [x] **Refactor existing pages**: Apply new components (brokers, IB modal updated)
+- [x] **Document design rules**: Clear guidelines in DESIGN-PATTERNS.md (fully documented)
+
+### Design Principles to Establish
+1. **Single source of truth**: Theme page defines all patterns
+2. **Component-first**: Use shared components, not inline styles
+3. **Consistent spacing**: Standard padding/margin scale
+4. **Color semantics**: Clear meaning for each color usage
+5. **Border/shadow consistency**: One style for cards/panels
+
+### Success Criteria
+- All panels/cards use same component
+- All alerts/messages use same component
+- Theme page accurately reflects entire app
+- New DESIGN-PATTERNS.md documents all rules
+- No inline style variations for common patterns
+
+---
+
+## WB-2025-09-10-001: Business-Critical Code Testing Coverage
+**State**: paused
+**Timeframe**: LATER
 **Created**: 2025-09-10 23:30
 **Dependencies**: None
 **Tags**: #testing #business-critical #auth #financial
@@ -153,6 +222,51 @@ Create Next.js 14+ project structure with all production dependencies and initia
 - Follow the subscription tier structure from setup doc
 - Ensure all dependencies match production requirements
 - Set up proper TypeScript configuration for trading calculations
+
+---
+
+## WB-2025-09-15-001: Interactive Brokers Integration Phase 1
+**State**: paused
+**Timeframe**: NOW  
+**Created**: 2025-09-15 10:45
+**Paused**: 2025-09-15 14:30
+**Dependencies**: None
+**Tags**: #broker-integration #interactive-brokers #security #trading
+
+### Goal
+Implement secure Interactive Brokers integration with comprehensive mock-first development approach and proper abstraction layer for future broker additions.
+
+### Phase 1 Tasks
+- [x] **Create BROKER-INTEGRATION-PATTERNS.md**: Document standard patterns for all broker integrations
+- [x] **Implement secure credential storage**: Encrypted storage for API keys and credentials
+- [x] **Complete IBClient implementation**: Full mock mode with realistic responses
+- [x] **Add IB Gateway connection logic**: Support both TWS and Gateway connections
+- [ ] **Create broker settings UI**: Connection management in settings page
+- [ ] **Implement connection status monitoring**: Real-time connection health checks
+- [ ] **Add comprehensive error handling**: User-friendly error messages and recovery
+- [ ] **Write integration tests**: Test all broker operations in mock mode
+
+### Security Requirements
+- All credentials encrypted at rest using AES-256
+- Separate paper trading from live trading environments
+- Audit logging for all trading operations
+- Rate limiting on API endpoints
+- Session-based credential access with timeout
+
+### Implementation Notes
+- Mock-first approach - all development uses mock data
+- User has actual IB account available for testing
+- Gateway/TWS connection required for live trading
+- Support multiple simultaneous broker connections
+- Abstraction layer enables future broker additions (Alpaca, TD Ameritrade)
+- **PAUSED 2025-09-15**: Core UI and backend infrastructure complete. Pausing to focus on design consistency refactor
+
+### Success Criteria
+- Can connect to IB in mock mode without credentials
+- Settings page shows connection status and account info
+- All broker operations work with mock data
+- Security audit shows no credential exposure risks
+- Documentation complete for adding new brokers
 
 ---
 

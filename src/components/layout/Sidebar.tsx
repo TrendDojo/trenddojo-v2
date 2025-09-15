@@ -37,7 +37,7 @@ const PortfoliosIcon = () => (
   </svg>
 );
 
-const ExchangesIcon = () => (
+const BrokersIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
   </svg>
@@ -84,13 +84,13 @@ const navigationItems = [
     ]
   },
   { 
-    href: "/exchanges", 
-    label: "Exchanges", 
-    icon: ExchangesIcon,
+    href: "/brokers", 
+    label: "Brokers", 
+    icon: BrokersIcon,
     hasDropdown: true,
     subItems: [
-      { href: "/exchanges/interactive-brokers", label: "Interactive Brokers" },
-      { href: "/exchanges/add", label: "Add Exchange" }
+      { href: "/brokers", label: "Connect Broker" },
+      { href: "/brokers/interactive-brokers", label: "Interactive Brokers" }
     ]
   },
   { href: "/settings", label: "Settings", icon: SettingsIcon },
@@ -181,14 +181,19 @@ function NavItem({
                     : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/30 hover:bg-gray-100/50"
                 )}
               >
-                {(item.label === "Add Strategy" || item.label === "Add Exchange") ? (
-                  <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                {(item.label === "Add Strategy" || item.label === "Connect Broker") ? (
+                  <>
+                    <span className="flex-1">{item.label}</span>
+                    <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </>
                 ) : (
-                  <span className="w-2 h-2 rounded-full bg-current opacity-30"></span>
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-current opacity-30"></span>
+                    <span>{item.label}</span>
+                  </>
                 )}
-                <span>{item.label}</span>
               </Link>
             ))}
           </div>
@@ -226,7 +231,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [strategiesOpen, setStrategiesOpen] = useState(false);
-  const [exchangesOpen, setExchangesOpen] = useState(false);
+  const [brokersOpen, setBrokersOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   
   const userEmail = session?.user?.email || "user@example.com";
@@ -302,12 +307,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 subItems={item.subItems}
                 isOpen={
                   item.label === "Strategies" ? strategiesOpen : 
-                  item.label === "Exchanges" ? exchangesOpen : 
+                  item.label === "Brokers" ? brokersOpen : 
                   false
                 }
                 onToggleDropdown={
                   item.label === "Strategies" ? () => setStrategiesOpen(!strategiesOpen) : 
-                  item.label === "Exchanges" ? () => setExchangesOpen(!exchangesOpen) :
+                  item.label === "Brokers" ? () => setBrokersOpen(!brokersOpen) :
                   undefined
                 }
                 onClick={() => {

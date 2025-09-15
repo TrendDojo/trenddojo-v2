@@ -4,7 +4,9 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Panel";
+import { Card, Alert, Panel } from "@/components/ui/Panel";
+import { Modal, ConfirmModal } from "@/components/ui/Modal";
+import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
 
 export default function ThemePage() {
@@ -125,28 +127,19 @@ export default function ThemePage() {
                 <div className="flex flex-wrap gap-3">
                   <Button variant="primary">Primary Button</Button>
                   <Button variant="secondary">Secondary Button</Button>
-                  <button className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors">
-                    Success Button
-                  </button>
-                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
-                    Danger Button
-                  </button>
-                  <button className="px-4 py-2 border dark:border-slate-700 border-gray-300 dark:text-gray-300 text-gray-700 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                    Outline Button
-                  </button>
+                  <Button variant="success">Success Button</Button>
+                  <Button variant="danger">Danger Button</Button>
+                  <Button variant="ghost">Ghost Button</Button>
                 </div>
               </div>
               
               <div>
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Sizes</p>
                 <div className="flex flex-wrap items-center gap-3">
-                  <button className="px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-                    Small
-                  </button>
-                  <Button variant="primary">Medium</Button>
-                  <button className="px-6 py-3 text-lg bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-                    Large
-                  </button>
+                  <Button variant="primary" size="sm">Small</Button>
+                  <Button variant="primary" size="md">Medium</Button>
+                  <Button variant="primary" size="lg">Large</Button>
+                  <Button variant="primary" fullWidth>Full Width</Button>
                 </div>
               </div>
               
@@ -154,22 +147,149 @@ export default function ThemePage() {
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">States</p>
                 <div className="flex flex-wrap gap-3">
                   <Button variant="primary">Normal</Button>
-                  <button className="px-4 py-2 bg-indigo-700 text-white rounded-lg">
-                    Active/Pressed
-                  </button>
-                  <button disabled className="px-4 py-2 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed opacity-50">
-                    Disabled
-                  </button>
-                  <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Loading
-                  </button>
+                  <Button variant="primary" disabled>Disabled</Button>
+                  <Button variant="primary" loading>Loading</Button>
                 </div>
               </div>
             </div>
+          </Card>
+
+          {/* Alerts Section */}
+          <Card>
+            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Alerts</h2>
+            
+            <div className="space-y-4">
+              <Alert intent="info" title="Information">
+                This is an informational alert message with helpful details.
+              </Alert>
+              
+              <Alert intent="success" title="Success!">
+                Your operation completed successfully. Everything is working as expected.
+              </Alert>
+              
+              <Alert intent="warning" title="Warning">
+                Please review this warning message. Some action may be required.
+              </Alert>
+              
+              <Alert intent="error" title="Error">
+                An error occurred while processing your request. Please try again.
+              </Alert>
+              
+              <Alert intent="info" icon={false}>
+                Alert without icon - just text content.
+              </Alert>
+            </div>
+          </Card>
+
+          {/* Panels Section */}
+          <Card>
+            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Panels & Cards</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Panel variant="default" padding="lg" rounded="xl">
+                <h3 className="font-semibold dark:text-white text-gray-900 mb-2">Default Panel</h3>
+                <p className="text-sm dark:text-gray-400 text-gray-600">
+                  Standard panel with default styling. Used for most content containers.
+                </p>
+              </Panel>
+              
+              <Panel variant="subtle" padding="lg" rounded="xl">
+                <h3 className="font-semibold dark:text-white text-gray-900 mb-2">Subtle Panel</h3>
+                <p className="text-sm dark:text-gray-400 text-gray-600">
+                  Subtle background for secondary content areas.
+                </p>
+              </Panel>
+              
+              <Panel variant="solid" padding="lg" rounded="xl">
+                <h3 className="font-semibold dark:text-white text-gray-900 mb-2">Solid Panel</h3>
+                <p className="text-sm dark:text-gray-400 text-gray-600">
+                  Solid background with border for emphasis.
+                </p>
+              </Panel>
+              
+              <Panel variant="glass" padding="lg" rounded="xl">
+                <h3 className="font-semibold dark:text-white text-gray-900 mb-2">Glass Panel</h3>
+                <p className="text-sm dark:text-gray-400 text-gray-600">
+                  Glassmorphic effect with backdrop blur.
+                </p>
+              </Panel>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Interactive Panels</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Panel variant="default" padding="md" rounded="lg" hoverable>
+                  <p className="text-sm dark:text-gray-300 text-gray-700">Hoverable Panel - changes on hover</p>
+                </Panel>
+                
+                <Panel variant="default" padding="md" rounded="lg" clickable onClick={() => alert('Panel clicked!')}>
+                  <p className="text-sm dark:text-gray-300 text-gray-700">Clickable Panel - click to test</p>
+                </Panel>
+              </div>
+            </div>
+          </Card>
+
+          {/* Modal Section */}
+          <Card>
+            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Modals</h2>
+            
+            <div className="flex flex-wrap gap-3">
+              <Button variant="primary" onClick={() => setShowModal(true)}>
+                Open Standard Modal
+              </Button>
+              
+              <Button variant="danger" onClick={() => {
+                const modal = document.createElement('div');
+                modal.id = 'confirm-modal-root';
+                document.body.appendChild(modal);
+                const root = require('react-dom/client').createRoot(modal);
+                root.render(
+                  <ConfirmModal
+                    isOpen={true}
+                    onClose={() => {
+                      root.unmount();
+                      document.body.removeChild(modal);
+                    }}
+                    onConfirm={() => {
+                      alert('Confirmed!');
+                      root.unmount();
+                      document.body.removeChild(modal);
+                    }}
+                    title="Delete Item?"
+                    message="Are you sure you want to delete this item? This action cannot be undone."
+                    variant="danger"
+                  />
+                );
+              }}>
+                Open Confirm Modal
+              </Button>
+            </div>
+            
+            <Modal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+              title="Example Modal"
+              description="This is a standard modal with header and footer"
+              footer={
+                <div className="flex justify-end gap-3">
+                  <Button variant="secondary" onClick={() => setShowModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" onClick={() => setShowModal(false)}>
+                    Save Changes
+                  </Button>
+                </div>
+              }
+            >
+              <div className="space-y-4">
+                <p className="dark:text-gray-300 text-gray-700">
+                  This is the modal content area. You can put any content here including forms, text, images, etc.
+                </p>
+                <FormField label="Example Field" helper="This is a helper text">
+                  <Input placeholder="Enter value..." />
+                </FormField>
+              </div>
+            </Modal>
           </Card>
 
           {/* Form Elements Section */}
@@ -178,52 +298,52 @@ export default function ThemePage() {
             
             <div className="space-y-6">
               <div>
-                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Input Fields</p>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Input Fields with FormField Component</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                      Text Input
-                    </label>
-                    <input
+                  <FormField label="Text Input" helper="Enter any text value" required>
+                    <Input
                       type="text"
                       placeholder="Enter text..."
-                      className="w-full px-3 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white text-gray-900"
                     />
-                  </div>
+                  </FormField>
                   
-                  <div>
-                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                      Disabled Input
-                    </label>
-                    <input
+                  <FormField label="Disabled Input">
+                    <Input
                       type="text"
                       disabled
                       value="Disabled field"
-                      className="w-full px-3 py-2 dark:bg-slate-900 bg-gray-100 border dark:border-slate-800 border-gray-200 rounded-lg dark:text-gray-500 text-gray-500 cursor-not-allowed"
                     />
-                  </div>
+                  </FormField>
                   
-                  <div>
-                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                      Select Dropdown
-                    </label>
-                    <select className="w-full px-3 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white text-gray-900">
+                  <FormField label="Select Dropdown" helper="Choose an option">
+                    <Select>
                       <option>Option 1</option>
                       <option>Option 2</option>
                       <option>Option 3</option>
-                    </select>
-                  </div>
+                    </Select>
+                  </FormField>
                   
-                  <div>
-                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                      Number Input
-                    </label>
-                    <input
+                  <FormField label="Number Input">
+                    <Input
                       type="number"
                       placeholder="0.00"
-                      className="w-full px-3 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white text-gray-900"
                     />
-                  </div>
+                  </FormField>
+                  
+                  <FormField label="With Error" error="This field has an error">
+                    <Input
+                      type="text"
+                      placeholder="Error state"
+                      error
+                    />
+                  </FormField>
+                  
+                  <FormField label="Password" helper="Must be at least 8 characters">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                    />
+                  </FormField>
                 </div>
               </div>
               
@@ -240,17 +360,17 @@ export default function ThemePage() {
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Checkboxes & Radio Buttons</p>
                 <div className="space-y-3">
                   <label className="flex items-center">
-                    <input type="checkbox" className="mr-2" defaultChecked />
+                    <input type="checkbox" className="mr-2 w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 rounded dark:checked:bg-indigo-600 checked:bg-indigo-600 accent-indigo-600" defaultChecked />
                     <span className="dark:text-gray-300 text-gray-700">Checkbox option</span>
                   </label>
                   
                   <label className="flex items-center">
-                    <input type="radio" name="radio-group" className="mr-2" defaultChecked />
+                    <input type="radio" name="radio-group" className="mr-2 w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 dark:checked:bg-indigo-600 checked:bg-indigo-600 accent-indigo-600" defaultChecked />
                     <span className="dark:text-gray-300 text-gray-700">Radio option 1</span>
                   </label>
                   
                   <label className="flex items-center">
-                    <input type="radio" name="radio-group" className="mr-2" />
+                    <input type="radio" name="radio-group" className="mr-2 w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 dark:checked:bg-indigo-600 checked:bg-indigo-600 accent-indigo-600" />
                     <span className="dark:text-gray-300 text-gray-700">Radio option 2</span>
                   </label>
                   
@@ -365,15 +485,41 @@ export default function ThemePage() {
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Badges & Tags</h2>
             
-            <div className="flex flex-wrap gap-3">
-              <span className="px-2 py-1 text-xs bg-indigo-500 text-white rounded-full">Primary</span>
-              <span className="px-2 py-1 text-xs bg-teal-500 text-white rounded-full">Positive</span>
-              <span className="px-2 py-1 text-xs bg-purple-500 text-white rounded-full">Negative</span>
-              <span className="px-2 py-1 text-xs bg-emerald-500 text-white rounded-full">Success</span>
-              <span className="px-2 py-1 text-xs bg-amber-500 text-white rounded-full">Warning</span>
-              <span className="px-2 py-1 text-xs bg-rose-500 text-white rounded-full">Danger</span>
-              <span className="px-2 py-1 text-xs dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-full">Neutral</span>
-              <span className="px-3 py-1.5 text-sm border dark:border-slate-700 border-gray-300 dark:text-gray-300 text-gray-700 rounded-lg">Outline Badge</span>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-2">Small Pills</p>
+                <div className="flex flex-wrap gap-3">
+                  <span className="px-2 py-1 text-xs bg-indigo-500 text-white rounded-full">Primary</span>
+                  <span className="px-2 py-1 text-xs bg-teal-500 text-white rounded-full">Positive</span>
+                  <span className="px-2 py-1 text-xs bg-purple-500 text-white rounded-full">Negative</span>
+                  <span className="px-2 py-1 text-xs bg-emerald-500 text-white rounded-full">Success</span>
+                  <span className="px-2 py-1 text-xs bg-amber-500 text-white rounded-full">Warning</span>
+                  <span className="px-2 py-1 text-xs bg-rose-500 text-white rounded-full">Danger</span>
+                  <span className="px-2 py-1 text-xs bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full">Black/White</span>
+                  <span className="px-2 py-1 text-xs dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-full">Neutral</span>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-2">Medium Pills</p>
+                <div className="flex flex-wrap gap-3">
+                  <span className="px-3 py-1.5 text-sm bg-indigo-500 text-white rounded-full">Primary</span>
+                  <span className="px-3 py-1.5 text-sm bg-teal-500 text-white rounded-full">Positive</span>
+                  <span className="px-3 py-1.5 text-sm bg-purple-500 text-white rounded-full">Negative</span>
+                  <span className="px-3 py-1.5 text-sm bg-emerald-500 text-white rounded-full">Success</span>
+                  <span className="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-full">Warning</span>
+                  <span className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded-full">Danger</span>
+                  <span className="px-3 py-1.5 text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full">Black/White</span>
+                  <span className="px-3 py-1.5 text-sm dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-full">Neutral</span>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-2">Outline Badges</p>
+                <div className="flex flex-wrap gap-3">
+                  <span className="px-3 py-1.5 text-sm border dark:border-slate-700 border-gray-300 dark:text-gray-300 text-gray-700 rounded-lg">Outline Badge</span>
+                </div>
+              </div>
             </div>
           </Card>
 

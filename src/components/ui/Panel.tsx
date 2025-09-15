@@ -133,18 +133,85 @@ export function Section({ className, children, ...props }: Omit<PanelProps, 'var
   );
 }
 
-export function Alert({ className, children, intent = 'info', ...props }: Omit<PanelProps, 'variant'>) {
+interface AlertProps extends Omit<PanelProps, 'variant' | 'intent'> {
+  intent?: 'info' | 'warning' | 'error' | 'success';
+  title?: string;
+  icon?: boolean;
+}
+
+const alertIcons = {
+  info: (
+    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  warning: (
+    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+  ),
+  error: (
+    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  success: (
+    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+};
+
+const alertColors = {
+  info: 'text-blue-600 dark:text-blue-400',
+  warning: 'text-amber-600 dark:text-amber-400',
+  error: 'text-rose-600 dark:text-rose-400',
+  success: 'text-emerald-600 dark:text-emerald-400',
+};
+
+const alertBackgrounds = {
+  info: 'dark:bg-blue-900/20 bg-blue-50',
+  warning: 'dark:bg-amber-900/20 bg-amber-50',
+  error: 'dark:bg-rose-900/20 bg-rose-50',
+  success: 'dark:bg-emerald-900/20 bg-emerald-50',
+};
+
+export function Alert({ 
+  className, 
+  children, 
+  intent = 'info', 
+  title,
+  icon = true,
+  ...props 
+}: AlertProps) {
   return (
-    <Panel 
-      variant="subtle" 
-      intent={intent}
-      rounded="lg" 
-      padding="md" 
-      {...props} 
-      className={className}
+    <div 
+      className={cn(
+        "rounded-lg p-4 flex gap-3",
+        alertBackgrounds[intent],
+        className
+      )}
+      {...props}
     >
-      {children}
-    </Panel>
+      {icon && (
+        <span className={alertColors[intent]}>
+          {alertIcons[intent]}
+        </span>
+      )}
+      <div className="flex-1">
+        {title && (
+          <h3 className={cn("font-semibold mb-1", alertColors[intent])}>
+            {title}
+          </h3>
+        )}
+        <div className={cn(
+          "text-sm",
+          title ? "dark:text-gray-300 text-gray-700" : alertColors[intent]
+        )}>
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
