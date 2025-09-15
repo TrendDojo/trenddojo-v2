@@ -183,7 +183,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         />
 
         {/* Main Content - fluid column */}
-        <main className="overflow-auto">
+        <main className="overflow-visible">
           <div className="h-full">
             {children}
           </div>

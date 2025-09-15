@@ -72,8 +72,10 @@ export function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
           className={cn(
-            "relative w-full transform overflow-hidden rounded-xl shadow-xl transition-all",
+            "relative w-full transform overflow-hidden rounded-xl transition-all",
+            "shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]",
             "dark:bg-slate-800 bg-white",
+            "ring-1 ring-black/5 dark:ring-white/10",
             sizeStyles[size],
             className
           )}

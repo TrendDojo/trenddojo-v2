@@ -55,7 +55,7 @@ export function UserDropdown({ className }: UserDropdownProps) {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 dark:bg-slate-800 bg-white rounded-lg shadow-xl border dark:border-slate-700 border-gray-200 overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-64 dark:bg-slate-800 bg-white rounded-lg shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] border dark:border-slate-600 border-gray-200 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden z-[9999]">
           {/* User Info */}
           <div className="px-4 py-3 border-b dark:border-slate-700 border-gray-200">
             <p className="font-medium dark:text-white text-gray-900">

@@ -6,7 +6,9 @@ import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
+import { Pill } from "@/components/ui/Pill";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
+import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
 
 interface Stock {
   symbol: string;
@@ -221,13 +223,29 @@ export default function ScreenerPage() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/market-data/screener');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch market data: ${response.statusText}`);
-      }
+      // For now, use mock data from Yahoo Finance service
+      // In production, this would fetch real data from Yahoo Finance API
+      const mockQuotes = YahooFinanceService.getMockQuotes();
       
-      const data = await response.json();
-      setStocks(data.stocks || []);
+      // Convert StockQuote to Stock interface
+      const stockData: Stock[] = mockQuotes.map(quote => ({
+        symbol: quote.symbol,
+        name: quote.name,
+        sector: quote.sector || 'Unknown',
+        price: quote.price,
+        change: quote.change,
+        changePercent: quote.changePercent,
+        volume: quote.volume,
+        marketCap: quote.marketCap || 0,
+        pe: quote.pe || 0,
+        weekHigh52: quote.fiftyTwoWeekHigh || quote.price * 1.2,
+        weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
+        avgVolume: quote.volume || 0,
+        rsi: Math.floor(Math.random() * 70) + 15, // Random RSI between 15-85
+        signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
+      }));
+      
+      setStocks(stockData);
       setLastUpdate(new Date());
     } catch (err) {
       console.error('Error fetching market data:', err);
@@ -362,14 +380,14 @@ export default function ScreenerPage() {
   return (
     <AppLayout>
       <PageContent>
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold dark:text-white text-gray-900">Stock Screener</h1>
               
               {/* Data Source Selector - Inline with title */}
-              <div className="relative dropdown-container">
+              <div className="relative dropdown-container z-[80]">
                 <Button 
                   variant="secondary" 
                   size="sm" 
@@ -394,47 +412,52 @@ export default function ScreenerPage() {
                 <Dropdown
                   isOpen={showProviderDropdown}
                   onClose={() => setShowProviderDropdown(false)}
-                  width="sm"
-                  position="right"
-                  className="py-1"
+                  width="md"
+                  position="left"
+                  className="py-2"
                 >
-                    <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18.6 3L12 13.5L5.4 3H0L9.3 16.5L6 21H11.4L12 20.1L12.6 21H18L14.7 16.5L24 3H18.6Z" fill="#7B3FF2"/>
                       </svg>
-                      <span className="text-sm dark:text-gray-300 text-gray-700">Yahoo Finance</span>
-                      <span className="ml-auto text-xs dark:text-gray-500 text-gray-500">Free</span>
+                      <span className="text-base font-bold dark:text-white text-gray-900">Yahoo Finance</span>
+                      <div className="ml-auto flex items-center gap-1">
+                        <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-xs dark:text-gray-400 text-gray-600">Free</span>
+                      </div>
                     </button>
                     
-                    <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#FF5722"/>
                         <path d="M2 17L12 22L22 17" stroke="#FF5722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <path d="M2 12L12 17L22 12" stroke="#FF5722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm dark:text-gray-300 text-gray-700">Polygon.io</span>
-                      <span className="ml-auto text-xs bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded">Pro</span>
+                      <span className="text-base font-bold dark:text-gray-400 text-gray-600">Polygon.io</span>
+                      <span className="ml-auto text-xs bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded">Pro</span>
                     </button>
                     
-                    <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93ZM17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39Z" fill="#00ACC1"/>
                       </svg>
-                      <span className="text-sm dark:text-gray-300 text-gray-700">Alpha Vantage</span>
+                      <span className="text-base font-bold dark:text-gray-400 text-gray-600 whitespace-nowrap">Alpha Vantage</span>
                       <span className="ml-auto text-xs dark:text-gray-500 text-gray-500">Free</span>
                     </button>
                     
-                    <button className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
                         <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm dark:text-gray-300 text-gray-700">Mock Data</span>
+                      <span className="text-base font-bold dark:text-gray-400 text-gray-600">Mock Data</span>
                       <span className="ml-auto text-xs dark:text-gray-500 text-gray-500">Dev</span>
                     </button>
                     
-                    <div className="border-t dark:border-slate-700 border-gray-200 mt-1 pt-1">
-                      <div className="px-3 py-2">
+                    <div className="border-t dark:border-slate-700 border-gray-200 mt-2 pt-2">
+                      <div className="px-4 py-2">
                         <p className="text-xs dark:text-gray-500 text-gray-500">More sources coming soon</p>
                       </div>
                     </div>
@@ -468,16 +491,23 @@ export default function ScreenerPage() {
                     </svg>
                   )}
                 </button>
+                <button
+                  onClick={fetchMarketData}
+                  disabled={loading}
+                  className="ml-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  refresh
+                </button>
               </>
             )}
             {error && <span className="ml-2 text-amber-500">• Using mock data</span>}
           </p>
 
           {/* Filter Dropdowns */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 relative z-[60]">
             <div className="flex gap-3">
               {/* Presets Dropdown */}
-              <div className="relative dropdown-container">
+              <div className="relative dropdown-container z-[60]">
                 <Button
                   variant="secondary"
                   size="sm"
@@ -504,23 +534,23 @@ export default function ScreenerPage() {
                   position="left"
                 >
                     {/* Tabs */}
-                    <div className="flex border-b dark:border-slate-700 border-gray-200">
+                    <div className="flex bg-gray-100 dark:bg-slate-700 border-b dark:border-slate-600 border-gray-200">
                       <button
                         onClick={() => setPresetsTab('library')}
-                        className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                        className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all relative ${
                           presetsTab === 'library'
-                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
-                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
                         Library
                       </button>
                       <button
                         onClick={() => setPresetsTab('custom')}
-                        className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                        className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all relative ${
                           presetsTab === 'custom'
-                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
-                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
                         Custom
@@ -578,7 +608,7 @@ export default function ScreenerPage() {
                           ) : (
                             <div className="px-4 py-8 text-center">
                               <p className="text-sm text-gray-500 dark:text-gray-400">No custom filters saved yet</p>
-                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Use "Save Current" to create custom filters</p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Use "Save Filter" to create custom filters</p>
                             </div>
                           )}
                         </>
@@ -588,7 +618,7 @@ export default function ScreenerPage() {
               </div>
               
               {/* Markets Dropdown */}
-              <div className="relative dropdown-container">
+              <div className="relative dropdown-container z-[60]">
                 <Button
                   variant="secondary"
                   size="sm"
@@ -610,7 +640,16 @@ export default function ScreenerPage() {
                 
                 <Dropdown
                   isOpen={showMarketsDropdown}
-                  onClose={() => setShowMarketsDropdown(false)}
+                  onClose={() => {
+                    setShowMarketsDropdown(false);
+                    // Reset expanded sectors when closing, but only if no subcategories are selected
+                    const hasAnySubcategorySelected = activeFilters.some(f => 
+                      f.label?.includes('›')
+                    );
+                    if (!hasAnySubcategorySelected) {
+                      setExpandedSectors(new Set());
+                    }
+                  }}
                   width="lg"
                   position="left"
                 >
@@ -619,7 +658,7 @@ export default function ScreenerPage() {
                         {
                           name: 'Technology',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                           ),
@@ -628,8 +667,8 @@ export default function ScreenerPage() {
                         {
                           name: 'Healthcare',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                           ),
                           subcategories: ['Biotech', 'Pharmaceuticals', 'Medical Devices', 'Healthcare Services', 'Diagnostics', 'Health Tech']
@@ -637,7 +676,7 @@ export default function ScreenerPage() {
                         {
                           name: 'Financial',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
                           ),
@@ -646,7 +685,7 @@ export default function ScreenerPage() {
                         {
                           name: 'Consumer',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                           ),
@@ -655,7 +694,7 @@ export default function ScreenerPage() {
                         {
                           name: 'Industrial',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
                           ),
@@ -664,7 +703,7 @@ export default function ScreenerPage() {
                         {
                           name: 'Energy',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                           ),
@@ -673,47 +712,54 @@ export default function ScreenerPage() {
                         {
                           name: 'Materials',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                           ),
-                          subcategories: []
+                          subcategories: ['Chemicals', 'Mining', 'Steel', 'Paper & Forest', 'Packaging', 'Construction Materials']
                         },
                         {
                           name: 'Real Estate',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                           ),
-                          subcategories: []
+                          subcategories: ['REITs', 'Residential', 'Commercial', 'Industrial', 'Retail Properties', 'Real Estate Services']
                         },
                         {
                           name: 'Communications',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" />
                             </svg>
                           ),
-                          subcategories: []
+                          subcategories: ['Telecom', 'Media', 'Entertainment', 'Publishing', 'Broadcasting', 'Internet Media']
                         },
                         {
                           name: 'Utilities',
                           icon: (
-                            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                           ),
-                          subcategories: []
+                          subcategories: ['Electric', 'Gas', 'Water', 'Multi-Utilities', 'Independent Power', 'Renewable Utilities']
                         }
                       ].map((sector) => {
                         const isSelected = activeFilters.some(f => f.filter?.sector === sector.name);
                         const hasSubcategorySelected = activeFilters.some(f => f.label?.startsWith(`${sector.name} ›`));
                         
                         return (
-                          <div key={sector.name} className="border-b dark:border-slate-700 border-gray-100 last:border-0">
-                            <div className="flex items-center px-4 py-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                          <div key={sector.name} className={`${
+                            isSelected || hasSubcategorySelected
+                              ? ""
+                              : "border-b dark:border-slate-700 border-gray-100 last:border-0"
+                          }`}>
+                            <div className={`flex items-center px-4 py-4 transition-colors ${
+                              isSelected || hasSubcategorySelected 
+                                ? "bg-gray-50 dark:bg-slate-700 border-t border-b dark:border-slate-600 border-gray-200" 
+                                : "hover:bg-gray-50 dark:hover:bg-slate-700"
+                            }`}>
                               <div
                                 onClick={() => {
                                   // If subcategories are selected, don't allow parent selection
@@ -730,12 +776,26 @@ export default function ScreenerPage() {
                                 }}
                                 className="flex-1 flex items-center gap-3 text-left cursor-pointer"
                               >
-                                {sector.icon}
-                                <span className="font-medium text-base dark:text-white text-gray-900">
+                                <div className={
+                                  isSelected 
+                                    ? "text-indigo-500" 
+                                    : hasSubcategorySelected 
+                                      ? "text-gray-500 dark:text-gray-400"
+                                      : "text-gray-500 dark:text-gray-400"
+                                }>
+                                  {sector.icon}
+                                </div>
+                                <span className={`text-base ${
+                                  isSelected 
+                                    ? "font-bold text-gray-900 dark:text-white" 
+                                    : hasSubcategorySelected
+                                      ? "font-medium text-gray-500 dark:text-gray-400"
+                                      : "font-medium text-gray-700 dark:text-gray-300"
+                                }`}>
                                   {sector.name}
                                 </span>
                               </div>
-                              {(isSelected || hasSubcategorySelected) && sector.subcategories.length > 0 && (
+                              {(isSelected || hasSubcategorySelected) && sector.subcategories.length > 0 && !hasSubcategorySelected && (
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -751,7 +811,7 @@ export default function ScreenerPage() {
                                   }}
                                   className="mr-3 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
                                 >
-                                  {expandedSectors.has(sector.name) ? 'collapse' : 'refine'}
+                                  {expandedSectors.has(sector.name) ? 'hide' : 'refine'}
                                 </button>
                               )}
                               <input
@@ -772,42 +832,48 @@ export default function ScreenerPage() {
                                   }
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className={`mr-3 rounded border-gray-300 dark:border-gray-600 dark:bg-slate-700 text-indigo-600 focus:ring-indigo-500 ${
+                                className={`rounded border-gray-300 dark:border-gray-600 dark:bg-slate-700 text-indigo-600 focus:ring-indigo-500 ${
                                   hasSubcategorySelected ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                               />
                             </div>
-                            {expandedSectors.has(sector.name) && sector.subcategories.length > 0 && (
+                            {(expandedSectors.has(sector.name) || hasSubcategorySelected) && sector.subcategories.length > 0 && (
                               <div className="px-4 py-3 bg-gray-100 dark:bg-slate-900/50">
                                 <div className="flex flex-wrap gap-2">
                                   <button
                                     onClick={() => {
-                                      // Remove ALL filters for this sector and add parent in one operation
+                                      // Remove ALL subcategory filters for this sector and add parent
                                       const filtersToKeep = activeFilters.filter(f => 
-                                        !(f.filter?.sector === sector.name || f.label?.includes(`${sector.name} ›`))
+                                        !f.label?.includes(`${sector.name} ›`)
                                       );
                                       
-                                      // Create the new parent sector filter
-                                      const filterId = `custom-sector-${Date.now()}`;
-                                      const newFilter = {
-                                        id: filterId,
-                                        type: 'custom' as const,
-                                        label: sector.name,
-                                        value: sector.name,
-                                        filter: { sector: sector.name }
-                                      };
+                                      // Check if parent sector is already selected
+                                      const parentExists = filtersToKeep.some(f => f.filter?.sector === sector.name);
                                       
-                                      // Update both states at once
-                                      setActiveFilters([...filtersToKeep, newFilter]);
-                                      setFilters({ ...filters, sector: sector.name, subsector: '' });
+                                      if (!parentExists) {
+                                        // Create the new parent sector filter
+                                        const filterId = `custom-sector-${Date.now()}`;
+                                        const newFilter = {
+                                          id: filterId,
+                                          type: 'custom' as const,
+                                          label: sector.name,
+                                          value: sector.name,
+                                          filter: { sector: sector.name }
+                                        };
+                                        setActiveFilters([...filtersToKeep, newFilter]);
+                                      } else {
+                                        setActiveFilters(filtersToKeep);
+                                      }
+                                      
+                                      setFilters({ ...filters, sector: sector.name });
                                     }}
-                                    className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
-                                      !activeFilters.some(f => f.label?.includes(`${sector.name} ›`))
-                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                                        : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                    }`}
                                   >
-                                    All
+                                    <Pill
+                                      size="sm"
+                                      selected={activeFilters.some(f => f.filter?.sector === sector.name)}
+                                    >
+                                      All
+                                    </Pill>
                                   </button>
                                   {sector.subcategories.map((sub) => {
                                     const isSubSelected = activeFilters.some(f => f.label === `${sector.name} › ${sub}`);
@@ -820,9 +886,9 @@ export default function ScreenerPage() {
                                             const filterToRemove = activeFilters.find(f => f.label === `${sector.name} › ${sub}`);
                                             if (filterToRemove) removeFilter(filterToRemove.id);
                                           } else {
-                                            // Remove ALL filters for this sector (parent and all subcategories) and add subcategory in one operation
+                                            // Remove parent sector filter if it exists
                                             const filtersToKeep = activeFilters.filter(f => 
-                                              !(f.filter?.sector === sector.name || f.label?.includes(`${sector.name} ›`))
+                                              f.filter?.sector !== sector.name
                                             );
                                             
                                             // Create the new subcategory filter
@@ -835,18 +901,18 @@ export default function ScreenerPage() {
                                               filter: { subsector: sub }
                                             };
                                             
-                                            // Update both states at once
+                                            // Add the new subcategory (allowing multiple)
                                             setActiveFilters([...filtersToKeep, newFilter]);
-                                            setFilters({ ...filters, subsector: sub, sector: 'all' });
+                                            setFilters({ ...filters, sector: 'all' });
                                           }
                                         }}
-                                        className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
-                                          isSubSelected
-                                            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                        }`}
                                       >
-                                        {sub}
+                                        <Pill
+                                          size="sm"
+                                          selected={isSubSelected}
+                                        >
+                                          {sub}
+                                        </Pill>
                                       </button>
                                     );
                                   })}
@@ -861,7 +927,7 @@ export default function ScreenerPage() {
               </div>
               
               {/* Custom Filters Dropdown */}
-              <div className="relative dropdown-container">
+              <div className="relative dropdown-container z-[60]">
                 <Button
                   variant="secondary"
                   size="sm"
@@ -888,33 +954,33 @@ export default function ScreenerPage() {
                   position="left"
                 >
                     {/* Tabs */}
-                    <div className="flex border-b dark:border-slate-700 border-gray-200">
+                    <div className="flex bg-gray-100 dark:bg-slate-700 border-b dark:border-slate-600 border-gray-200">
                       <button
                         onClick={() => setFiltersTab('price-volume')}
-                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'price-volume'
-                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
-                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
                         Price & Volume
                       </button>
                       <button
                         onClick={() => setFiltersTab('technical')}
-                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'technical'
-                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
-                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
                         Technical
                       </button>
                       <button
                         onClick={() => setFiltersTab('fundamentals')}
-                        className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'fundamentals'
-                            ? 'dark:bg-slate-700 bg-gray-100 dark:text-white text-gray-900 border-b-2 border-indigo-500'
-                            : 'dark:text-gray-400 text-gray-600 hover:dark:text-gray-300 hover:text-gray-700'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
                         Fundamentals
@@ -1000,70 +1066,64 @@ export default function ScreenerPage() {
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 2%', '2')}
-                          className="px-3 py-2 text-sm bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
                         >
                           +2%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 5%', '5')}
-                          className="px-3 py-2 text-sm bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
                         >
                           +5%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 10%', '10')}
-                          className="px-3 py-2 text-sm bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
                         >
                           +10%
                         </button>
                         <button
                           onClick={() => addCustomFilter('maxChange', 'Down > 2%', '-2')}
-                          className="px-3 py-2 text-sm bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-700 dark:text-red-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 rounded-lg transition-colors"
                         >
                           -2%
                         </button>
                         <button
                           onClick={() => addCustomFilter('maxChange', 'Down > 5%', '-5')}
-                          className="px-3 py-2 text-sm bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-700 dark:text-red-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 rounded-lg transition-colors"
                         >
                           -5%
                         </button>
                         <button
                           onClick={() => addCustomFilter('maxChange', 'Down > 10%', '-10')}
-                          className="px-3 py-2 text-sm bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-700 dark:text-red-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 rounded-lg transition-colors"
                         >
                           -10%
                         </button>
                       </div>
                     </div>
 
-                    {/* Technical Signals */}
+                    {/* RSI Conditions */}
                     <div className="border-b dark:border-slate-700 border-gray-200 p-4">
-                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Technical Signals</h4>
+                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">RSI Conditions</h4>
                       <div className="space-y-2">
                         <button
-                          onClick={() => addCustomFilter('signal', 'Bullish', 'bullish')}
-                          className="w-full px-3 py-2 text-sm text-left bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 rounded-lg transition-colors"
-                        >
-                          🟢 Bullish Signal
-                        </button>
-                        <button
-                          onClick={() => addCustomFilter('signal', 'Bearish', 'bearish')}
-                          className="w-full px-3 py-2 text-sm text-left bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-700 dark:text-red-400 rounded-lg transition-colors"
-                        >
-                          🔴 Bearish Signal
-                        </button>
-                        <button
                           onClick={() => addCustomFilter('signal', 'Oversold', 'oversold')}
-                          className="w-full px-3 py-2 text-sm text-left bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 rounded-lg transition-colors"
+                          className="w-full px-3 py-2 text-sm text-left bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900 flex items-center gap-2"
                         >
-                          📉 Oversold (RSI &lt; 30)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                          </svg>
+                          Oversold (RSI &lt; 30)
                         </button>
                         <button
                           onClick={() => addCustomFilter('signal', 'Overbought', 'overbought')}
-                          className="w-full px-3 py-2 text-sm text-left bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/40 text-orange-700 dark:text-orange-400 rounded-lg transition-colors"
+                          className="w-full px-3 py-2 text-sm text-left bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900 flex items-center gap-2"
                         >
-                          📈 Overbought (RSI &gt; 70)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                          Overbought (RSI &gt; 70)
                         </button>
                       </div>
                     </div>
@@ -1097,25 +1157,6 @@ export default function ScreenerPage() {
                       
                       {filtersTab === 'fundamentals' && (
                         <>
-                    {/* Sector Selection */}
-                    <div className="p-4">
-                      <h4 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Sector</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          'Technology', 'Healthcare', 'Financial', 'Consumer',
-                          'Industrial', 'Energy', 'Materials', 'Real Estate',
-                          'Utilities', 'Communications', 'Basic Materials', 'Services'
-                        ].map((sector) => (
-                          <button
-                            key={sector}
-                            onClick={() => addCustomFilter('sector', sector, sector)}
-                            className="px-3 py-2 text-sm text-left bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors dark:text-white text-gray-900"
-                          >
-                            {sector}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
 
                     {/* Market Cap Section */}
                     <div className="p-4">
@@ -1163,20 +1204,18 @@ export default function ScreenerPage() {
             {/* Actions */}
             {activeFilters.length > 0 && (
               <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={clearAllFilters}
-                  className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                  className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline"
                 >
-                  Clear All
-                </Button>
+                  clear all
+                </button>
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => setShowSaveDialog(true)}
                 >
-                  Save Current
+                  Save Filter
                 </Button>
               </div>
             )}
@@ -1184,7 +1223,7 @@ export default function ScreenerPage() {
 
           {/* Active Filters Panel - Only show when filters are active */}
           {activeFilters.length > 0 && (
-            <Card>
+            <Card className="relative z-10">
               <div className="space-y-4">
                 {/* Active Filters Display - Grouped by Type */}
                 <div className="space-y-3">
@@ -1192,9 +1231,12 @@ export default function ScreenerPage() {
                   {activeFilters.filter(f => f.filter?.sector || f.label?.includes('›')).length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {activeFilters.filter(f => f.filter?.sector || f.label?.includes('›')).map((filter) => (
-                        <span
+                        <Pill
                           key={filter.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full"
+                          size="md"
+                          variant="default"
+                          selected={true}
+                          onRemove={() => removeFilter(filter.id)}
                         >
                           {filter.label?.includes('›') ? (
                             <>
@@ -1203,15 +1245,7 @@ export default function ScreenerPage() {
                           ) : (
                             <strong>{filter.label}</strong>
                           )}
-                          <button
-                            onClick={() => removeFilter(filter.id)}
-                            className="ml-0.5 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-full p-0.5 transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </span>
+                        </Pill>
                       ))}
                     </div>
                   )}
@@ -1234,20 +1268,15 @@ export default function ScreenerPage() {
                         f.label?.includes('RSI') ||
                         f.label?.includes('Volume')
                       ).map((filter) => (
-                        <span
+                        <Pill
                           key={filter.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-500 text-white rounded-full"
+                          size="md"
+                          variant="secondary"
+                          selected={true}
+                          onRemove={() => removeFilter(filter.id)}
                         >
                           {filter.label}
-                          <button
-                            onClick={() => removeFilter(filter.id)}
-                            className="ml-0.5 hover:bg-purple-600 rounded-full p-0.5 transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </span>
+                        </Pill>
                       ))}
                     </div>
                   )}
@@ -1274,20 +1303,15 @@ export default function ScreenerPage() {
                         !f.label?.includes('RSI') &&
                         !f.label?.includes('Volume')
                       ).map((filter) => (
-                        <span
+                        <Pill
                           key={filter.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-indigo-500 text-white rounded-full"
+                          size="md"
+                          variant="primary"
+                          selected={true}
+                          onRemove={() => removeFilter(filter.id)}
                         >
                           {filter.label}
-                          <button
-                            onClick={() => removeFilter(filter.id)}
-                            className="ml-0.5 hover:bg-indigo-600 rounded-full p-0.5 transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </span>
+                        </Pill>
                       ))}
                     </div>
                   )}
@@ -1473,7 +1497,7 @@ export default function ScreenerPage() {
             <Card className="w-full max-w-md">
               <div className="p-6 space-y-4">
                 <h3 className="text-lg font-semibold dark:text-white text-gray-900">
-                  Save Current Filter
+                  Save Filter Filter
                 </h3>
                 
                 <div>

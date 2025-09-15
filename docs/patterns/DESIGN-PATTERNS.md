@@ -70,7 +70,10 @@
 - **Page Background**: `bg-slate-900` (dark), `bg-gray-50` (light)
 
 ### Critical Rules
-- **TEAL = PROFIT, PURPLE = LOSS** (TrendDojo convention)
+- **TEAL = POSITIVE, PURPLE = NEGATIVE** (TrendDojo convention)
+  - Use `text-teal-500` for positive price changes, gains, profits
+  - Use `text-purple-500` for negative price changes, losses
+  - NOT standard green/red - this is our theme convention
 - **NEVER** mix teal/purple with non-financial elements
 - **CONSISTENCY**: Use amber (not yellow) for warnings, rose (not red) for errors
 - **ALWAYS** include dark mode variants
@@ -84,8 +87,8 @@
 - **Muted**: `text-slate-400 dark:text-slate-600` - Disabled, subtle text
 
 #### Financial Status Colors
-- **Profit**: `text-green-600 dark:text-green-400` - Positive P&L, gains
-- **Loss**: `text-red-600 dark:text-red-400` - Negative P&L, losses
+- **Profit**: `text-teal-600 dark:text-teal-400` - Positive P&L, gains
+- **Loss**: `text-purple-600 dark:text-purple-400` - Negative P&L, losses
 - **Neutral**: `text-slate-600 dark:text-slate-400` - Break-even, unchanged
 - **Warning**: `text-amber-600 dark:text-amber-400` - Risk alerts, cautions
 - **Info**: `text-blue-600 dark:text-blue-400` - Analysis, information
@@ -93,12 +96,29 @@
 #### Links
 - **Primary**: `text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300`
 
+## Icon Guidelines
+
+### Icon Selection Rules
+- **PREFER**: Monochrome, flat, outline icons
+- **AVOID**: Filled icons, 3D effects, gradients
+- **CONSISTENCY**: Use same icon library throughout (Heroicons preferred)
+- **SIZE**: Follow component size standards (sm: 4, md: 5, lg: 6)
+- **COLOR**: Icons inherit text color, use theme colors for emphasis
+
+### Specific Icon Usage
+- **Checkboxes**: Custom styled, consistent across all browsers
+- **Dropdowns**: No arrow icons, use checkboxes for selection
+- **Financial Indicators**: Flat monochrome icons only
+  - Oversold/Overbought: Use simple line icons, not filled
+  - Trend indicators: Simple arrows, no decorative elements
+- **Sector Icons**: Monochrome in default state, colored only when selected
+
 ## Trading-Specific Patterns
 
 ### Financial Data Display
 - **Always use monospace fonts** for numbers: `font-mono`
 - **Consistent decimal places**: 2 for currency, 4 for percentages
-- **Color coding**: Green for positive, red for negative, gray for neutral
+- **Color coding**: Teal for positive, purple for negative, gray for neutral
 - **Prefix symbols**: + for gains, - for losses, % for percentages
 
 ### Risk Indicators
@@ -157,3 +177,4 @@
 <!-- Format: - YYYY-MM-DD: Used for WB-XXXX-XX-XXX (Brief description) -->
 - 2025-09-05: Created for documentation harmonization (Trading-specific design patterns)
 - 2025-09-15: Updated with standardized design system and shared components (WB-2025-09-15-002)
+- 2025-09-15: Added icon guidelines and updated color scheme to teal/purple for financial indicators

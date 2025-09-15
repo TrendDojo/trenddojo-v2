@@ -27,7 +27,13 @@ export function Dropdown({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      // Check if the click is outside the dropdown AND not on a dropdown trigger button
+      const target = event.target as HTMLElement;
+      const isDropdownButton = target.closest('button')?.closest('.dropdown-container');
+      
+      if (dropdownRef.current && 
+          !dropdownRef.current.contains(target) && 
+          !isDropdownButton) {
         onClose();
       }
     };
@@ -80,9 +86,11 @@ export function Dropdown({
       className={cn(
         "absolute top-full mt-2",
         "bg-white dark:bg-slate-800",
-        "rounded-lg shadow-xl",
-        "border dark:border-slate-700 border-gray-200",
-        "z-[100]", // High z-index to appear above everything
+        "rounded-lg",
+        "shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]",
+        "border dark:border-slate-600 border-gray-200",
+        "ring-1 ring-black/5 dark:ring-white/10",
+        "z-[9999]", // Very high z-index to appear above everything
         "overflow-hidden",
         widthClasses[width],
         positionClasses[position],
