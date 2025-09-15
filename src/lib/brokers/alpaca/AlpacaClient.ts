@@ -69,8 +69,9 @@ export class AlpacaClient implements BrokerClient {
       return false;
     } catch (error) {
       throw new BrokerError(
-        `Failed to connect to Alpaca: ${error.message}`,
+        `Failed to connect to Alpaca: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'alpaca',
+        undefined,
         { paperTrading: this.config.paperTrading }
       );
     }
@@ -303,6 +304,7 @@ export class AlpacaClient implements BrokerClient {
       throw new BrokerError(
         error.message || `Alpaca API error: ${response.statusText}`,
         'alpaca',
+        undefined,
         { status: response.status, error }
       );
     }

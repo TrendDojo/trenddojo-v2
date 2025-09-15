@@ -29,6 +29,11 @@ interface Stock {
   signal?: string;
 }
 
+// Helper to check if filter has property
+function hasFilterProperty(filter: any, prop: string): boolean {
+  return filter && prop in filter;
+}
+
 // Helper function to format time ago
 function getTimeAgo(date: Date): string {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -76,7 +81,7 @@ export default function ScreenerPage() {
     type: 'preset' | 'custom';
     label: string;
     value?: any;
-    filter?: Partial<typeof filters>;
+    filter?: Partial<typeof filters> | { subsector: string };
   }>>([]);
   const [showPresetsDropdown, setShowPresetsDropdown] = useState(false);
   const [showCustomDropdown, setShowCustomDropdown] = useState(false);
@@ -242,6 +247,8 @@ export default function ScreenerPage() {
         weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
         avgVolume: quote.volume || 0,
         rsi: Math.floor(Math.random() * 70) + 15, // Random RSI between 15-85
+        movingAvg50: quote.price * (0.95 + Math.random() * 0.1), // Random MA50 near price
+        movingAvg200: quote.price * (0.9 + Math.random() * 0.2), // Random MA200 near price
         signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
       }));
       
@@ -746,7 +753,9 @@ export default function ScreenerPage() {
                           subcategories: ['Electric', 'Gas', 'Water', 'Multi-Utilities', 'Independent Power', 'Renewable Utilities']
                         }
                       ].map((sector) => {
-                        const isSelected = activeFilters.some(f => f.filter?.sector === sector.name);
+                        const isSelected = activeFilters.some(f =>
+                          f.filter && 'sector' in f.filter && f.filter.sector === sector.name
+                        );
                         const hasSubcategorySelected = activeFilters.some(f => f.label?.startsWith(`${sector.name} ›`));
                         
                         return (
@@ -767,7 +776,9 @@ export default function ScreenerPage() {
                                   
                                   if (isSelected) {
                                     // Remove the filter
-                                    const filterToRemove = activeFilters.find(f => f.filter?.sector === sector.name);
+                                    const filterToRemove = activeFilters.find(f =>
+                                      f.filter && 'sector' in f.filter && f.filter.sector === sector.name
+                                    );
                                     if (filterToRemove) removeFilter(filterToRemove.id);
                                   } else {
                                     // Add the filter
@@ -824,7 +835,9 @@ export default function ScreenerPage() {
                                   
                                   if (isSelected) {
                                     // Remove the filter
-                                    const filterToRemove = activeFilters.find(f => f.filter?.sector === sector.name);
+                                    const filterToRemove = activeFilters.find(f =>
+                                      f.filter && 'sector' in f.filter && f.filter.sector === sector.name
+                                    );
                                     if (filterToRemove) removeFilter(filterToRemove.id);
                                   } else {
                                     // Add the filter
@@ -848,7 +861,9 @@ export default function ScreenerPage() {
                                       );
                                       
                                       // Check if parent sector is already selected
-                                      const parentExists = filtersToKeep.some(f => f.filter?.sector === sector.name);
+                                      const parentExists = filtersToKeep.some(f =>
+                                        f.filter && 'sector' in f.filter && f.filter.sector === sector.name
+                                      );
                                       
                                       if (!parentExists) {
                                         // Create the new parent sector filter
@@ -870,7 +885,9 @@ export default function ScreenerPage() {
                                   >
                                     <Pill
                                       size="sm"
-                                      selected={activeFilters.some(f => f.filter?.sector === sector.name)}
+                                      selected={activeFilters.some(f =>
+                                        f.filter && 'sector' in f.filter && f.filter.sector === sector.name
+                                      )}
                                     >
                                       All
                                     </Pill>
@@ -888,7 +905,7 @@ export default function ScreenerPage() {
                                           } else {
                                             // Remove parent sector filter if it exists
                                             const filtersToKeep = activeFilters.filter(f => 
-                                              f.filter?.sector !== sector.name
+                                              !(f.filter && 'sector' in f.filter && f.filter.sector === sector.name)
                                             );
                                             
                                             // Create the new subcategory filter
@@ -1228,9 +1245,9 @@ export default function ScreenerPage() {
                 {/* Active Filters Display - Grouped by Type */}
                 <div className="space-y-3">
                   {/* Market/Sector filters */}
-                  {activeFilters.filter(f => f.filter?.sector || f.label?.includes('›')).length > 0 && (
+                  {activeFilters.filter(f => (f.filter && 'sector' in f.filter && f.filter.sector) || f.label?.includes('›')).length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {activeFilters.filter(f => f.filter?.sector || f.label?.includes('›')).map((filter) => (
+                      {activeFilters.filter(f => (f.filter && 'sector' in f.filter && f.filter.sector) || f.label?.includes('›')).map((filter) => (
                         <Pill
                           key={filter.id}
                           size="md"
@@ -1251,19 +1268,19 @@ export default function ScreenerPage() {
                   )}
                   
                   {/* Technical filters */}
-                  {activeFilters.filter(f => 
-                    f.filter?.signal || 
-                    f.filter?.minChange || 
-                    f.filter?.maxChange ||
+                  {activeFilters.filter(f =>
+                    hasFilterProperty(f.filter, 'signal') ||
+                    hasFilterProperty(f.filter, 'minChange') ||
+                    hasFilterProperty(f.filter, 'maxChange') ||
                     f.label?.includes('MA') ||
                     f.label?.includes('RSI') ||
                     f.label?.includes('Volume')
                   ).length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {activeFilters.filter(f => 
-                        f.filter?.signal || 
-                        f.filter?.minChange || 
-                        f.filter?.maxChange ||
+                      {activeFilters.filter(f =>
+                        hasFilterProperty(f.filter, 'signal') ||
+                        hasFilterProperty(f.filter, 'minChange') ||
+                        hasFilterProperty(f.filter, 'maxChange') ||
                         f.label?.includes('MA') ||
                         f.label?.includes('RSI') ||
                         f.label?.includes('Volume')
@@ -1283,22 +1300,22 @@ export default function ScreenerPage() {
                   
                   {/* Other filters (Price, Market Cap, etc) */}
                   {activeFilters.filter(f => 
-                    !f.filter?.sector && 
+                    !(f.filter && 'sector' in f.filter && f.filter.sector) && 
                     !f.label?.includes('›') &&
-                    !f.filter?.signal && 
-                    !f.filter?.minChange && 
-                    !f.filter?.maxChange &&
+                    !hasFilterProperty(f.filter, 'signal') &&
+                    !hasFilterProperty(f.filter, 'minChange') &&
+                    !hasFilterProperty(f.filter, 'maxChange') &&
                     !f.label?.includes('MA') &&
                     !f.label?.includes('RSI') &&
                     !f.label?.includes('Volume')
                   ).length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {activeFilters.filter(f => 
-                        !f.filter?.sector && 
+                        !(f.filter && 'sector' in f.filter && f.filter.sector) && 
                         !f.label?.includes('›') &&
-                        !f.filter?.signal && 
-                        !f.filter?.minChange && 
-                        !f.filter?.maxChange &&
+                        !hasFilterProperty(f.filter, 'signal') &&
+                        !hasFilterProperty(f.filter, 'minChange') &&
+                        !hasFilterProperty(f.filter, 'maxChange') &&
                         !f.label?.includes('MA') &&
                         !f.label?.includes('RSI') &&
                         !f.label?.includes('Volume')

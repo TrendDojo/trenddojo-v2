@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { cn } from "@/lib/utils";
 
 interface ScalingLevel {
@@ -93,6 +94,8 @@ const STRATEGIES = {
 export default function PositionsPage() {
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [filterView, setFilterView] = useState<"all" | "active" | "pending" | "closing">("all");
+  const [filterStrategy, setFilterStrategy] = useState<string>("all");
+  const [strategyDropdownOpen, setStrategyDropdownOpen] = useState(false);
   
   // Calculate risk for a position
   const calculateRisk = (position: Position): number => {
@@ -284,9 +287,11 @@ export default function PositionsPage() {
     }
   ];
 
-  const filteredPositions = positions.filter(p => 
-    filterView === "all" || p.status === filterView
-  );
+  const filteredPositions = positions.filter(p => {
+    const statusMatch = filterView === "all" || p.status === filterView;
+    const strategyMatch = filterStrategy === "all" || p.strategy === filterStrategy;
+    return statusMatch && strategyMatch;
+  });
 
   const togglePositionSelection = (id: string) => {
     setSelectedPositions(prev => 
@@ -370,37 +375,150 @@ export default function PositionsPage() {
 
           {/* Filter and Actions Bar */}
           <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              <Button
-                variant={filterView === "all" ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => setFilterView("all")}
-              >
-                All ({positions.length})
-              </Button>
-              <Button
-                variant={filterView === "active" ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => setFilterView("active")}
-              >
-                Active ({positions.filter(p => p.status === "active").length})
-              </Button>
-              <Button
-                variant={filterView === "pending" ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => setFilterView("pending")}
-              >
-                Pending ({positions.filter(p => p.status === "pending").length})
-              </Button>
-              <Button
-                variant={filterView === "closing" ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => setFilterView("closing")}
-              >
-                Closing ({positions.filter(p => p.status === "closing").length})
-              </Button>
-            </div>
+            <div className="flex items-center gap-4">
+              {/* Strategy Dropdown */}
+              <div className="relative dropdown-container">
+                <button
+                  onClick={() => setStrategyDropdownOpen(!strategyDropdownOpen)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors min-w-[160px]"
+                >
+                  <div className="flex-1 text-left">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
+                      Strategy
+                    </p>
+                    {filterStrategy === "all" ? (
+                      <p className="text-sm font-semibold dark:text-white text-gray-900 mt-0.5">
+                        All Strategies
+                      </p>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className={cn(
+                            "inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold rounded",
+                            STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.bgColor || "bg-gray-600",
+                            STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.textColor || "text-white"
+                          )}>
+                            {STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.id || filterStrategy.substring(0, 2).toUpperCase()}
+                          </span>
+                          <span className="text-sm font-semibold dark:text-white text-gray-900">
+                            {STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.id || "??"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                          {filterStrategy}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <svg 
+                    className={cn(
+                      "w-4 h-4 dark:text-gray-400 text-gray-600 transition-transform flex-shrink-0",
+                      strategyDropdownOpen && "rotate-180"
+                    )}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                <Dropdown
+                  isOpen={strategyDropdownOpen}
+                  onClose={() => setStrategyDropdownOpen(false)}
+                  position="left"
+                  width="sm"
+                >
+                  <div className="py-2">
+                    <button
+                      onClick={() => {
+                        setFilterStrategy("all");
+                        setStrategyDropdownOpen(false);
+                      }}
+                      className={cn(
+                        "w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-between",
+                        filterStrategy === "all" && "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400"
+                      )}
+                    >
+                      <span>All Strategies</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {positions.length}
+                      </span>
+                    </button>
+                    <div className="my-1 border-t dark:border-slate-700 border-gray-200" />
+                    {Object.entries(STRATEGIES).map(([name, config]) => {
+                      const count = positions.filter(p => p.strategy === name).length;
+                      if (count === 0) return null;
+                      return (
+                        <button
+                          key={name}
+                          onClick={() => {
+                            setFilterStrategy(name);
+                            setStrategyDropdownOpen(false);
+                          }}
+                          className={cn(
+                            "w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-between",
+                            filterStrategy === name && "bg-indigo-50 dark:bg-indigo-950/30"
+                          )}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold rounded",
+                              config.bgColor,
+                              config.textColor
+                            )}>
+                              {config.id}
+                            </span>
+                            <span className={filterStrategy === name ? "text-indigo-600 dark:text-indigo-400" : "dark:text-gray-300 text-gray-700"}>
+                              {name}
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Dropdown>
+              </div>
 
+              {/* Vertical Divider */}
+              <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
+              
+              {/* Status Filters */}
+              <div className="flex gap-2">
+                <Button
+                  variant={filterView === "all" ? "primary" : "secondary"}
+                  size="sm"
+                  onClick={() => setFilterView("all")}
+                >
+                  All ({positions.length})
+                </Button>
+                <Button
+                  variant={filterView === "active" ? "primary" : "secondary"}
+                  size="sm"
+                  onClick={() => setFilterView("active")}
+                >
+                  Active ({positions.filter(p => p.status === "active").length})
+                </Button>
+                <Button
+                  variant={filterView === "pending" ? "primary" : "secondary"}
+                  size="sm"
+                  onClick={() => setFilterView("pending")}
+                >
+                  Pending ({positions.filter(p => p.status === "pending").length})
+                </Button>
+                <Button
+                  variant={filterView === "closing" ? "primary" : "secondary"}
+                  size="sm"
+                  onClick={() => setFilterView("closing")}
+                >
+                  Closing ({positions.filter(p => p.status === "closing").length})
+                </Button>
+            </div>
+            </div>
+            
             <div className="flex gap-2">
               {selectedPositions.length > 0 && (
                 <>
@@ -463,23 +581,6 @@ export default function PositionsPage() {
                       )}
                     >
                       <td className="px-4 py-3">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-lg font-bold dark:text-white text-gray-900">{position.symbol}</p>
-                            <span className="text-gray-400 dark:text-gray-600">|</span>
-                            <span className="dark:text-gray-300 text-gray-700 font-medium">
-                              {position.quantity}
-                            </span>
-                            {position.quantity < position.originalQuantity && (
-                              <span className="text-xs dark:text-gray-500 text-gray-500">
-                                of {position.originalQuantity}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs dark:text-gray-400 text-gray-600">{position.name}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <span 
                             className={cn(
@@ -491,7 +592,25 @@ export default function PositionsPage() {
                           >
                             {STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.id || position.strategy.substring(0, 2).toUpperCase()}
                           </span>
-                          <div className="space-y-1 flex-1">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-lg font-bold dark:text-white text-gray-900">{position.symbol}</p>
+                              <span className="text-gray-400 dark:text-gray-600">|</span>
+                              <span className="dark:text-gray-300 text-gray-700 font-medium">
+                                {position.quantity}
+                              </span>
+                              {position.quantity < position.originalQuantity && (
+                                <span className="text-xs dark:text-gray-500 text-gray-500">
+                                  of {position.originalQuantity}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs dark:text-gray-400 text-gray-600">{position.name}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-1">
                             {position.scalingLevels ? (
                               <div className="space-y-1">
                                 <div className="flex items-center gap-0.5 relative">
@@ -505,12 +624,7 @@ export default function PositionsPage() {
                                   )}
                                   
                                   {/* Entry price marker */}
-                                  <div className="relative">
-                                    <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
-                                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] dark:text-gray-400 text-gray-500 whitespace-nowrap">
-                                      ${position.entryPrice.toFixed(2)}
-                                    </span>
-                                  </div>
+                                  <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
                                   
                                   {/* Position segments */}
                                   {position.scalingLevels.map((level, idx) => {
@@ -568,12 +682,7 @@ export default function PositionsPage() {
                                 )}
                                 
                                 {/* Entry price marker */}
-                                <div className="relative">
-                                  <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
-                                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] dark:text-gray-400 text-gray-500 whitespace-nowrap">
-                                    ${position.entryPrice.toFixed(2)}
-                                  </span>
-                                </div>
+                                <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
                                 
                                 {/* Single position bar */}
                                 <div className="flex items-center gap-0">
@@ -603,7 +712,6 @@ export default function PositionsPage() {
                                 </span>
                               </div>
                             )}
-                          </div>
                         </div>
                       </td>
                       <td className="px-4 py-3 dark:text-gray-300 text-gray-700">

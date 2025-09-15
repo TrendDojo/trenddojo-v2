@@ -99,7 +99,7 @@ export class InteractiveBrokersClient implements BrokerClient {
       
     } catch (error) {
       throw new BrokerError(
-        `Failed to connect to Interactive Brokers: ${error.message}`,
+        `Failed to connect to Interactive Brokers: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'interactive_brokers'
       );
     }

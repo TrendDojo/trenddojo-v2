@@ -294,4 +294,7 @@ export const authConfig = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default NextAuth(authConfig as any)
+const handler = NextAuth(authConfig as any)
+
+export default handler
+export const auth = handler.auth

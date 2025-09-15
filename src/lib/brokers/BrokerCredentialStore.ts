@@ -97,7 +97,7 @@ export class BrokerCredentialStore {
         version: this.version,
       };
     } catch (error) {
-      throw new Error(`Failed to encrypt credentials: ${error.message}`);
+      throw new Error(`Failed to encrypt credentials: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
   
@@ -136,7 +136,7 @@ export class BrokerCredentialStore {
       
       return JSON.parse(decrypted.toString('utf8'));
     } catch (error) {
-      throw new Error(`Failed to decrypt credentials: ${error.message}`);
+      throw new Error(`Failed to decrypt credentials: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
   

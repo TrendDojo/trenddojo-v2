@@ -75,8 +75,9 @@ export class IBGateway extends EventEmitter {
     } catch (error) {
       this.emit('error', error);
       throw new BrokerError(
-        `Failed to connect to IB Gateway: ${error.message}`,
+        `Failed to connect to IB Gateway: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'interactive_brokers',
+        undefined,
         {
           host: this.config.host,
           port: this.config.port,

@@ -144,7 +144,7 @@ export default function SignupPage() {
           
           <Panel variant="default" padding="xl" rounded="xl">
             {error && (
-              <Alert intent="danger" className="mb-6">
+              <Alert intent="error" className="mb-6">
                 <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
                 <Link href="/login" className="text-red-200 hover:text-red-100 underline text-sm mt-2 inline-block">
                   Sign in to existing account

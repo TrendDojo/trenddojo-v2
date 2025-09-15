@@ -76,7 +76,7 @@ export default function LoginPage() {
           </Alert>
           
           {error && (
-            <Alert intent="danger" className="mb-6">
+            <Alert intent="error" className="mb-6">
               <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
             </Alert>
           )}

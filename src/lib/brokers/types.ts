@@ -92,10 +92,18 @@ export interface MarketData {
   timestamp: Date;
 }
 
-export interface BrokerError extends Error {
+export class BrokerError extends Error {
   code?: string;
   broker: string;
   details?: any;
+
+  constructor(message: string, broker: string, code?: string, details?: any) {
+    super(message);
+    this.name = 'BrokerError';
+    this.broker = broker;
+    this.code = code;
+    this.details = details;
+  }
 }
 
 // Risk management types
