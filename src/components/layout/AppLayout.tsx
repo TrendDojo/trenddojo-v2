@@ -19,6 +19,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -65,17 +66,29 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   return (
     <div className="min-h-screen dark:bg-slate-950 bg-white">
       {/* Grid-based layout for proper alignment */}
-      <div className="lg:grid lg:grid-cols-[256px_1fr] lg:gap-0">
+      <div className={cn(
+        "lg:grid lg:gap-0",
+        sidebarCollapsed ? "lg:grid-cols-[64px_1fr]" : "lg:grid-cols-[256px_1fr]"
+      )}>
         {/* Header - spans full width */}
         <header className="lg:col-span-2 dark:bg-slate-950 bg-white py-6">
-          <div className="lg:grid lg:grid-cols-[256px_1fr] lg:gap-0">
+          <div className={cn(
+            "lg:grid lg:gap-0",
+            sidebarCollapsed ? "lg:grid-cols-[64px_1fr]" : "lg:grid-cols-[256px_1fr]"
+          )}>
             {/* Logo Section - Desktop only */}
-            <div className="hidden lg:block px-7">
-              <Link href="/">
-                <img 
-                  src="/assets/logos/td-logo-s.svg" 
-                  alt="TrendDojo" 
-                  className="h-8 w-auto"
+            <div className={cn(
+              "hidden lg:flex items-center",
+              sidebarCollapsed ? "px-3 justify-center" : "px-7"
+            )}>
+              <Link href="/" title="TrendDojo">
+                <img
+                  src="/assets/logos/td-logo-s.svg"
+                  alt="TrendDojo"
+                  className={cn(
+                    "w-auto transition-all",
+                    sidebarCollapsed ? "h-6" : "h-8"
+                  )}
                 />
               </Link>
             </div>
@@ -192,9 +205,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       </header>
 
         {/* Sidebar - fixed width column */}
-        <Sidebar 
-          isOpen={sidebarOpen} 
-          onToggle={() => setSidebarOpen(!sidebarOpen)} 
+        <Sidebar
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          isCollapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
         />
 
         {/* Main Content - fluid column */}

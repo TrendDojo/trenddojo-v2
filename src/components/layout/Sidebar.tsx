@@ -16,6 +16,8 @@ import {
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  isCollapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 const navigationItems = [
@@ -31,6 +33,7 @@ interface NavItemProps {
   label: string;
   icon: React.ComponentType;
   isActive?: boolean;
+  isCollapsed?: boolean;
   onClick?: () => void;
 }
 
@@ -39,6 +42,7 @@ function NavItem({
   label,
   icon: Icon,
   isActive = false,
+  isCollapsed = false,
   onClick
 }: NavItemProps) {
   return (
@@ -46,21 +50,40 @@ function NavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-5 py-3.5 ml-2 rounded-lg transition-all duration-200",
+        "flex items-center gap-3 rounded-lg transition-all duration-200",
         "font-medium relative group",
+        isCollapsed ? "px-3 py-3.5 justify-center" : "px-5 py-3.5 ml-2",
         isActive
           ? "dark:text-white text-gray-900 dark:bg-slate-800/30 bg-gray-100"
           : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/50 hover:bg-gray-100"
       )}
+      title={isCollapsed ? label : undefined}
     >
       <Icon />
-      <span className="truncate">{label}</span>
+      {!isCollapsed && <span className="truncate">{label}</span>}
+
+      {/* Tooltip for collapsed state */}
+      {isCollapsed && (
+        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 hidden lg:block">
+          {label}
+        </div>
+      )}
     </Link>
   );
 }
 
-export function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export function Sidebar({
+  isOpen,
+  onToggle,
+  isCollapsed = false,
+  onCollapsedChange
+}: SidebarProps) {
   const pathname = usePathname();
+  const [localCollapsed, setLocalCollapsed] = useState(isCollapsed);
+
+  // Use prop if provided, otherwise use local state
+  const collapsed = onCollapsedChange ? isCollapsed : localCollapsed;
+  const setCollapsed = onCollapsedChange || setLocalCollapsed;
 
   return (
     <>
@@ -75,11 +98,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "h-full w-64 lg:w-64 dark:bg-slate-950 bg-white z-50",
-          "transform transition-transform duration-200 ease-in-out",
+          "h-full dark:bg-slate-950 bg-white z-50",
+          "transform transition-all duration-200 ease-in-out",
           "flex flex-col flex-shrink-0",
-          // Desktop: Always visible, Mobile: Hidden by default with slide animation
+          // Desktop: Always visible with collapsible width
           "hidden lg:block",
+          collapsed ? "w-16" : "w-64",
           // Mobile overlay positioning - 70% width
           isOpen && "!block fixed top-0 left-0 bottom-0 !w-[70%] min-w-[240px]"
         )}
@@ -117,6 +141,32 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </div>
         </div>
 
+        {/* Collapse Toggle - Desktop only */}
+        <div className="hidden lg:flex justify-end px-2 pb-4">
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <svg
+              className={cn(
+                "w-5 h-5 dark:text-gray-400 text-gray-600 transition-transform",
+                collapsed && "rotate-180"
+              )}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        </div>
+
         {/* Navigation */}
         <nav className="flex-1 px-2 pb-6 overflow-y-auto">
           <div className="space-y-2">
@@ -128,6 +178,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 label={item.label}
                 icon={item.icon}
                 isActive={pathname === item.href}
+                isCollapsed={collapsed}
                 onClick={() => {
                   if (window.innerWidth < 1024) {
                     onToggle();
