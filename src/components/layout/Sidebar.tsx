@@ -142,30 +142,29 @@ export function Sidebar({
         </div>
 
         {/* Collapse Toggle - Desktop only */}
-        <div className="hidden lg:flex justify-end px-2 pb-4">
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <svg
-              className={cn(
-                "w-5 h-5 dark:text-gray-400 text-gray-600 transition-transform",
-                collapsed && "rotate-180"
-              )}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {!collapsed && (
+          <div className="hidden lg:flex justify-end px-2 pb-4">
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
+              title="Collapse sidebar"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-              />
-            </svg>
-          </button>
-        </div>
+              <svg
+                className="w-5 h-5 dark:text-gray-400 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 px-2 pb-6 overflow-y-auto">

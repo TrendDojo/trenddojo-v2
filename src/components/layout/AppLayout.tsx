@@ -81,16 +81,35 @@ export function AppLayout({ children, title }: AppLayoutProps) {
               "hidden lg:flex items-center",
               sidebarCollapsed ? "px-3 justify-center" : "px-7"
             )}>
-              <Link href="/" title="TrendDojo">
-                <img
-                  src="/assets/logos/td-logo-s.svg"
-                  alt="TrendDojo"
-                  className={cn(
-                    "w-auto transition-all",
-                    sidebarCollapsed ? "h-6" : "h-8"
-                  )}
-                />
-              </Link>
+              {sidebarCollapsed ? (
+                <button
+                  onClick={() => setSidebarCollapsed(false)}
+                  className="p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
+                  title="Expand sidebar"
+                >
+                  <svg
+                    className="w-6 h-6 dark:text-gray-400 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <Link href="/" title="TrendDojo">
+                  <img
+                    src="/assets/logos/td-logo-s.svg"
+                    alt="TrendDojo"
+                    className="h-8 w-auto"
+                  />
+                </Link>
+              )}
             </div>
 
             {/* Header Content - Aligned with main content */}
