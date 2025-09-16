@@ -28,10 +28,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Variant styles matching website colors
     const variantStyles = {
       primary: "bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500",
-      secondary: "dark:bg-slate-700/50 bg-gray-200 dark:hover:bg-slate-700 hover:bg-gray-300 dark:text-white text-gray-900 focus:ring-slate-500",
+      secondary: "dark:bg-transparent bg-transparent border dark:border-slate-700 border-gray-300 dark:hover:bg-slate-800 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
       ghost: "bg-transparent dark:hover:bg-slate-700/30 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
-      danger: "bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500",
-      success: "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500",
+      danger: "bg-down hover:opacity-90 text-white focus:ring-down",
+      success: "bg-up hover:opacity-90 text-white focus:ring-up",
     };
     
     // Size styles

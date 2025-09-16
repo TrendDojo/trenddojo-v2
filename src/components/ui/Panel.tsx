@@ -35,11 +35,11 @@ interface PanelProps {
 }
 
 const variantStyles = {
-  default: "bg-slate-800/50 dark:bg-slate-800/50 bg-white/80 backdrop-blur-sm",
-  subtle: "bg-slate-800/30 dark:bg-slate-800/30 bg-gray-100/50",
+  default: "bg-transparent",
+  subtle: "bg-transparent",
   ghost: "bg-transparent",
-  solid: "bg-slate-800 dark:bg-slate-800 bg-white border border-slate-800 dark:border-slate-800 border-gray-200",
-  glass: "bg-white/5 dark:bg-white/5 bg-white/90 backdrop-blur-md"
+  solid: "border dark:border-slate-700 border-gray-200",
+  glass: "bg-transparent"
 };
 
 const intentStyles = {
@@ -73,8 +73,8 @@ export function Panel({
   className,
   variant = 'default',
   intent = 'neutral',
-  padding = 'md',
-  rounded = 'lg',
+  padding = 'none',
+  rounded = 'none',
   hoverable = false,
   clickable = false,
   disabled = false,
@@ -112,7 +112,7 @@ export function Panel({
 // Specialized panel variants for common use cases
 export function Card({ className, children, ...props }: Omit<PanelProps, 'variant'>) {
   return (
-    <Panel variant="default" rounded="xl" padding="lg" {...props} className={className}>
+    <Panel variant="ghost" rounded="none" padding="none" {...props} className={className}>
       {children}
     </Panel>
   );
@@ -165,15 +165,15 @@ const alertIcons = {
 const alertColors = {
   info: 'text-blue-600 dark:text-blue-400',
   warning: 'text-amber-600 dark:text-amber-400',
-  error: 'text-rose-600 dark:text-rose-400',
-  success: 'text-emerald-600 dark:text-emerald-400',
+  error: 'text-down',
+  success: 'text-up',
 };
 
 const alertBackgrounds = {
   info: 'dark:bg-blue-900/20 bg-blue-50',
   warning: 'dark:bg-amber-900/20 bg-amber-50',
-  error: 'dark:bg-rose-900/20 bg-rose-50',
-  success: 'dark:bg-emerald-900/20 bg-emerald-50',
+  error: 'bg-down/10',
+  success: 'bg-up/10',
 };
 
 export function Alert({ 

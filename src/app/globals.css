@@ -8,6 +8,45 @@
   }
 }
 
+@layer utilities {
+  .text-up {
+    color: rgb(16, 185, 129); /* Teal/green for positive */
+  }
+  .text-down {
+    color: rgb(205, 3, 91); /* Custom red for negative */
+  }
+  .dark .text-up {
+    color: rgb(52, 211, 153); /* Lighter teal for dark mode */
+  }
+  .dark .text-down {
+    color: rgb(225, 29, 115); /* Lighter red for dark mode */
+  }
+  .bg-up {
+    background-color: rgb(16, 185, 129);
+  }
+  .bg-down {
+    background-color: rgb(205, 3, 91);
+  }
+  .dark .bg-up {
+    background-color: rgb(52, 211, 153);
+  }
+  .dark .bg-down {
+    background-color: rgb(225, 29, 115);
+  }
+  .border-up {
+    border-color: rgb(16, 185, 129);
+  }
+  .border-down {
+    border-color: rgb(205, 3, 91);
+  }
+  .dark .border-up {
+    border-color: rgb(52, 211, 153);
+  }
+  .dark .border-down {
+    border-color: rgb(225, 29, 115);
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

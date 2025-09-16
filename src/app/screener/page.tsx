@@ -9,6 +9,19 @@ import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
 import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
+import {
+  Monitor,
+  Heart,
+  CreditCard,
+  ShoppingBag,
+  Factory,
+  Zap,
+  Package,
+  Home,
+  Wifi,
+  Droplets,
+  Globe
+} from "lucide-react";
 
 interface Stock {
   symbol: string;
@@ -546,7 +559,7 @@ export default function ScreenerPage() {
                         onClick={() => setPresetsTab('library')}
                         className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all relative ${
                           presetsTab === 'library'
-                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm rounded-t-md'
                             : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
@@ -556,7 +569,7 @@ export default function ScreenerPage() {
                         onClick={() => setPresetsTab('custom')}
                         className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all relative ${
                           presetsTab === 'custom'
-                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm rounded-t-md'
                             : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
@@ -624,7 +637,7 @@ export default function ScreenerPage() {
                 </Dropdown>
               </div>
               
-              {/* Markets Dropdown */}
+              {/* Sectors Dropdown */}
               <div className="relative dropdown-container z-[60]">
                 <Button
                   variant="secondary"
@@ -636,10 +649,8 @@ export default function ScreenerPage() {
                   }}
                   className="flex items-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                  </svg>
-                  <span>Markets</span>
+                  <Globe className="w-5 h-5" />
+                  <span>Sectors</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -664,92 +675,52 @@ export default function ScreenerPage() {
                       {[
                         {
                           name: 'Technology',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                          ),
+                          icon: <Monitor className="w-5 h-5" />,
                           subcategories: ['Software', 'Hardware', 'Semiconductors', 'Internet Services', 'Cloud Computing', 'Cybersecurity']
                         },
                         {
                           name: 'Healthcare',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                          ),
+                          icon: <Heart className="w-5 h-5" />,
                           subcategories: ['Biotech', 'Pharmaceuticals', 'Medical Devices', 'Healthcare Services', 'Diagnostics', 'Health Tech']
                         },
                         {
                           name: 'Financial',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                          ),
+                          icon: <CreditCard className="w-5 h-5" />,
                           subcategories: ['Banks', 'Insurance', 'Asset Management', 'Fintech', 'Payment Processing', 'REITs']
                         },
                         {
                           name: 'Consumer',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                          ),
+                          icon: <ShoppingBag className="w-5 h-5" />,
                           subcategories: ['Retail', 'E-commerce', 'Food & Beverage', 'Apparel', 'Entertainment', 'Travel & Leisure']
                         },
                         {
                           name: 'Industrial',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                          ),
+                          icon: <Factory className="w-5 h-5" />,
                           subcategories: ['Aerospace & Defense', 'Machinery', 'Transportation', 'Construction', 'Logistics', 'Manufacturing']
                         },
                         {
                           name: 'Energy',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                          ),
+                          icon: <Zap className="w-5 h-5" />,
                           subcategories: ['Oil & Gas', 'Renewable Energy', 'Utilities', 'Solar', 'Wind', 'Nuclear']
                         },
                         {
                           name: 'Materials',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            </svg>
-                          ),
+                          icon: <Package className="w-5 h-5" />,
                           subcategories: ['Chemicals', 'Mining', 'Steel', 'Paper & Forest', 'Packaging', 'Construction Materials']
                         },
                         {
                           name: 'Real Estate',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                          ),
+                          icon: <Home className="w-5 h-5" />,
                           subcategories: ['REITs', 'Residential', 'Commercial', 'Industrial', 'Retail Properties', 'Real Estate Services']
                         },
                         {
                           name: 'Communications',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" />
-                            </svg>
-                          ),
+                          icon: <Wifi className="w-5 h-5" />,
                           subcategories: ['Telecom', 'Media', 'Entertainment', 'Publishing', 'Broadcasting', 'Internet Media']
                         },
                         {
                           name: 'Utilities',
-                          icon: (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                          ),
+                          icon: <Droplets className="w-5 h-5" />,
                           subcategories: ['Electric', 'Gas', 'Water', 'Multi-Utilities', 'Independent Power', 'Renewable Utilities']
                         }
                       ].map((sector) => {
@@ -976,7 +947,7 @@ export default function ScreenerPage() {
                         onClick={() => setFiltersTab('price-volume')}
                         className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'price-volume'
-                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm rounded-t-md'
                             : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
@@ -986,7 +957,7 @@ export default function ScreenerPage() {
                         onClick={() => setFiltersTab('technical')}
                         className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'technical'
-                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm rounded-t-md'
                             : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
@@ -996,7 +967,7 @@ export default function ScreenerPage() {
                         onClick={() => setFiltersTab('fundamentals')}
                         className={`flex-1 px-3 py-2.5 text-sm font-medium transition-all relative ${
                           filtersTab === 'fundamentals'
-                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm -mb-[1px] border-b-2 border-indigo-500 rounded-t-md'
+                            ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-sm rounded-t-md'
                             : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                       >
@@ -1083,19 +1054,19 @@ export default function ScreenerPage() {
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 2%', '2')}
-                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
                         >
                           +2%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 5%', '5')}
-                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
                         >
                           +5%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 10%', '10')}
-                          className="px-3 py-2 text-sm bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
                         >
                           +10%
                         </button>
@@ -1341,16 +1312,6 @@ export default function ScreenerPage() {
                     {selectedStocks.size > 0 && ` • ${selectedStocks.size} selected`}
                   </p>
                   <div className="flex gap-2">
-                    {selectedStocks.size > 0 && (
-                      <>
-                        <Button variant="secondary" size="sm">
-                          Add to Watchlist
-                        </Button>
-                        <Button variant="primary" size="sm">
-                          Create Trade Plan
-                        </Button>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1365,8 +1326,7 @@ export default function ScreenerPage() {
           )}
 
           {/* Results Table */}
-          <Card className="overflow-hidden">
-            {loading && stocks.length === 0 ? (
+          {loading && stocks.length === 0 ? (
               <div className="p-8 text-center">
                 <div className="inline-flex items-center gap-2 dark:text-gray-400 text-gray-600">
                   <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -1381,20 +1341,6 @@ export default function ScreenerPage() {
               <table className="w-full">
                 <thead className="dark:bg-slate-800/50 bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left">
-                      <input
-                        type="checkbox"
-                        className="rounded dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 dark:checked:bg-indigo-600 checked:bg-indigo-600 accent-indigo-600"
-                        checked={selectedStocks.size === filteredStocks.length && filteredStocks.length > 0}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedStocks(new Set(filteredStocks.map(s => s.symbol)));
-                          } else {
-                            setSelectedStocks(new Set());
-                          }
-                        }}
-                      />
-                    </th>
                     <th 
                       className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
                       onClick={() => handleSort("symbol")}
@@ -1449,14 +1395,6 @@ export default function ScreenerPage() {
                       className="hover:dark:bg-slate-800/50 hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          className="rounded dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 dark:checked:bg-indigo-600 checked:bg-indigo-600 accent-indigo-600"
-                          checked={selectedStocks.has(stock.symbol)}
-                          onChange={() => toggleStockSelection(stock.symbol)}
-                        />
-                      </td>
-                      <td className="px-4 py-3">
                         <div>
                           <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
                           <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
@@ -1505,7 +1443,6 @@ export default function ScreenerPage() {
               </table>
             </div>
             )}
-          </Card>
         </div>
 
         {/* Save Filter Dialog */}

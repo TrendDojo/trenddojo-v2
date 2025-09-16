@@ -84,7 +84,7 @@ export function Dropdown({
     <div
       ref={dropdownRef}
       className={cn(
-        "absolute top-full mt-2",
+        "absolute top-full mt-3",
         "bg-white dark:bg-slate-800",
         "rounded-lg",
         "shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]",

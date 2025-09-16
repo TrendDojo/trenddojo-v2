@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Atom } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
+import { AccountStatusBar } from "@/components/portfolio/AccountStatusBar";
+import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
 import { cn } from "@/lib/utils";
 
 interface ScalingLevel {
@@ -25,6 +30,7 @@ interface Position {
   originalQuantity: number;
   entryPrice: number;
   currentPrice: number;
+  exitPrice?: number;
   stopLoss?: number;
   takeProfit?: number;
   scalingLevels?: ScalingLevel[];
@@ -32,8 +38,10 @@ interface Position {
   pnlPercent: number;
   value: number;
   openDate: string;
+  closedDate?: string;
   strategy: string;
-  status: "active" | "pending" | "closing";
+  status: "active" | "pending" | "closed";
+  exitReason?: "stop_loss" | "take_profit" | "manual" | "partial";
 }
 
 // Strategy mapping with IDs and colors
@@ -92,10 +100,32 @@ const STRATEGIES = {
 };
 
 export default function PositionsPage() {
+  const router = useRouter();
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-  const [filterView, setFilterView] = useState<"all" | "active" | "pending" | "closing">("all");
+  const [filterView, setFilterView] = useState<"active" | "pending" | "closed">("active");
   const [filterStrategy, setFilterStrategy] = useState<string>("all");
   const [strategyDropdownOpen, setStrategyDropdownOpen] = useState(false);
+  const [columnsDropdownOpen, setColumnsDropdownOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [visibleColumns, setVisibleColumns] = useState({
+    symbol: true,
+    strategy: true,
+    status: true,
+    entry: true,
+    risk: true,
+    value: true,
+    pnl: true,
+    age: true,
+    actions: true
+  });
+
+  // Hide risk and value columns when viewing closed positions
+  const effectiveVisibleColumns = {
+    ...visibleColumns,
+    risk: filterView === "closed" ? false : visibleColumns.risk,
+    value: filterView === "closed" ? false : visibleColumns.value
+  };
   
   // Calculate risk for a position
   const calculateRisk = (position: Position): number => {
@@ -283,15 +313,110 @@ export default function PositionsPage() {
       value: 24330.00,
       openDate: "2024-01-26",
       strategy: "Growth",
-      status: "closing"
+      status: "active"
+    },
+    {
+      id: "9",
+      symbol: "BA",
+      name: "Boeing Co.",
+      side: "long",
+      quantity: 0,
+      originalQuantity: 100,
+      entryPrice: 220.00,
+      currentPrice: 210.00,
+      exitPrice: 210.00,
+      stopLoss: 210.00,
+      takeProfit: 240.00,
+      pnl: -1000.00,
+      pnlPercent: -4.55,
+      value: 0,
+      openDate: "2024-01-10",
+      closedDate: "2024-01-28",
+      strategy: "Breakout",
+      status: "closed",
+      exitReason: "stop_loss"
+    },
+    {
+      id: "10",
+      symbol: "NFLX",
+      name: "Netflix Inc.",
+      side: "long",
+      quantity: 0,
+      originalQuantity: 50,
+      entryPrice: 480.00,
+      currentPrice: 520.00,
+      exitPrice: 520.00,
+      stopLoss: 460.00,
+      takeProfit: 520.00,
+      pnl: 2000.00,
+      pnlPercent: 8.33,
+      value: 0,
+      openDate: "2024-01-05",
+      closedDate: "2024-01-27",
+      strategy: "Momentum",
+      status: "closed",
+      exitReason: "take_profit"
+    },
+    {
+      id: "11",
+      symbol: "AMD",
+      name: "Advanced Micro Devices",
+      side: "short",
+      quantity: 0,
+      originalQuantity: 80,
+      entryPrice: 145.00,
+      currentPrice: 138.00,
+      exitPrice: 138.00,
+      stopLoss: 150.00,
+      takeProfit: 135.00,
+      pnl: 560.00,
+      pnlPercent: 4.83,
+      value: 0,
+      openDate: "2024-01-08",
+      closedDate: "2024-01-26",
+      strategy: "Mean Reversion",
+      status: "closed",
+      exitReason: "manual"
+    },
+    {
+      id: "12",
+      symbol: "CRM",
+      name: "Salesforce Inc.",
+      side: "long",
+      quantity: 0,
+      originalQuantity: 100,
+      entryPrice: 250.00,
+      currentPrice: 265.00,
+      exitPrice: 258.00,
+      stopLoss: 240.00,
+      takeProfit: 280.00,
+      scalingLevels: [
+        { quantity: 30, targetPrice: 260.00, executed: true, executedPrice: 261.00, executedDate: "2024-01-20" },
+        { quantity: 30, targetPrice: 270.00, executed: true, executedPrice: 269.50, executedDate: "2024-01-22" },
+        { quantity: 40, targetPrice: 280.00, executed: false }
+      ],
+      pnl: 1185.00,
+      pnlPercent: 4.74,
+      value: 0,
+      openDate: "2024-01-12",
+      closedDate: "2024-01-25",
+      strategy: "Swing Trade",
+      status: "closed",
+      exitReason: "partial"
     }
   ];
 
   const filteredPositions = positions.filter(p => {
-    const statusMatch = filterView === "all" || p.status === filterView;
+    const statusMatch = p.status === filterView;
     const strategyMatch = filterStrategy === "all" || p.strategy === filterStrategy;
     return statusMatch && strategyMatch;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredPositions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedPositions = filteredPositions.slice(startIndex, endIndex);
 
   const togglePositionSelection = (id: string) => {
     setSelectedPositions(prev => 
@@ -313,59 +438,79 @@ export default function PositionsPage() {
   const totalPnL = filteredPositions.reduce((sum, p) => sum + p.pnl, 0);
   const totalRisk = filteredPositions.reduce((sum, p) => sum + Math.max(0, calculateRisk(p)), 0);
 
+  // Mock portfolio status - in real app would come from API
+  const portfolioStatus = {
+    accountStatus: 'warning' as const,
+    currentDrawdown: -7.5
+  };
+
   return (
     <AppLayout>
       <PageContent>
-        <div className="space-y-6">
+        <div className="space-y-4">
+          {/* Account Status Bar */}
+          <AccountStatusBar
+            accountStatus={portfolioStatus.accountStatus}
+            currentDrawdown={portfolioStatus.currentDrawdown}
+            portfolioName="Main Portfolio"
+          />
+
           {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold dark:text-white text-gray-900">Positions</h1>
-            <p className="text-sm dark:text-gray-400 text-gray-600 mt-1">
-              Manage your active trading positions
-            </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold dark:text-white text-gray-900">
+                {(() => {
+                  const statusPrefix = filterView.charAt(0).toUpperCase() + filterView.slice(1);
+                  if (filterStrategy === "all") {
+                    return `${statusPrefix} Positions`;
+                  } else {
+                    return `${statusPrefix} Positions – ${filterStrategy}`;
+                  }
+                })()}
+              </h1>
+              <p className="text-sm dark:text-gray-400 text-gray-600 mt-1">
+                Manage your active trading positions
+              </p>
+            </div>
+            <Button variant="primary" size="sm" className="flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Position
+            </Button>
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <Card className="p-4">
+          <div className="flex flex-wrap gap-16">
+            <Card>
               <p className="text-sm dark:text-gray-400 text-gray-600">Positions</p>
               <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
                 {filteredPositions.length}
               </p>
             </Card>
-            <Card className="p-4">
+            <Card>
               <p className="text-sm dark:text-gray-400 text-gray-600">Total Value</p>
               <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
                 ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
             </Card>
-            <Card className="p-4 border-2 border-rose-500/20 dark:border-rose-400/20">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <p className="text-sm dark:text-gray-400 text-gray-600">Total Risk</p>
-              </div>
-              <p className={cn(
-                "text-2xl font-bold mt-1",
-                totalRisk === 0 ? "text-teal-500" : "text-rose-500 dark:text-rose-400"
-              )}>
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Combined Risk</p>
+              <p className="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
                 ${totalRisk.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </p>
-              <p className="text-xs dark:text-gray-500 text-gray-500 mt-1">
-                {totalValue > 0 ? `${((totalRisk / totalValue) * 100).toFixed(1)}% of portfolio` : '0%'}
+                <span className="text-base font-normal ml-2">({totalValue > 0 ? `${((totalRisk / totalValue) * 100).toFixed(1)}%` : '0%'})</span>
               </p>
             </Card>
-            <Card className="p-4">
-              <p className="text-sm dark:text-gray-400 text-gray-600">Total P&L</p>
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Active P&L</p>
               <p className={cn(
                 "text-2xl font-bold mt-1",
-                totalPnL >= 0 ? "text-teal-500" : "text-purple-500"
+                totalPnL >= 0 ? "text-up" : "text-down"
               )}>
                 {totalPnL >= 0 ? "+" : ""}${Math.abs(totalPnL).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
             </Card>
-            <Card className="p-4">
+            <Card>
               <p className="text-sm dark:text-gray-400 text-gray-600">Win Rate</p>
               <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
                 {((filteredPositions.filter(p => p.pnl > 0).length / filteredPositions.length) * 100).toFixed(0)}%
@@ -373,56 +518,41 @@ export default function PositionsPage() {
             </Card>
           </div>
 
+          {/* Spacer for better visual separation */}
+          <div className="pt-2"></div>
+
           {/* Filter and Actions Bar */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               {/* Strategy Dropdown */}
-              <div className="relative dropdown-container">
-                <button
-                  onClick={() => setStrategyDropdownOpen(!strategyDropdownOpen)}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors min-w-[160px]"
-                >
-                  <div className="flex-1 text-left">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
-                      Strategy
-                    </p>
-                    {filterStrategy === "all" ? (
-                      <p className="text-sm font-semibold dark:text-white text-gray-900 mt-0.5">
-                        All Strategies
-                      </p>
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className={cn(
-                            "inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold rounded",
-                            STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.bgColor || "bg-gray-600",
-                            STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.textColor || "text-white"
-                          )}>
-                            {STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.id || filterStrategy.substring(0, 2).toUpperCase()}
-                          </span>
-                          <span className="text-sm font-semibold dark:text-white text-gray-900">
-                            {STRATEGIES[filterStrategy as keyof typeof STRATEGIES]?.id || "??"}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                          {filterStrategy}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <svg 
+              <div className="flex items-center gap-2">
+                <div className="relative dropdown-container">
+                  <button
+                    onClick={() => setStrategyDropdownOpen(!strategyDropdownOpen)}
                     className={cn(
-                      "w-4 h-4 dark:text-gray-400 text-gray-600 transition-transform flex-shrink-0",
-                      strategyDropdownOpen && "rotate-180"
+                      "flex items-center gap-2 px-3 py-2 font-semibold transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 focus:ring-offset-gray-50 focus:ring-indigo-500 min-w-[160px] border",
+                      filterStrategy !== "all"
+                        ? "dark:bg-indigo-500 bg-indigo-600 dark:hover:bg-indigo-600 hover:bg-indigo-700 text-white border-transparent"
+                        : "dark:bg-transparent bg-transparent dark:border-slate-700 border-gray-300 dark:hover:bg-slate-800 hover:bg-gray-100 dark:text-white text-gray-900"
                     )}
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                
+                    <Atom className="w-4 h-4 flex-shrink-0" />
+                    <span className="flex-1 text-left">
+                      {filterStrategy === "all" ? "All Strategies" : filterStrategy}
+                    </span>
+                    <svg
+                      className={cn(
+                        "w-4 h-4 transition-transform flex-shrink-0",
+                        strategyDropdownOpen && "rotate-180"
+                      )}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
                 <Dropdown
                   isOpen={strategyDropdownOpen}
                   onClose={() => setStrategyDropdownOpen(false)}
@@ -461,140 +591,259 @@ export default function PositionsPage() {
                             filterStrategy === name && "bg-indigo-50 dark:bg-indigo-950/30"
                           )}
                         >
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              "inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold rounded",
-                              config.bgColor,
-                              config.textColor
-                            )}>
-                              {config.id}
-                            </span>
                             <span className={filterStrategy === name ? "text-indigo-600 dark:text-indigo-400" : "dark:text-gray-300 text-gray-700"}>
                               {name}
                             </span>
-                          </div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {count}
-                          </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {count}
+                            </span>
                         </button>
                       );
                     })}
                   </div>
                 </Dropdown>
+                </div>
+                {/* Reset link - only visible when a strategy is selected */}
+                {filterStrategy !== "all" && (
+                  <button
+                    onClick={() => {
+                      setFilterStrategy("all");
+                      setStrategyDropdownOpen(false);
+                    }}
+                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors underline"
+                  >
+                    reset
+                  </button>
+                )}
               </div>
 
               {/* Vertical Divider */}
-              <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
-              
+              <div className="h-8 w-px bg-gray-500 dark:bg-gray-400 self-end" />
+
               {/* Status Filters */}
-              <div className="flex gap-2">
-                <Button
-                  variant={filterView === "all" ? "primary" : "secondary"}
-                  size="sm"
-                  onClick={() => setFilterView("all")}
-                >
-                  All ({positions.length})
-                </Button>
+              <div className="flex gap-2 self-end">
                 <Button
                   variant={filterView === "active" ? "primary" : "secondary"}
                   size="sm"
                   onClick={() => setFilterView("active")}
                 >
-                  Active ({positions.filter(p => p.status === "active").length})
+                  Active
                 </Button>
                 <Button
                   variant={filterView === "pending" ? "primary" : "secondary"}
                   size="sm"
                   onClick={() => setFilterView("pending")}
                 >
-                  Pending ({positions.filter(p => p.status === "pending").length})
+                  Pending
                 </Button>
                 <Button
-                  variant={filterView === "closing" ? "primary" : "secondary"}
+                  variant={filterView === "closed" ? "primary" : "secondary"}
                   size="sm"
-                  onClick={() => setFilterView("closing")}
+                  onClick={() => setFilterView("closed")}
                 >
-                  Closing ({positions.filter(p => p.status === "closing").length})
+                  Closed
                 </Button>
+              </div>
             </div>
-            </div>
-            
-            <div className="flex gap-2">
-              {selectedPositions.length > 0 && (
-                <>
-                  <Button variant="secondary" size="sm">
-                    Close {selectedPositions.length} Position{selectedPositions.length > 1 ? 's' : ''}
-                  </Button>
-                  <Button variant="secondary" size="sm">
-                    Edit Stops
-                  </Button>
-                </>
-              )}
-              <Button variant="primary" size="sm" className="flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                New Position
-              </Button>
+
+            {/* Right side controls - separate flex container */}
+            <div className="flex items-center gap-6">
+              {/* Column Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setColumnsDropdownOpen(!columnsDropdownOpen)}
+                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                  title="Select columns"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </button>
+                {columnsDropdownOpen && (
+                  <Dropdown
+                    isOpen={columnsDropdownOpen}
+                    onClose={() => setColumnsDropdownOpen(false)}
+                    position="right"
+                    width="sm"
+                  >
+                    <div className="py-2">
+                      <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        Visible Columns
+                      </p>
+                      {Object.entries(visibleColumns).map(([key, value]) => (
+                        <label
+                          key={key}
+                          className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setVisibleColumns(prev => ({
+                              ...prev,
+                              [key]: e.target.checked
+                            }))}
+                            className="mr-3"
+                          />
+                          <span className="text-sm capitalize dark:text-gray-300 text-gray-700">
+                            {key === 'pnl' ? 'P&L' : key}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </Dropdown>
+                )}
+              </div>
+
+              {/* Vertical Divider */}
+              <div className="h-8 w-px bg-gray-500 dark:bg-gray-400 self-end" />
+
+              {/* Top Pagination Controls - Same format as bottom */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={cn(
+                          "px-3 py-1 rounded-lg text-sm font-medium transition-colors",
+                          currentPage === pageNum
+                            ? "dark:bg-slate-700/50 bg-gray-200 dark:text-white text-gray-900"
+                            : "hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-gray-300 text-gray-700"
+                        )}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* Action Buttons Row (when items selected) */}
+          {selectedPositions.length > 0 && (
+            <div className="flex gap-2 -mt-2">
+              <Button variant="secondary" size="sm">
+                Close {selectedPositions.length} Position{selectedPositions.length > 1 ? 's' : ''}
+              </Button>
+              <Button variant="secondary" size="sm">
+                Edit Stops
+              </Button>
+            </div>
+          )}
+
           {/* Positions Table */}
-          <Card>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full">
                 <thead className="border-b dark:border-slate-700 border-gray-200">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Symbol
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Entry
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Current
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      P&L
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Risk
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Value
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
-                      Actions
-                    </th>
+                    {effectiveVisibleColumns.symbol && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Symbol
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.strategy && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Strategy
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.status && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Status
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.entry && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Entry / Change
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.risk && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Risk
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.value && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Value
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.pnl && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        P&L
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.age && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Age
+                      </th>
+                    )}
+                    {effectiveVisibleColumns.actions && (
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                        Actions
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y dark:divide-slate-700 divide-gray-200">
-                  {filteredPositions.map((position) => (
-                    <tr 
+                  {paginatedPositions.map((position, index) => (
+                    <tr
                       key={position.id}
                       className={cn(
                         "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors",
-                        selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20"
+                        selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20",
+                        index === 0 && "cursor-pointer"
                       )}
+                      onClick={index === 0 ? () => router.push(`/positions/${position.id}`) : undefined}
                     >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <span 
-                            className={cn(
-                              "inline-flex items-center justify-center w-8 h-8 text-xs font-bold rounded-lg flex-shrink-0",
-                              STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.bgColor || "bg-gray-200 dark:bg-gray-700",
-                              STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.textColor || "text-gray-700 dark:text-gray-300"
-                            )}
-                            title={position.strategy}
-                          >
-                            {STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.id || position.strategy.substring(0, 2).toUpperCase()}
-                          </span>
+                      {effectiveVisibleColumns.symbol && (
+                        <td className="px-4 py-3">
                           <div>
                             <div className="flex items-center gap-2">
-                              <p className="text-lg font-bold dark:text-white text-gray-900">{position.symbol}</p>
+                              {index === 0 ? (
+                                <Link
+                                  href={`/positions/${position.id}`}
+                                  className="text-lg font-bold dark:text-white text-gray-900 hover:text-indigo-600 dark:hover:text-indigo-400"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {position.symbol}
+                                </Link>
+                              ) : (
+                                <p className="text-lg font-bold dark:text-white text-gray-900">{position.symbol}</p>
+                              )}
+                              {position.side === "short" && (
+                                <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
+                                  SHORT
+                                </span>
+                              )}
                               <span className="text-gray-400 dark:text-gray-600">|</span>
                               <span className="dark:text-gray-300 text-gray-700 font-medium">
                                 {position.quantity}
@@ -607,171 +856,128 @@ export default function PositionsPage() {
                             </div>
                             <p className="text-xs dark:text-gray-400 text-gray-600">{position.name}</p>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="space-y-1">
-                            {position.scalingLevels ? (
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-0.5 relative">
-                                  {/* Stop Loss segment */}
-                                  {position.stopLoss && (
-                                    <div
-                                      className="h-2 rounded-l-full bg-amber-500 dark:bg-amber-400 cursor-help"
-                                      style={{ width: "15px" }}
-                                      title={`Stop Loss: $${position.stopLoss}`}
-                                    />
-                                  )}
-                                  
-                                  {/* Entry price marker */}
-                                  <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
-                                  
-                                  {/* Position segments */}
-                                  {position.scalingLevels.map((level, idx) => {
-                                    const widthPercent = (level.quantity / position.originalQuantity) * 100;
-                                    return (
-                                      <div
-                                        key={idx}
-                                        className={cn(
-                                          "h-2 transition-all relative group cursor-help",
-                                          idx === position.scalingLevels!.length - 1 && "rounded-r-full",
-                                          level.executed 
-                                            ? "bg-gray-300 dark:bg-gray-600" 
-                                            : idx === 0 && position.side === "long" && position.currentPrice >= level.targetPrice
-                                              ? "bg-teal-400 dark:bg-teal-500 animate-pulse"
-                                              : idx === 0 && position.side === "short" && position.currentPrice <= level.targetPrice
-                                                ? "bg-teal-400 dark:bg-teal-500 animate-pulse"
-                                                : "bg-indigo-500 dark:bg-indigo-400"
-                                        )}
-                                        style={{ width: `${Math.min(widthPercent * 0.8, 30)}px` }}
-                                        title={level.executed 
-                                          ? `Sold ${level.quantity} @ $${level.executedPrice}` 
-                                          : `Target: ${level.quantity} @ $${level.targetPrice}`}
-                                      />
-                                    );
-                                  })}
-                                  <span className="text-xs dark:text-gray-500 text-gray-500 ml-2">
-                                    {Math.round((position.quantity / position.originalQuantity) * 100)}%
-                                  </span>
-                                </div>
-                              <div className="flex items-center gap-1 text-xs dark:text-gray-500 text-gray-500">
-                                {position.stopLoss && (
-                                  <span className="text-purple-500 dark:text-purple-400">
-                                    SL: ${position.stopLoss}
-                                  </span>
-                                )}
-                                {position.scalingLevels.filter(l => !l.executed).length > 0 && (
-                                  <>
-                                    <span className="mx-1">→</span>
-                                    <span className="text-teal-500 dark:text-teal-400">
-                                      Next: ${position.scalingLevels.find(l => !l.executed)?.targetPrice}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-0.5 relative">
-                                {/* Stop Loss segment */}
-                                {position.stopLoss && (
-                                  <div
-                                    className="h-2 rounded-l-full bg-amber-500 dark:bg-amber-400 cursor-help"
-                                    style={{ width: "15px" }}
-                                    title={`Stop Loss: $${position.stopLoss}`}
-                                  />
-                                )}
-                                
-                                {/* Entry price marker */}
-                                <div className="w-0.5 h-4 bg-gray-400 dark:bg-gray-500" />
-                                
-                                {/* Single position bar */}
-                                <div className="flex items-center gap-0">
-                                  {position.quantity < position.originalQuantity ? (
-                                    <>
-                                      <div 
-                                        className="h-2 bg-indigo-500 dark:bg-indigo-400"
-                                        style={{ width: `${(position.quantity / position.originalQuantity) * 60}px` }}
-                                        title={`Remaining: ${position.quantity} shares`}
-                                      />
-                                      <div 
-                                        className="h-2 bg-gray-300 dark:bg-gray-600 rounded-r-full"
-                                        style={{ width: `${((position.originalQuantity - position.quantity) / position.originalQuantity) * 60}px` }}
-                                        title={`Sold: ${position.originalQuantity - position.quantity} shares`}
-                                      />
-                                    </>
-                                  ) : (
-                                    <div 
-                                      className="h-2 bg-indigo-500 dark:bg-indigo-400 rounded-r-full"
-                                      style={{ width: "60px" }}
-                                      title={`Full position: ${position.quantity} shares`}
-                                    />
-                                  )}
-                                </div>
-                                <span className="text-xs dark:text-gray-500 text-gray-500 ml-2">
-                                  {Math.round((position.quantity / position.originalQuantity) * 100)}%
-                                </span>
-                              </div>
-                            )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        ${position.entryPrice.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        ${position.currentPrice.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className={cn(
-                          position.pnl >= 0 ? "text-teal-500" : "text-purple-500"
-                        )}>
-                          <p className="font-medium">
-                            {position.pnl >= 0 ? "+" : ""}${Math.abs(position.pnl).toFixed(2)}
-                          </p>
-                          <p className="text-xs">
-                            {position.pnlPercent >= 0 ? "+" : ""}{position.pnlPercent.toFixed(2)}%
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {(() => {
-                          const risk = calculateRisk(position);
-                          const riskPercent = position.value > 0 ? (Math.abs(risk) / position.value) * 100 : 0;
-                          const isProtected = risk <= 0;
-                          
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.strategy && (
+                        <td className="px-4 py-3">
+                          <span className="text-sm font-semibold dark:text-gray-300 text-gray-700" title={position.strategy}>
+                            {STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.id || position.strategy.substring(0, 2).toUpperCase()}
+                          </span>
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.status && (
+                        <td className="px-4 py-3">
+                          {position.status === "closed" ? (
+                            <ClosedPositionStatusBar
+                              side={position.side}
+                              stopLoss={position.stopLoss}
+                              scalingLevels={position.scalingLevels}
+                              exitReason={position.exitReason}
+                              pnl={position.pnl}
+                            />
+                          ) : (
+                            <PositionStatusBar
+                              side={position.side}
+                              quantity={position.quantity}
+                              originalQuantity={position.originalQuantity}
+                              stopLoss={position.stopLoss}
+                              scalingLevels={position.scalingLevels}
+                              status={position.status}
+                              pnl={position.pnl}
+                            />
+                          )}
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.entry && (
+                        <td className="px-4 py-3">
+                          <div>
+                            <div className="dark:text-gray-300 text-gray-700 font-medium">
+                              ${position.entryPrice.toFixed(2)}
+                            </div>
+                            <div className={cn(
+                              "text-sm font-medium",
+                              position.currentPrice > position.entryPrice ? "text-up" : "text-down"
+                            )}>
+                              {position.currentPrice > position.entryPrice ? "+" : ""}
+                              {(position.currentPrice - position.entryPrice).toFixed(2)}
+                            </div>
+                          </div>
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.risk && (
+                        <td className="px-4 py-3">
+                        {position.status === "closed" ? (
+                          <span className="text-sm text-gray-400 dark:text-gray-500">–</span>
+                        ) : (() => {
+                          const netRisk = calculateRisk(position);
+
+                          // Calculate actual remaining risk (what you could still lose)
+                          const riskPerShare = position.side === "long"
+                            ? position.currentPrice - (position.stopLoss || 0)
+                            : (position.stopLoss || 0) - position.currentPrice;
+                          const remainingRisk = Math.max(0, riskPerShare * position.quantity);
+                          const riskPercent = position.value > 0 ? (remainingRisk / position.value) * 100 : 0;
+
+                          // Check if profits taken exceed remaining risk
+                          const isProtected = netRisk <= 0;
+
                           return (
                             <div className={cn(
-                              "font-semibold",
-                              isProtected 
-                                ? "text-teal-600 dark:text-teal-400" 
-                                : riskPercent > 5 
-                                  ? "text-rose-600 dark:text-rose-400"
-                                  : "text-amber-600 dark:text-amber-400"
+                              "text-sm font-semibold",
+                              isProtected
+                                ? "text-up"  // Green when protected by profits
+                                : "text-down"  // Red when at risk
                             )}>
-                              <p className="text-sm">
-                                {isProtected ? (
-                                  <span className="flex items-center gap-1">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    </svg>
-                                    Protected
-                                  </span>
-                                ) : (
-                                  <>
-                                    ${Math.abs(risk).toFixed(0)}
-                                    <span className="text-xs ml-1">
-                                      ({riskPercent.toFixed(1)}%)
-                                    </span>
-                                  </>
-                                )}
-                              </p>
+                              {remainingRisk > 0 ? (
+                                <>
+                                  {riskPercent.toFixed(1)}%
+                                </>
+                              ) : (
+                                <span className="flex items-center gap-1">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                  </svg>
+                                  <span className="text-xs">Locked</span>
+                                </span>
+                              )}
                             </div>
                           );
                         })()}
                       </td>
-                      <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        ${position.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-3">
+                      )}
+                      {effectiveVisibleColumns.value && (
+                        <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
+                          ${position.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.pnl && (
+                        <td className="px-4 py-3">
+                          <div className={cn(
+                            "text-sm font-semibold",
+                            position.pnl >= 0 ? "text-up" : "text-down"
+                          )}>
+                            {position.pnl >= 0 ? "+" : ""}{position.pnlPercent.toFixed(2)}%
+                          </div>
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.age && (
+                        <td className="px-4 py-3 text-sm dark:text-gray-400 text-gray-600">
+                          {(() => {
+                            const openDate = new Date(position.openDate);
+                            const closeDate = position.closedDate ? new Date(position.closedDate) : new Date();
+                            const days = Math.floor((closeDate.getTime() - openDate.getTime()) / (1000 * 60 * 60 * 24));
+
+                            if (days === 0) return "Today";
+                            if (days === 1) return "1 day";
+                            if (days < 7) return `${days} days`;
+                            if (days < 30) return `${Math.floor(days / 7)}w ${days % 7}d`;
+                            if (days < 365) return `${Math.floor(days / 30)}mo`;
+                            return `${Math.floor(days / 365)}y ${Math.floor((days % 365) / 30)}mo`;
+                          })()}
+                        </td>
+                      )}
+                      {effectiveVisibleColumns.actions && (
+                        <td className="px-4 py-3">
                         <button className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                           <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
                             <circle cx="12" cy="5" r="2" />
@@ -780,12 +986,70 @@ export default function PositionsPage() {
                           </svg>
                         </button>
                       </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between py-3">
+                <div className="text-sm dark:text-gray-400 text-gray-600">
+                  {filteredPositions.length > 0
+                    ? `Showing ${startIndex + 1} to ${Math.min(endIndex, filteredPositions.length)} of ${filteredPositions.length} positions`
+                    : "No positions to display"
+                  }
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={cn(
+                            "px-3 py-1 rounded-lg text-sm font-medium transition-colors",
+                            currentPage === pageNum
+                              ? "dark:bg-slate-700/50 bg-gray-200 dark:text-white text-gray-900"
+                              : "hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-gray-300 text-gray-700"
+                          )}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
             </div>
-          </Card>
         </div>
       </PageContent>
     </AppLayout>

@@ -41,6 +41,11 @@ model Portfolio {
   baseCurrency    String    @default("USD")
   startingBalance Decimal?  @db.Decimal(15, 2)
   currentBalance  Decimal?  @db.Decimal(15, 2)
+
+  // Circuit breaker tracking
+  accountStatus   String    @default("active") // 'active', 'warning', 'recovery', 'locked'
+  currentDrawdown Decimal   @default(0) @db.Decimal(5, 2) // Current % drawdown from peak
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -49,7 +54,7 @@ model Portfolio {
   riskSettings    RiskSettings[]
   strategies      Strategy[]
   tradePlans      TradePlan[] // All trade ideas/journal entries
-  
+
   @@map("portfolios")
 }
 
@@ -58,15 +63,19 @@ model Strategy {
   portfolioId       String
   name              String
   description       String?
-  status            String    @default("active") // 'active', 'paused', 'closed', 'testing'
-  type              String?   // 'momentum', 'mean_reversion', 'breakout', 'swing', 'scalp'
-  
+  status            String    @default("active") // 'active', 'paused', 'blocked', 'closed', 'testing'
+  type              String?   // 'momentum', 'mean_reversion', 'breakout', 'swing', 'trend_following'
+
+  // Versioning - link to parent when cloned
+  parentStrategyId  String?   // References the strategy this was cloned from
+  blockedReason     String?   // Why strategy was blocked (if applicable)
+
   // Allocation and Risk
   allocatedCapital  Decimal?  @db.Decimal(15, 2)
   maxPositions      Int       @default(5)
   maxRiskPercent    Decimal?  @db.Decimal(5, 2) @default(2.0)
   maxDrawdown       Decimal?  @db.Decimal(5, 2) @default(10.0)
-  
+
   // Rules Configuration
   entryRules        Json?
   exitRules         Json?
@@ -96,10 +105,13 @@ model Strategy {
   
   // Relations
   portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  parentStrategy    Strategy? @relation("StrategyVersions", fields: [parentStrategyId], references: [id])
+  childStrategies   Strategy[] @relation("StrategyVersions")
   positions         Position[]
-  
+
   @@index([portfolioId])
   @@index([status])
+  @@index([parentStrategyId])
   @@map("strategies")
 }
 
@@ -292,13 +304,18 @@ model RiskSettings {
   maxOpenPositions         Int       @default(5)
   maxCorrelatedPositions   Int       @default(3)
   positionSizingMethod     String    @default("fixed_risk")
+
+  // Flexible risk management via JSON
+  assetClassLimits         Json?     // Different drawdown limits per asset class
+  drawdownActions          Json?     // What happens at -5%, -10%, -15% etc
+
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
 
   // Relations
   user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   portfolio                Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  
+
   @@map("risk_settings")
 }
 

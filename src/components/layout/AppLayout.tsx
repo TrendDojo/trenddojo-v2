@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { UserDropdown } from "./UserDropdown";
 import { PaperTradingIndicator } from "@/components/PaperTradingIndicator";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Palette } from "lucide-react";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -62,11 +63,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   }, [sidebarOpen]);
 
   return (
-    <div className="min-h-screen dark:bg-slate-900 bg-gray-100">
+    <div className="min-h-screen dark:bg-slate-950 bg-white">
       {/* Grid-based layout for proper alignment */}
       <div className="lg:grid lg:grid-cols-[256px_1fr] lg:gap-0">
         {/* Header - spans full width */}
-        <header className="lg:col-span-2 dark:bg-slate-900 bg-gray-100 py-6">
+        <header className="lg:col-span-2 dark:bg-slate-950 bg-white py-6">
           <div className="lg:grid lg:grid-cols-[256px_1fr] lg:gap-0">
             {/* Logo Section - Desktop only */}
             <div className="hidden lg:block px-7">
@@ -90,7 +91,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         <input
                           type="text"
                           placeholder="Search symbols, positions..."
-                          className="w-full px-5 py-3 pl-12 dark:bg-slate-800 bg-white rounded-xl dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-5 py-3 pl-12 dark:bg-slate-900 bg-gray-50 rounded-xl dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                         <svg
                           className="absolute left-4 top-3.5 w-5 h-5 dark:text-gray-400 text-gray-500"
@@ -111,8 +112,22 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 
                 {/* Right side actions */}
                 <div className="flex items-center gap-2">
+                  {/* Dev Theme Link - development only, desktop only */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <Link
+                      href="/theme"
+                      className="hidden lg:flex items-center gap-2 p-2 rounded dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
+                      aria-label="Theme showcase"
+                    >
+                      <Palette className="w-6 h-6 dark:text-gray-400 text-gray-600" />
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 font-normal">
+                        DEV
+                      </span>
+                    </Link>
+                  )}
+
                   {/* Theme toggle button - desktop only */}
-                  <button 
+                  <button
                     onClick={toggleTheme}
                     className="hidden lg:block p-2 rounded dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
                     aria-label="Toggle theme"
@@ -144,7 +159,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                       />
                     </svg>
                   </button>
-                  
+
                   {/* User dropdown - desktop only */}
                   <div className="hidden lg:block pl-2 border-l dark:border-slate-800 border-gray-200">
                     <UserDropdown />

@@ -220,9 +220,10 @@ trenddojo-v2/
 
 ## 🚫 Forbidden Actions
 **DO NOT:**
+- **NEVER implement day trading features** → We DO NOT support day trading, scalping, or intraday strategies
 - NEVER deploy financial calculations without unit tests → ALWAYS write tests first
 - NEVER use live trading APIs in development → ALWAYS use mocks and paper trading
-- NEVER skip staging deployment → ALWAYS test on staging before production  
+- NEVER skip staging deployment → ALWAYS test on staging before production
 - NEVER close work blocks without approval → ALWAYS ask user permission first
 - NEVER ignore risk management changes → ALWAYS get extra review for risk logic
 - NEVER create files outside `/docs/` → ALL documentation lives in `/docs/` directory

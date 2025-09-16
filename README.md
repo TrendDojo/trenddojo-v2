@@ -1,6 +1,8 @@
 # TrendDojo
 
-Professional trading platform - systematic risk management and position sizing.
+Professional trading platform for swing and trend following strategies - systematic risk management and position sizing.
+
+**⚠️ IMPORTANT: TrendDojo does NOT support day trading.** We focus exclusively on swing trading (3-10 day holds) and trend following (weeks to months). Minimum timeframe is 4-hour charts for entry refinement only.
 
 ## 📚 Documentation
 

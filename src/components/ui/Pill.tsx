@@ -22,9 +22,9 @@ const variantClasses = {
   default: "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900",
   primary: "bg-indigo-500 text-white",
   secondary: "bg-purple-500 text-white",
-  success: "bg-green-500 text-white",
+  success: "bg-up text-white",
   warning: "bg-amber-500 text-white",
-  danger: "bg-rose-500 text-white",
+  danger: "bg-down text-white",
 };
 
 export function Pill({
