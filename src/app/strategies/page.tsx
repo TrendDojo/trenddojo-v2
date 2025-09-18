@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Atom, TrendingUp, TrendingDown, Pause, Play, Plus, MoreVertical, Copy, Archive, History, Ban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import sampleData from "../../../temp/sampleData.json";
@@ -30,6 +31,15 @@ export default function StrategiesPage() {
   return (
     <AppLayout>
       <PageContent>
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <Breadcrumb
+            items={[
+              { label: "Strategies" }
+            ]}
+          />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

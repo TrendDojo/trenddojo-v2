@@ -8,6 +8,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { AccountStatusBar } from "@/components/portfolio/AccountStatusBar";
 import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
@@ -448,6 +449,15 @@ export default function PositionsPage() {
     <AppLayout>
       <PageContent>
         <div className="space-y-4">
+          {/* Breadcrumb */}
+          <div className="mb-8">
+            <Breadcrumb
+              items={[
+                { label: "Positions" }
+              ]}
+            />
+          </div>
+
           {/* Account Status Bar */}
           <AccountStatusBar
             accountStatus={portfolioStatus.accountStatus}

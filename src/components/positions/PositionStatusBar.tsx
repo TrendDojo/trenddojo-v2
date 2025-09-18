@@ -255,7 +255,7 @@ export function ClosedPositionStatusBar({
       <div className="relative inline-block" style={{ width: `${totalWidth}px`, height: '32px' }}>
         {/* Entry indicator - positioned at first segment width + half gap */}
         <div className="absolute -top-1 flex flex-col items-center cursor-help"
-          style={{ left: `${segmentPositions[0].width + gap/2 - 4}px` }}
+          style={{ left: `${segmentWidth + gap/2 - 4}px` }}
           title="Entry point"
         >
           <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400" />
@@ -331,9 +331,10 @@ export function ClosedPositionStatusBar({
   return (
     <div className="relative inline-block" style={{ width: `${totalWidth}px`, height: '32px' }}>
       {/* Entry indicator */}
-      <div className="absolute -top-2 flex flex-col items-center" style={{
-        left: `${totalWidth / 2 - 4}px`
-      }}>
+      <div className="absolute -top-1 flex flex-col items-center cursor-help"
+        style={{ left: `${totalWidth / 2 - 4}px` }}
+        title="Entry point"
+      >
         <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400" />
         <div className="w-0.5 h-1.5 bg-blue-500 dark:bg-blue-400" />
       </div>

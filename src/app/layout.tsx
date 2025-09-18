@@ -15,22 +15,23 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/favicon.svg",
+        url: "/assets/icons/favicon.svg",
         type: "image/svg+xml",
       },
       {
-        url: "/assets/icons/favicons/favicon-16x16.svg",
+        url: "/favicon-16x16.svg",
         sizes: "16x16",
         type: "image/svg+xml",
       },
       {
-        url: "/assets/icons/favicons/favicon-32x32.svg",
+        url: "/favicon-32x32.svg",
         sizes: "32x32",
         type: "image/svg+xml",
       },
     ],
-    apple: "/assets/icons/favicons/apple-touch-icon.svg",
+    apple: "/apple-touch-icon.svg",
   },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { IBConnectionModal, IBCredentials } from "@/components/brokers/IBConnectionModal";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -150,6 +151,15 @@ export default function BrokersPage() {
   return (
     <AppLayout>
       <PageContent>
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <Breadcrumb
+            items={[
+              { label: "Brokers" }
+            ]}
+          />
+        </div>
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">
             Broker Connections

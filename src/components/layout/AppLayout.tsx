@@ -19,7 +19,14 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Load collapsed state from localStorage on mount
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      return saved === 'true';
+    }
+    return false;
+  });
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -37,6 +44,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       default: return 'Dashboard';
     }
   })();
+
+  // Save collapsed state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', sidebarCollapsed.toString());
+  }, [sidebarCollapsed]);
 
   // Close sidebar on window resize to desktop
   useEffect(() => {
@@ -74,42 +86,20 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <header className="lg:col-span-2 dark:bg-slate-950 bg-white py-6">
           <div className={cn(
             "lg:grid lg:gap-0",
-            sidebarCollapsed ? "lg:grid-cols-[64px_1fr]" : "lg:grid-cols-[256px_1fr]"
+            sidebarCollapsed ? "lg:grid-cols-[80px_1fr]" : "lg:grid-cols-[256px_1fr]"
           )}>
             {/* Logo Section - Desktop only */}
             <div className={cn(
-              "hidden lg:flex items-center",
-              sidebarCollapsed ? "px-3 justify-center" : "px-7"
-            )}>
-              {sidebarCollapsed ? (
-                <button
-                  onClick={() => setSidebarCollapsed(false)}
-                  className="p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
-                  title="Expand sidebar"
-                >
-                  <svg
-                    className="w-6 h-6 dark:text-gray-400 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </button>
-              ) : (
-                <Link href="/" title="TrendDojo">
-                  <img
-                    src="/assets/logos/td-logo-s.svg"
-                    alt="TrendDojo"
-                    className="h-8 w-auto"
-                  />
-                </Link>
-              )}
+              "hidden lg:flex items-center justify-start"
+            )} style={{ paddingLeft: '1.25rem' }}>
+              <Link href="/dashboard" title="Dashboard">
+                <img
+                  src={sidebarCollapsed ? "/assets/icons/trenddojo-plain-icon.svg" : "/assets/logos/td-logo-s.svg"}
+                  alt="TrendDojo"
+                  className={sidebarCollapsed ? "h-10 w-10" : "h-10 w-auto"}
+                  style={sidebarCollapsed ? { objectFit: 'contain' } : {}}
+                />
+              </Link>
             </div>
 
             {/* Header Content - Aligned with main content */}
@@ -123,7 +113,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         <input
                           type="text"
                           placeholder="Search symbols, positions..."
-                          className="w-full px-5 py-3 pl-12 dark:bg-slate-900 bg-gray-50 rounded-xl dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-5 py-3 pl-12 dark:bg-slate-800 bg-gray-100 rounded-xl dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                         <svg
                           className="absolute left-4 top-3.5 w-5 h-5 dark:text-gray-400 text-gray-500"

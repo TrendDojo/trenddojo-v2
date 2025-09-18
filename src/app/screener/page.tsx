@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
@@ -401,6 +402,15 @@ export default function ScreenerPage() {
     <AppLayout>
       <PageContent>
         <div className="space-y-6 relative">
+          {/* Breadcrumb */}
+          <div className="mb-8">
+            <Breadcrumb
+              items={[
+                { label: "Screener" }
+              ]}
+            />
+          </div>
+
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-4">

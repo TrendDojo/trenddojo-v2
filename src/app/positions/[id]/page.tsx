@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChevronLeft, TrendingUp, TrendingDown, DollarSign, Activity, Calendar, Target, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,21 +45,24 @@ const mockPosition = {
 export default function PositionDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"overview" | "executions" | "notes">("overview");
 
   const position = mockPosition; // In real app, fetch based on params.id
 
   return (
     <AppLayout>
       <PageContent>
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <Breadcrumb
+            items={[
+              { label: "Positions", href: "/positions" },
+              { label: position.symbol }
+            ]}
+          />
+        </div>
+
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={() => router.back()}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800/50 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 dark:text-gray-400 text-gray-600" />
-          </button>
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold dark:text-white text-gray-900">
@@ -129,103 +133,68 @@ export default function PositionDetailPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b dark:border-slate-700 border-gray-200">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "overview"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab("executions")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "executions"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Executions
-          </button>
-          <button
-            onClick={() => setActiveTab("notes")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "notes"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Notes
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === "overview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Risk Management */}
-            <div>
-              <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
-                Risk Management
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Stop Loss</span>
-                  <span className="font-medium text-down">
-                    ${position.stopLoss.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Take Profit</span>
-                  <span className="font-medium text-up">
-                    ${position.takeProfit.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Risk Multiple</span>
-                  <span className="font-medium dark:text-white text-gray-900">
-                    {position.rMultiple.toFixed(1)}R
-                  </span>
-                </div>
+        {/* Overview Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Risk Management */}
+          <div>
+            <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
+              Risk Management
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Stop Loss</span>
+                <span className="font-medium text-down">
+                  ${position.stopLoss.toFixed(2)}
+                </span>
               </div>
-            </div>
-
-            {/* Performance */}
-            <div>
-              <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
-                Performance
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Max Gain</span>
-                  <span className="font-medium text-up">
-                    +{position.maxGainPercent.toFixed(2)}%
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Max Loss</span>
-                  <span className="font-medium text-down">
-                    {position.maxLossPercent.toFixed(2)}%
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="dark:text-gray-400 text-gray-600">Holding Days</span>
-                  <span className="font-medium dark:text-white text-gray-900">
-                    {position.holdingDays} days
-                  </span>
-                </div>
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Take Profit</span>
+                <span className="font-medium text-up">
+                  ${position.takeProfit.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Risk Multiple</span>
+                <span className="font-medium dark:text-white text-gray-900">
+                  {position.rMultiple.toFixed(1)}R
+                </span>
               </div>
             </div>
           </div>
-        )}
 
-        {activeTab === "executions" && (
+          {/* Performance */}
+          <div>
+            <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
+              Performance
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Max Gain</span>
+                <span className="font-medium text-up">
+                  +{position.maxGainPercent.toFixed(2)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Max Loss</span>
+                <span className="font-medium text-down">
+                  {position.maxLossPercent.toFixed(2)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="dark:text-gray-400 text-gray-600">Holding Days</span>
+                <span className="font-medium dark:text-white text-gray-900">
+                  {position.holdingDays} days
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Combined Activity Table - Executions and Notes */}
+        <div>
+          <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
+            Activity History
+          </h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -236,6 +205,9 @@ export default function PositionDetailPage() {
                   <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
                     Type
                   </th>
+                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                    Details
+                  </th>
                   <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
                     Quantity
                   </th>
@@ -243,68 +215,73 @@ export default function PositionDetailPage() {
                     Price
                   </th>
                   <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
-                    Fees
-                  </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
                     Total
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {position.executions.map((execution, idx) => (
-                  <tr key={idx} className="border-b dark:border-slate-800 border-gray-100">
-                    <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
-                      {execution.date.toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={cn(
-                        "px-2 py-1 rounded text-xs font-medium",
-                        execution.type === "buy"
-                          ? "bg-up/20 text-up"
-                          : "bg-down/20 text-down"
-                      )}>
-                        {execution.type.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
-                      {execution.quantity}
-                    </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
-                      ${execution.price.toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
-                      ${execution.fees.toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4 text-right font-medium dark:text-white text-gray-900">
-                      ${(execution.quantity * execution.price + execution.fees).toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
+                {/* Combine executions and notes and sort by date */}
+                {[
+                  ...position.executions.map(exec => ({
+                    date: exec.date,
+                    type: 'execution',
+                    subType: exec.type,
+                    quantity: exec.quantity,
+                    price: exec.price,
+                    fees: exec.fees,
+                    total: exec.quantity * exec.price + exec.fees
+                  })),
+                  ...position.notes.map(note => ({
+                    date: note.date,
+                    type: 'note',
+                    content: note.content
+                  }))
+                ]
+                  .sort((a, b) => b.date.getTime() - a.date.getTime())
+                  .map((item, idx) => (
+                    <tr key={idx} className="border-b dark:border-slate-800 border-gray-100">
+                      <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
+                        {item.date.toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        {item.type === 'execution' ? (
+                          <span className={cn(
+                            "px-2 py-1 rounded text-xs font-medium",
+                            item.subType === "buy"
+                              ? "bg-up/20 text-up"
+                              : "bg-down/20 text-down"
+                          )}>
+                            {item.subType?.toUpperCase()}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                            NOTE
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
+                        {item.type === 'note' ? item.content : item.fees ? `Fees: $${item.fees.toFixed(2)}` : '—'}
+                      </td>
+                      <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                        {item.type === 'execution' ? item.quantity : '—'}
+                      </td>
+                      <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                        {item.type === 'execution' ? `$${item.price?.toFixed(2)}` : '—'}
+                      </td>
+                      <td className="py-3 px-4 text-right font-medium dark:text-white text-gray-900">
+                        {item.type === 'execution' ? `$${item.total?.toFixed(2)}` : '—'}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
-        )}
-
-        {activeTab === "notes" && (
-          <div className="space-y-4">
-            {position.notes.map((note, idx) => (
-              <div key={idx} className="border-b dark:border-slate-800 border-gray-100 pb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 dark:text-gray-400 text-gray-600" />
-                  <span className="text-sm dark:text-gray-400 text-gray-600">
-                    {note.date.toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="dark:text-gray-300 text-gray-700">
-                  {note.content}
-                </p>
-              </div>
-            ))}
+          <div className="mt-4">
             <Button variant="secondary" size="sm">
               Add Note
             </Button>
           </div>
-        )}
+        </div>
       </PageContent>
     </AppLayout>
   );
