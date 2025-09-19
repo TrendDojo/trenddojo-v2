@@ -4,10 +4,11 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { StrategiesTab } from "@/components/strategies/StrategiesTab";
-import { RulesTab } from "@/components/strategies/RulesTab";
+import { EntriesTab } from "@/components/strategies/EntriesTab";
+import { ExitsTab } from "@/components/strategies/ExitsTab";
 
 export default function StrategiesPage() {
-  const [activeTab, setActiveTab] = useState<"strategies" | "rules">("strategies");
+  const [activeTab, setActiveTab] = useState<"strategies" | "entries" | "exits">("strategies");
 
   return (
     <AppLayout>
@@ -36,21 +37,33 @@ export default function StrategiesPage() {
               Strategies
             </button>
             <button
-              onClick={() => setActiveTab("rules")}
+              onClick={() => setActiveTab("entries")}
               className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "rules"
+                activeTab === "entries"
                   ? "border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-indigo-500"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
               }`}
             >
-              Rules
+              Entries
+            </button>
+            <button
+              onClick={() => setActiveTab("exits")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === "exits"
+                  ? "border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-indigo-500"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+              }`}
+            >
+              Exits
             </button>
           </nav>
         </div>
 
         {/* Tab Content */}
         <div>
-          {activeTab === "strategies" ? <StrategiesTab /> : <RulesTab />}
+          {activeTab === "strategies" && <StrategiesTab />}
+          {activeTab === "entries" && <EntriesTab />}
+          {activeTab === "exits" && <ExitsTab />}
         </div>
       </PageContent>
     </AppLayout>
