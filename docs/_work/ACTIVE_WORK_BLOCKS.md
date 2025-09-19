@@ -65,8 +65,113 @@ Implement the hierarchical risk management system with Account → Strategy → 
 ### Outcome
 **Success** - Full hierarchical risk system implemented with minimal database changes. UI updated to reflect new features. Framework updated with three-file context system.
 
-## WB-2025-01-18-001: Position Indicator Graphic Enhancement
+## WB-2025-01-19-001: Trading Strategy Implementation - MVP
 **State**: confirmed
+**Timeframe**: NOW
+**Created**: 2025-01-19 14:00
+**Updated**: 2025-01-19 15:00 (Simplified to MVP scope)
+**Dependencies**: None (simplified)
+**Tags**: #trading #strategies #mvp #business-critical
+
+### Goal
+Ship a dead-simple strategy management page where users can create strategies by picking 3 rules (entry, position, exit) and track basic performance.
+
+### MVP Requirements (Simplified from Original)
+1. **Single Page with Two Tabs**
+   - Strategies Tab: List view with Name, Status, P&L, Win Rate
+   - Rules Tab: Three sections showing available rules
+   - "New Strategy" button opens modal
+
+2. **Strategy Creation**
+   - Modal with 3 dropdowns (Entry, Position, Exit)
+   - No editing after creation
+   - Can only pause/resume
+
+3. **Fixed Rules (9 Total)**
+   - Entry: Breakout, Pullback, Manual
+   - Position: 2% Risk (only one for now)
+   - Exit: 2R Target, Trail 20MA, Manual
+
+4. **Basic Performance Tracking**
+   - Count trades
+   - Calculate win rate
+   - Sum P&L
+   - That's it
+
+### Tasks (MVP Only)
+- [x] Review and align with MVP requirements
+- [ ] Create rules table migration (id, type, name, config_json)
+- [ ] Seed database with 9 fixed rules
+- [ ] Build strategies page with tabs (Strategies/Rules)
+- [ ] Create strategy list table component
+- [ ] Build rules display (3 sections, simple list)
+- [ ] Create "New Strategy" modal (3 dropdowns + create)
+- [ ] Implement pause/resume functionality
+- [ ] Add basic P&L calculation from trades
+- [ ] Calculate and display win rate
+- [ ] Connect to trades table for performance data
+- [ ] Add expandable row to show positions
+- [ ] Basic testing with mock trades
+
+### What We're NOT Building (Yet)
+- ❌ Complex strategy builder
+- ❌ Backtesting
+- ❌ Signal generation
+- ❌ Custom indicators
+- ❌ Rule versioning
+- ❌ Strategy cloning
+- ❌ Advanced metrics (Sharpe, etc.)
+- ❌ Automated trading
+
+### Database Changes Needed
+```sql
+-- New rules table
+CREATE TABLE rules (
+  id SERIAL PRIMARY KEY,
+  type VARCHAR(20), -- 'entry', 'position', 'exit'
+  name VARCHAR(50),
+  config_json JSONB
+);
+
+-- Simplified strategies table
+CREATE TABLE strategies (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  entry_rule_id INT REFERENCES rules(id),
+  position_rule_id INT REFERENCES rules(id),
+  exit_rule_id INT REFERENCES rules(id),
+  status VARCHAR(20) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Basic trades table
+CREATE TABLE trades (
+  id SERIAL PRIMARY KEY,
+  strategy_id INT REFERENCES strategies(id),
+  symbol VARCHAR(10),
+  entry_price DECIMAL,
+  exit_price DECIMAL,
+  pnl DECIMAL,
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Success Criteria
+✅ User can create a strategy in <30 seconds
+✅ Strategy appears in list immediately
+✅ Can see P&L updating as trades happen
+✅ Can pause/resume strategies
+✅ Total implementation time: 2-3 days max
+
+### Notes
+- This is a radical simplification of the original work block
+- Focus on shipping something users can interact with TODAY
+- Once MVP works, we can add complexity incrementally
+- No automation in MVP - all trades can be manual
+
+## WB-2025-01-18-001: Position Indicator Graphic Enhancement
+**State**: doing
 **Timeframe**: NOW
 **Created**: 2025-01-18 12:00
 **Dependencies**: None
@@ -76,15 +181,15 @@ Implement the hierarchical risk management system with Account → Strategy → 
 Enhance the position indicator graphic to provide accurate visual representation of position status with proper proportions relative to real pricing data.
 
 ### Requirements
-1. **Fixed Width Implementation**
-   - Convert from percentage-based to fixed pixel widths
-   - Ensure consistent display across different screen sizes
-   - Maintain responsiveness while keeping proportions accurate
+1. **Fixed Width Implementation** ✅
+   - Converted to fixed pixel widths (120px container)
+   - Consistent display across different screen sizes
+   - Maintains proportions accurately
 
-2. **Correct Ratio Spacing**
-   - Elements must be proportionally spaced based on actual price points
-   - Entry price, current price, stop loss, and take profit positions must accurately reflect their relative distances
-   - Visual representation should match real-world pricing ratios (e.g., if stop is 5% below entry and target is 10% above, the visual spacing should be 1:2)
+2. **Correct Ratio Spacing** ✅
+   - Elements proportionally spaced based on actual price points
+   - Entry, current, stop, and target positions reflect relative distances
+   - Visual spacing matches real-world pricing ratios
 
 3. **Visual Key/Legend**
    - Add a key explaining color coding and symbols
@@ -92,16 +197,22 @@ Enhance the position indicator graphic to provide accurate visual representation
    - Consider hover tooltips for additional context
    - Position the key in an unobtrusive but accessible location
 
-4. **Technical Considerations**
-   - Calculate pixel positions based on price ranges
-   - Handle edge cases (very tight stops, distant targets)
-   - Ensure performance with multiple indicators on screen
-   - Consider animation for price movements
+4. **Technical Considerations** ✅ (partial)
+   - Pixel positions calculated based on price ranges
+   - Edge cases handled
+   - Performance maintained with multiple indicators
 
 ### Tasks
-- [ ] Analyze current PositionStatusBar implementation
-- [ ] Design new calculation system for proportional spacing
-- [ ] Implement fixed-width container with proper ratios
+- [x] Analyze current PositionStatusBar implementation
+- [x] Design new calculation system for proportional spacing
+- [x] Implement fixed-width container with proper ratios
+- [x] Convert to three-row layout (current price, segments, symbols/prices)
+- [x] Switch from absolute positioning to flexbox
+- [x] Standardize symbol widths to 9px
+- [x] Apply theme variables throughout
+- [ ] Handle stop loss changes elegantly
+- [ ] Refine bottom row width solution
+- [ ] Add pending and closed position indicators
 - [ ] Create visual key component
 - [ ] Add hover states and tooltips
 - [ ] Test with various price scenarios
@@ -109,6 +220,9 @@ Enhance the position indicator graphic to provide accurate visual representation
 - [ ] Document the visualization logic
 
 ### Notes
-- Current implementation uses percentage-based positioning which doesn't reflect actual price relationships
-- Need to balance accuracy with visual clarity (extreme ratios may need clamping)
-- Consider using a logarithmic scale for very large price ranges
+- Successfully refactored from 350+ lines to 337 lines
+- Three-row layout: current price (top), segments (middle), symbols/prices (bottom)
+- Flexbox layout provides better maintainability than absolute positioning
+- Dynamic current price positioning based on actual values working correctly
+- Bottom row alignment solved with equal-width containers
+- Remaining work focuses on edge cases and visual polish
