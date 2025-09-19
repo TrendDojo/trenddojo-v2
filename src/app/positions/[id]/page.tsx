@@ -247,11 +247,11 @@ export default function PositionDetailPage() {
                         {item.type === 'execution' ? (
                           <span className={cn(
                             "px-2 py-1 rounded text-xs font-medium",
-                            item.subType === "buy"
+                            'subType' in item && item.subType === "buy"
                               ? "bg-up/20 text-up"
                               : "bg-down/20 text-down"
                           )}>
-                            {item.subType?.toUpperCase()}
+                            {'subType' in item ? item.subType?.toUpperCase() : ''}
                           </span>
                         ) : (
                           <span className="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-600 dark:text-blue-400">
@@ -260,16 +260,16 @@ export default function PositionDetailPage() {
                         )}
                       </td>
                       <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
-                        {item.type === 'note' ? item.content : item.fees ? `Fees: $${item.fees.toFixed(2)}` : '—'}
+                        {item.type === 'note' ? ('content' in item ? item.content : '') : ('fees' in item && item.fees ? `Fees: $${item.fees.toFixed(2)}` : '—')}
                       </td>
                       <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
-                        {item.type === 'execution' ? item.quantity : '—'}
+                        {item.type === 'execution' ? ('quantity' in item ? item.quantity : '') : '—'}
                       </td>
                       <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
-                        {item.type === 'execution' ? `$${item.price?.toFixed(2)}` : '—'}
+                        {item.type === 'execution' ? ('price' in item && item.price ? `$${item.price.toFixed(2)}` : '') : '—'}
                       </td>
                       <td className="py-3 px-4 text-right font-medium dark:text-white text-gray-900">
-                        {item.type === 'execution' ? `$${item.total?.toFixed(2)}` : '—'}
+                        {item.type === 'execution' ? ('total' in item && item.total ? `$${item.total.toFixed(2)}` : '') : '—'}
                       </td>
                     </tr>
                   ))}

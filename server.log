@@ -1,22 +1,566 @@
- ⚠ Port 3000 is in use by process 75686, usin   ▲ Next.js 15.5.2 (Turbopac❌ tRPC failed on user.getProfile: Unsupported POST-request to query procedure at path "user.getProfile"
-
------
-[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /var/folders/fn/ywfzbk6j31j76l_s2r8pm8_40000gn/T/next-panic-5eb0bf8dc20ddb892e613e7297aa3804.log.
-
-To help make Turbopack better, report this error by ]8;;https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20Nex[?25h
-package%20not%20found&body=Turbopack%20version%3A%20%60v15.5.0-3-gc8cf55f4e%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ANext.js%20package%20not%20found%0A%0ADebug%20info%3A%0A-%20Execution%20of%20get_entrypoints_with_issues_operation%20failed%0A-%20Execution%20of%20EntrypointsOperation%3A%3Anew%20failed%0A-%20Execution%20of%20Project%3A%3Aentrypoints%20failed%0A-%20Execution%20of%20PagesProject%3A%3Aroutes%20failed%0A-%20Execution%20of%20get_pages_structure_for_root_directory%20failed%0A-%20Execution%20of%20get_next_package%20failed%0A-%20Next.js%20package%20not%20found%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace\clicking here.]8;;\
------
-
-Error [TurbopackInternalError]: Next.js package not found
-
-Debug info:
-- Execution of get_entrypoints_with_issues_operation failed
-- Execution of EntrypointsOperation::new failed
-- Execution of Project::entrypoints failed
-- Execution of PagesProject::routes failed
-- Execution of get_pages_structure_for_root_directory failed
-- Execution of get_next_package failed
-- Next.js package not found
-    at <unknown> (TurbopackInternalError: Next.js package not found) {
-  location: undefined
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/libMarketDataService initialized with 1 providers
+ GET /api/market-data/screener 200 in 8360ms
+MarketDataService initialized with 1 providers
+ GET /api/market-data/screener 200 in 7759ms
+MarketDataService initialized with 1 providers
+ GET /api/market-data/screener 200 in 7692ms
+MarketDataService initialized with 1 providers
+ GET /api/market-data/screener 200 in 7531ms
+MarketDataService initialized with 1 providers
+ GET /api/market-data/screener 200 in 7565ms
+:67:5)
+    at async GET (src/app/api/market-data/screener/route.ts:41:5)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+      at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+      at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+      at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+      at async GET (src/app/api/market-data/screener/route.ts:41:5)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Failed to fetch bulk prices for chunk: AAPL,MSFT,GOOGL,AMZN,META,NVDA,TSLA,JPM,BAC,WFC,GS,MS,BRK-B,V,MA,JNJ,UNH,PFE,ABBV,TMO,MRK,LLY,XOM,CVX,COP,SLB,EOG,WMT,HD,PG,KO,PEP,NKE,MCD,SBUX,BA,CAT,GE,MMM,UPS,HON,AMD,INTC,QCOM,MU,AVGO,TXN,AMAT,LRCX,CRM,ADBE,ORCL,NOW,INTU,UBER,SQ,SHOP,DIS,NFLX,ROKU,SPOT,PYPL,COIN,PLTR,SOFI,RIVN,LCID Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+    at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+    at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+    at async GET (src/app/api/market-data/screener/route.ts:44:23)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+      at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+      at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+      at async GET (src/app/api/market-data/screener/route.ts:44:23)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+    at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+    at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+    at async GET (src/app/api/market-data/screener/route.ts:41:5)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+      at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+      at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+      at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+      at async GET (src/app/api/market-data/screener/route.ts:41:5)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Failed to fetch bulk prices for chunk: AAPL,MSFT,GOOGL,AMZN,META,NVDA,TSLA,JPM,BAC,WFC,GS,MS,BRK-B,V,MA,JNJ,UNH,PFE,ABBV,TMO,MRK,LLY,XOM,CVX,COP,SLB,EOG,WMT,HD,PG,KO,PEP,NKE,MCD,SBUX,BA,CAT,GE,MMM,UPS,HON,AMD,INTC,QCOM,MU,AVGO,TXN,AMAT,LRCX,CRM,ADBE,ORCL,NOW,INTU,UBER,SQ,SHOP,DIS,NFLX,ROKU,SPOT,PYPL,COIN,PLTR,SOFI,RIVN,LCID Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+    at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+    at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+    at async GET (src/app/api/market-data/screener/route.ts:44:23)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+      at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+      at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+      at async GET (src/app/api/market-data/screener/route.ts:44:23)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+    at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+    at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+    at async GET (src/app/api/market-data/screener/route.ts:41:5)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+      at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+      at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+      at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+      at async GET (src/app/api/market-data/screener/route.ts:41:5)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Failed to fetch bulk prices for chunk: AAPL,MSFT,GOOGL,AMZN,META,NVDA,TSLA,JPM,BAC,WFC,GS,MS,BRK-B,V,MA,JNJ,UNH,PFE,ABBV,TMO,MRK,LLY,XOM,CVX,COP,SLB,EOG,WMT,HD,PG,KO,PEP,NKE,MCD,SBUX,BA,CAT,GE,MMM,UPS,HON,AMD,INTC,QCOM,MU,AVGO,TXN,AMAT,LRCX,CRM,ADBE,ORCL,NOW,INTU,UBER,SQ,SHOP,DIS,NFLX,ROKU,SPOT,PYPL,COIN,PLTR,SOFI,RIVN,LCID Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+    at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+    at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+    at async GET (src/app/api/market-data/screener/route.ts:44:23)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+      at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+      at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+      at async GET (src/app/api/market-data/screener/route.ts:44:23)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+    at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+    at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+    at async GET (src/app/api/market-data/screener/route.ts:41:5)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+      at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+      at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+      at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+      at async GET (src/app/api/market-data/screener/route.ts:41:5)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Failed to fetch bulk prices for chunk: AAPL,MSFT,GOOGL,AMZN,META,NVDA,TSLA,JPM,BAC,WFC,GS,MS,BRK-B,V,MA,JNJ,UNH,PFE,ABBV,TMO,MRK,LLY,XOM,CVX,COP,SLB,EOG,WMT,HD,PG,KO,PEP,NKE,MCD,SBUX,BA,CAT,GE,MMM,UPS,HON,AMD,INTC,QCOM,MU,AVGO,TXN,AMAT,LRCX,CRM,ADBE,ORCL,NOW,INTU,UBER,SQ,SHOP,DIS,NFLX,ROKU,SPOT,PYPL,COIN,PLTR,SOFI,RIVN,LCID Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+    at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+    at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+    at async GET (src/app/api/market-data/screener/route.ts:44:23)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+      at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+      at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+      at async GET (src/app/api/market-data/screener/route.ts:44:23)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+    at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+    at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+    at async GET (src/app/api/market-data/screener/route.ts:41:5)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+      at async YahooFinanceProvider.initialize (src/lib/market-data/providers/YahooFinanceProvider.ts:101:5)
+      at async MarketDataService.initializeProviders (src/lib/market-data/MarketDataService.ts:312:5)
+      at async MarketDataService.initialize (src/lib/market-data/MarketDataService.ts:67:5)
+      at async GET (src/app/api/market-data/screener/route.ts:41:5)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Yahoo Finance health check failed: Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+    at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getCurrentPrice (src/lib/market-data/providers/YahooFinanceProvider.ts:121:24)
+      at async YahooFinanceProvider.performHealthCheck (src/lib/market-data/providers/YahooFinanceProvider.ts:409:7)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
+}
+Failed to fetch bulk prices for chunk: AAPL,MSFT,GOOGL,AMZN,META,NVDA,TSLA,JPM,BAC,WFC,GS,MS,BRK-B,V,MA,JNJ,UNH,PFE,ABBV,TMO,MRK,LLY,XOM,CVX,COP,SLB,EOG,WMT,HD,PG,KO,PEP,NKE,MCD,SBUX,BA,CAT,GE,MMM,UPS,HON,AMD,INTC,QCOM,MU,AVGO,TXN,AMAT,LRCX,CRM,ADBE,ORCL,NOW,INTU,UBER,SQ,SHOP,DIS,NFLX,ROKU,SPOT,PYPL,COIN,PLTR,SOFI,RIVN,LCID Error [MarketDataError]: Failed after retries
+    at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:377:11)
+    at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+    at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+    at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+    at async GET (src/app/api/market-data/screener/route.ts:44:23)
+  375 |     }
+  376 |     
+> 377 |     throw new MarketDataError(
+      |           ^
+  378 |       'Failed after retries',
+  379 |       MarketDataErrorCode.NETWORK_ERROR,
+  380 |       this.name, {
+  code: 'NETWORK_ERROR',
+  provider: 'Yahoo Finance',
+  details: Error: HTTP 500: Cannot find server.
+      at YahooFinanceProvider.fetchWithRetry (src/lib/market-data/providers/YahooFinanceProvider.ts:353:17)
+      at async YahooFinanceProvider.getBulkPrices (src/lib/market-data/providers/YahooFinanceProvider.ts:169:26)
+      at async MarketDataService.fetchWithFallback (src/lib/market-data/MarketDataService.ts:336:16)
+      at async MarketDataService.getBulkPrices (src/lib/market-data/MarketDataService.ts:149:27)
+      at async GET (src/app/api/market-data/screener/route.ts:44:23)
+    351 |         
+    352 |         if (!response.ok) {
+  > 353 |           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        |                 ^
+    354 |         }
+    355 |         
+    356 |         const data = await response.json();
 }

@@ -64,3 +64,51 @@ Implement the hierarchical risk management system with Account → Strategy → 
 
 ### Outcome
 **Success** - Full hierarchical risk system implemented with minimal database changes. UI updated to reflect new features. Framework updated with three-file context system.
+
+## WB-2025-01-18-001: Position Indicator Graphic Enhancement
+**State**: confirmed
+**Timeframe**: NOW
+**Created**: 2025-01-18 12:00
+**Dependencies**: None
+**Tags**: #ui #visualization #positions #data-viz
+
+### Goal
+Enhance the position indicator graphic to provide accurate visual representation of position status with proper proportions relative to real pricing data.
+
+### Requirements
+1. **Fixed Width Implementation**
+   - Convert from percentage-based to fixed pixel widths
+   - Ensure consistent display across different screen sizes
+   - Maintain responsiveness while keeping proportions accurate
+
+2. **Correct Ratio Spacing**
+   - Elements must be proportionally spaced based on actual price points
+   - Entry price, current price, stop loss, and take profit positions must accurately reflect their relative distances
+   - Visual representation should match real-world pricing ratios (e.g., if stop is 5% below entry and target is 10% above, the visual spacing should be 1:2)
+
+3. **Visual Key/Legend**
+   - Add a key explaining color coding and symbols
+   - Include labels for: Entry Price, Current Price, Stop Loss, Take Profit
+   - Consider hover tooltips for additional context
+   - Position the key in an unobtrusive but accessible location
+
+4. **Technical Considerations**
+   - Calculate pixel positions based on price ranges
+   - Handle edge cases (very tight stops, distant targets)
+   - Ensure performance with multiple indicators on screen
+   - Consider animation for price movements
+
+### Tasks
+- [ ] Analyze current PositionStatusBar implementation
+- [ ] Design new calculation system for proportional spacing
+- [ ] Implement fixed-width container with proper ratios
+- [ ] Create visual key component
+- [ ] Add hover states and tooltips
+- [ ] Test with various price scenarios
+- [ ] Ensure mobile responsiveness
+- [ ] Document the visualization logic
+
+### Notes
+- Current implementation uses percentage-based positioning which doesn't reflect actual price relationships
+- Need to balance accuracy with visual clarity (extreme ratios may need clamping)
+- Consider using a logarithmic scale for very large price ranges
