@@ -17,17 +17,19 @@ interface AlpacaConnectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConnect: (credentials: AlpacaCredentials) => Promise<void>;
+  isPaperTrading?: boolean;
 }
 
 export function AlpacaConnectionModal({
   isOpen,
   onClose,
   onConnect,
+  isPaperTrading = true,
 }: AlpacaConnectionModalProps) {
   const [credentials, setCredentials] = useState<AlpacaCredentials>({
     apiKeyId: "",
     secretKey: "",
-    paperTrading: true, // Default to paper trading for safety
+    paperTrading: isPaperTrading,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export function AlpacaConnectionModal({
       await onConnect(credentials);
       onClose();
       // Clear credentials after successful connection
-      setCredentials({ apiKeyId: "", secretKey: "", paperTrading: true });
+      setCredentials({ apiKeyId: "", secretKey: "", paperTrading: isPaperTrading });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to connect to Alpaca"
@@ -60,7 +62,7 @@ export function AlpacaConnectionModal({
       onClose();
       setError(null);
       // Clear credentials when closing
-      setCredentials({ apiKeyId: "", secretKey: "", paperTrading: true });
+      setCredentials({ apiKeyId: "", secretKey: "", paperTrading: isPaperTrading });
     }
   };
 
@@ -68,33 +70,26 @@ export function AlpacaConnectionModal({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Connect to Alpaca"
+      title={isPaperTrading ? "Connect to Alpaca Paper Trading" : "Connect to Alpaca Live Trading"}
       size="lg"
     >
       <div className="space-y-6">
-        {/* Paper Trading Toggle */}
-        <div className="flex items-center justify-between p-4 bg-warning/10 rounded-lg border border-warning/30">
-          <div className="flex-1">
-            <h3 className="font-medium text-warning mb-1">
-              Paper Trading Mode
-            </h3>
-            <p className="text-sm text-warning/80">
-              {credentials.paperTrading
-                ? "Using simulated trading environment (recommended for testing)"
-                : "Using LIVE trading environment (real money at risk!)"}
-            </p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={credentials.paperTrading}
-              onChange={(e) =>
-                setCredentials({ ...credentials, paperTrading: e.target.checked })
-              }
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-warning"></div>
-          </label>
+        {/* Trading Mode Indicator */}
+        <div className={`p-4 rounded-lg ${
+          isPaperTrading ? 'bg-info/10' : 'bg-warning/10'
+        }`}>
+          <h3 className={`font-medium mb-1 ${
+            isPaperTrading ? 'text-info' : 'text-warning'
+          }`}>
+            {isPaperTrading ? '📝 Paper Trading Mode' : '⚠️ LIVE Trading Mode'}
+          </h3>
+          <p className={`text-sm ${
+            isPaperTrading ? 'text-info/80' : 'text-warning/80'
+          }`}>
+            {isPaperTrading
+              ? "Using simulated trading environment - perfect for testing strategies"
+              : "Using LIVE trading environment - real money at risk!"}
+          </p>
         </div>
 
         {/* API Credentials */}
@@ -147,7 +142,7 @@ export function AlpacaConnectionModal({
                 Go to{" "}
                 <a
                   href={
-                    credentials.paperTrading
+                    isPaperTrading
                       ? "https://app.alpaca.markets/paper/dashboard/overview"
                       : "https://app.alpaca.markets/brokerage/dashboard/overview"
                   }
@@ -167,7 +162,7 @@ export function AlpacaConnectionModal({
             <li className="flex items-start gap-2">
               <span className="font-semibold">3.</span>
               <span>
-                {credentials.paperTrading
+                {isPaperTrading
                   ? "Make sure you're in Paper Trading mode (toggle at top)"
                   : "Make sure you're in Live Trading mode (toggle at top)"}
               </span>
@@ -200,14 +195,14 @@ export function AlpacaConnectionModal({
         <Alert intent="info">
           <p className="text-sm">
             Your API credentials will be encrypted before storage. We never store
-            plain text credentials. {credentials.paperTrading
+            plain text credentials. {isPaperTrading
               ? "Paper trading uses simulated money only."
               : "LIVE TRADING - Real money at risk!"}
           </p>
         </Alert>
 
         {/* Live Trading Warning */}
-        {!credentials.paperTrading && (
+        {!isPaperTrading && (
           <Alert intent="warning">
             <p className="font-semibold mb-2">⚠️ LIVE TRADING MODE</p>
             <p className="text-sm">
@@ -228,14 +223,14 @@ export function AlpacaConnectionModal({
             Cancel
           </Button>
           <Button
-            variant={credentials.paperTrading ? "primary" : "danger"}
+            variant={isPaperTrading ? "primary" : "danger"}
             onClick={handleConnect}
             loading={loading}
             disabled={loading || !credentials.apiKeyId || !credentials.secretKey}
           >
             {loading
               ? "Connecting..."
-              : credentials.paperTrading
+              : isPaperTrading
               ? "Connect Paper Account"
               : "Connect LIVE Account"}
           </Button>

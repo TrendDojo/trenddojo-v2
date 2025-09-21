@@ -230,7 +230,7 @@ export function ExitsTab() {
       </div>
 
       {/* Warning Box */}
-      <div className="bg-warning/10 border border-warning/30 rounded-xl p-4">
+      <div className="bg-warning/10 rounded-xl p-4">
         <div className="flex gap-3">
           <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
           <div>

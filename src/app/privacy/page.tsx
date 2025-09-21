@@ -74,7 +74,7 @@ export default function PrivacyPolicy() {
                 <li><strong>Legal Compliance:</strong> When required by law or legal process</li>
               </ul>
 
-              <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-4">
+              <div className="bg-warning/10 rounded-lg p-4 mb-4">
                 <h4 className="font-medium text-warning mb-2">Important Note:</h4>
                 <p className="text-warning/80 text-sm">We never sell your personal information to third parties. All data sharing is strictly for service provision and regulatory compliance.</p>
               </div>

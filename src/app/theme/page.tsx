@@ -414,37 +414,50 @@ export default function ThemePage() {
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Tabs</h2>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Default Tabs</p>
-                <div className="border-b dark:border-slate-700 border-gray-200">
-                  <nav className="-mb-px flex space-x-8">
-                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600 dark:text-indigo-400">
-                      Active Tab
-                    </button>
-                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
-                      Inactive Tab
-                    </button>
-                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
-                      Another Tab
-                    </button>
-                  </nav>
-                </div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Modern Tabs (Default)</p>
+                <Tabs
+                  tabs={[
+                    { id: "active", label: "Active Tab" },
+                    { id: "inactive", label: "Inactive Tab" },
+                    { id: "another", label: "Another Tab" },
+                    { id: "disabled", label: "Disabled", disabled: true }
+                  ]}
+                  activeTab={activeModernTab}
+                  onTabChange={setActiveModernTab}
+                  variant="modern"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Classic Tabs</p>
+                <Tabs
+                  tabs={[
+                    { id: "overview", label: "Overview" },
+                    { id: "settings", label: "Settings" },
+                    { id: "activity", label: "Activity" },
+                    { id: "disabled", label: "Disabled", disabled: true }
+                  ]}
+                  activeTab={activeClassicTab}
+                  onTabChange={setActiveClassicTab}
+                  variant="classic"
+                />
               </div>
 
               <div>
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Pill Tabs</p>
-                <div className="flex space-x-2">
-                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-indigo-600 text-white">
-                    Active
-                  </button>
-                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600">
-                    Inactive
-                  </button>
-                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600">
-                    Another
-                  </button>
-                </div>
+                <Tabs
+                  tabs={[
+                    { id: "active", label: "Active" },
+                    { id: "inactive", label: "Inactive" },
+                    { id: "another", label: "Another" },
+                    { id: "disabled", label: "Disabled", disabled: true }
+                  ]}
+                  activeTab={activePillTab}
+                  onTabChange={setActivePillTab}
+                  variant="pills"
+                />
               </div>
             </div>
           </Card>

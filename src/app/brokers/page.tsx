@@ -463,6 +463,7 @@ export default function BrokersPage() {
             setSelectedAlpacaBroker(null);
           }}
           onConnect={handleAlpacaConnect}
+          isPaperTrading={selectedAlpacaBroker === 'alpaca_paper'}
         />
 
         {/* Legal Agreement Modal */}
