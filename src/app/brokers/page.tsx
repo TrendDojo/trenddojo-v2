@@ -34,6 +34,7 @@ export default function BrokersPage() {
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [agreementText, setAgreementText] = useState("");
   const [hasAgreed, setHasAgreed] = useState(false);
+  const [pendingBrokerId, setPendingBrokerId] = useState<string | null>(null);
   const [brokers, setBrokers] = useState<BrokerCard[]>([
     {
       id: 'alpaca_paper',
@@ -212,6 +213,17 @@ export default function BrokersPage() {
     if (agreementText.toLowerCase() === "i agree") {
       setHasAgreed(true);
       setShowLegalModal(false);
+
+      // Open the appropriate broker modal after agreement
+      if (pendingBrokerId) {
+        if (pendingBrokerId === 'interactive_brokers') {
+          setShowIBModal(true);
+        } else if (pendingBrokerId === 'alpaca_paper' || pendingBrokerId === 'alpaca_live') {
+          setSelectedAlpacaBroker(pendingBrokerId);
+          setShowAlpacaModal(true);
+        }
+        setPendingBrokerId(null);
+      }
     }
   };
 
@@ -380,6 +392,7 @@ export default function BrokersPage() {
                   <Button
                     onClick={() => {
                       if (!hasAgreed) {
+                        setPendingBrokerId(broker.id);
                         setShowLegalModal(true);
                         return;
                       }
@@ -425,6 +438,7 @@ export default function BrokersPage() {
                   <Button
                     onClick={() => {
                       if (!hasAgreed) {
+                        setPendingBrokerId(broker.id);
                         setShowLegalModal(true);
                         return;
                       }
