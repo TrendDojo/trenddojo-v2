@@ -73,7 +73,13 @@ export function AlpacaConnectionModal({
       title={isPaperTrading ? "Connect to Alpaca Paper Trading" : "Connect to Alpaca Live Trading"}
       size="lg"
     >
-      <div className="space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleConnect();
+        }}
+        className="space-y-6"
+      >
         {/* Trading Mode Indicator */}
         <div className={`p-4 rounded-lg ${
           isPaperTrading ? 'bg-info/10' : 'bg-warning/10'
@@ -216,6 +222,7 @@ export function AlpacaConnectionModal({
         {/* Action Buttons */}
         <div className="flex gap-3 justify-end">
           <Button
+            type="button"
             variant="ghost"
             onClick={handleClose}
             disabled={loading}
@@ -223,8 +230,8 @@ export function AlpacaConnectionModal({
             Cancel
           </Button>
           <Button
+            type="submit"
             variant={isPaperTrading ? "primary" : "danger"}
-            onClick={handleConnect}
             loading={loading}
             disabled={loading || !credentials.apiKeyId || !credentials.secretKey}
           >
@@ -235,7 +242,7 @@ export function AlpacaConnectionModal({
               : "Connect LIVE Account"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Panel, Alert, Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { theme } from "@/lib/theme";
+import { Input, Checkbox, FormField } from "@/components/ui/FormField";
 
 export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +52,7 @@ export default function SignupPage() {
   // Show success screen after signup
   if (isSuccess) {
     return (
-      <div className="min-h-screen dark:bg-slate-900 bg-gray-100">
+      <div className="min-h-screen dark:bg-slate-900 bg-white">
         {/* Logo in top left */}
         <div className="absolute top-0 left-0 p-6">
           <Link href="/">
@@ -98,17 +98,21 @@ export default function SignupPage() {
             </Card>
             
             <div className="space-y-4">
-              <Link
-                href="/demo"
-                className={`block w-full ${theme.buttons.primary}`}
-              >
-                Try the Demo
+              <Link href="/demo" className="block">
+                <Button
+                  variant="primary"
+                  fullWidth
+                >
+                  Try the Demo
+                </Button>
               </Link>
-              <Link
-                href="/"
-                className={`block w-full ${theme.buttons.ghost}`}
-              >
-                Back to Home
+              <Link href="/" className="block">
+                <Button
+                  variant="ghost"
+                  fullWidth
+                >
+                  Back to Home
+                </Button>
               </Link>
             </div>
           </div>
@@ -146,77 +150,63 @@ export default function SignupPage() {
             {error && (
               <Alert intent="error" className="mb-6">
                 <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
-                <Link href="/login" className="text-red-200 hover:text-red-100 underline text-sm mt-2 inline-block">
+                <Link href="/login" className="text-danger hover:opacity-80 underline text-sm mt-2 inline-block">
                   Sign in to existing account
                 </Link>
               </Alert>
             )}
             
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
-                  Full Name
-                </label>
-                <input
+              <FormField label="Full Name" required>
+                <Input
                   type="text"
                   id="name"
                   name="name"
                   required
                   disabled={isSubmitting}
-                  className={theme.inputs.base}
                   placeholder="John Doe"
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
-                  Email Address
-                </label>
-                <input
+              <FormField label="Email Address" required>
+                <Input
                   type="email"
                   id="email"
                   name="email"
                   required
                   disabled={isSubmitting}
-                  className={theme.inputs.base}
                   placeholder="your@email.com"
                 />
-              </div>
-              
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
-                  Password
-                </label>
-                <input
+              </FormField>
+
+              <FormField label="Password" helper="Minimum 8 characters" required>
+                <Input
                   type="password"
                   id="password"
                   name="password"
                   required
                   disabled={isSubmitting}
-                  className={theme.inputs.base}
                   placeholder="Create a strong password"
                   minLength={8}
                 />
-                <p className="mt-2 text-xs dark:text-gray-400 text-gray-600">
-                  Minimum 8 characters
-                </p>
-              </div>
+              </FormField>
               
               <div className="flex items-start">
                 <input
                   type="checkbox"
                   id="terms"
+                  name="terms"
                   required
                   disabled={isSubmitting}
-                  className="w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 dark:checked:bg-blue-600 checked:bg-blue-600 accent-blue-600 mt-1"
+                  className="w-4 h-4 mt-1 rounded ring-1 ring-gray-200 dark:ring-slate-700 dark:bg-slate-900/50 bg-gray-50 dark:checked:bg-indigo-600 checked:bg-indigo-600 focus:ring-2 focus:ring-indigo-500"
                 />
                 <label htmlFor="terms" className="ml-2 text-sm dark:text-gray-400 text-gray-600">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-blue-400 hover:text-blue-300">
+                  <Link href="/terms" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-blue-400 hover:text-blue-300">
+                  <Link href="/privacy" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
                     Privacy Policy
                   </Link>
                 </label>
@@ -238,7 +228,7 @@ export default function SignupPage() {
                   <div className="w-full border-t dark:border-slate-700 border-gray-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 dark:bg-slate-800/50 bg-white dark:text-gray-400 text-gray-600">Or continue with</span>
+                  <span className="px-4 dark:bg-slate-950 bg-white dark:text-gray-400 text-gray-600">Or continue with</span>
                 </div>
               </div>
               
@@ -263,7 +253,7 @@ export default function SignupPage() {
               
               <p className="mt-6 text-center dark:text-gray-400 text-gray-600 text-sm">
                 Already have an account?{" "}
-                <Link href="/login" className="text-blue-400 hover:text-blue-300">
+                <Link href="/login" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
                   Sign in
                 </Link>
               </p>

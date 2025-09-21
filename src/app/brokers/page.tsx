@@ -31,7 +31,7 @@ export default function BrokersPage() {
   const [showIBModal, setShowIBModal] = useState(false);
   const [showAlpacaModal, setShowAlpacaModal] = useState(false);
   const [selectedAlpacaBroker, setSelectedAlpacaBroker] = useState<string | null>(null);
-  const [showLegalModal, setShowLegalModal] = useState(true);
+  const [showLegalModal, setShowLegalModal] = useState(false);
   const [agreementText, setAgreementText] = useState("");
   const [hasAgreed, setHasAgreed] = useState(false);
   const [brokers, setBrokers] = useState<BrokerCard[]>([
@@ -379,6 +379,10 @@ export default function BrokersPage() {
                 {broker.status === 'disconnected' && broker.isSupported && (
                   <Button
                     onClick={() => {
+                      if (!hasAgreed) {
+                        setShowLegalModal(true);
+                        return;
+                      }
                       if (broker.id === 'interactive_brokers') {
                         setShowIBModal(true);
                       } else if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
@@ -420,6 +424,10 @@ export default function BrokersPage() {
                 {broker.status === 'error' && (
                   <Button
                     onClick={() => {
+                      if (!hasAgreed) {
+                        setShowLegalModal(true);
+                        return;
+                      }
                       if (broker.id === 'interactive_brokers') {
                         setShowIBModal(true);
                       } else if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
@@ -469,7 +477,7 @@ export default function BrokersPage() {
         {/* Legal Agreement Modal */}
         <Modal
           isOpen={showLegalModal && !hasAgreed}
-          onClose={() => {}} // Prevent closing
+          onClose={() => setShowLegalModal(false)}
           title="Important Legal Notice"
           size="lg"
         >
@@ -485,7 +493,15 @@ export default function BrokersPage() {
               </p>
             </Alert>
 
-            <div className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (agreementText.toLowerCase() === "i agree") {
+                  handleLegalAgreement();
+                }
+              }}
+              className="space-y-4"
+            >
               <p className="text-sm dark:text-gray-300 text-gray-700">
                 Type <strong>"I agree"</strong> to acknowledge and accept these terms:
               </p>
@@ -496,15 +512,25 @@ export default function BrokersPage() {
                 onChange={(e) => setAgreementText(e.target.value)}
               />
 
-              <Button
-                onClick={handleLegalAgreement}
-                disabled={agreementText.toLowerCase() !== "i agree"}
-                variant="primary"
-                fullWidth
-              >
-                Continue to Broker Connections
-              </Button>
-            </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  onClick={() => setShowLegalModal(false)}
+                  variant="ghost"
+                  fullWidth
+                >
+                  Browse Only (No Connections)
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={agreementText.toLowerCase() !== "i agree"}
+                  variant="primary"
+                  fullWidth
+                >
+                  I Agree - Enable Connections
+                </Button>
+              </div>
+            </form>
           </div>
         </Modal>
       </PageContent>

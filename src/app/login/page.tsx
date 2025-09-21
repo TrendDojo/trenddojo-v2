@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Panel, Alert } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { theme } from "@/lib/theme";
+import { Input, Checkbox, FormField } from "@/components/ui/FormField";
 
 export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen dark:bg-slate-900 bg-gray-100">
+    <div className="min-h-screen dark:bg-slate-900 bg-white">
       {/* Logo in top left */}
       <div className="absolute top-0 left-0 p-6">
         <Link href="/">
@@ -82,47 +82,35 @@ export default function LoginPage() {
           )}
           
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
-                Email Address
-              </label>
-              <input
+            <FormField label="Email Address" required>
+              <Input
                 type="email"
                 id="email"
                 name="email"
                 required
                 disabled={isSubmitting}
-                className={theme.inputs.base}
                 placeholder="your@email.com"
                 defaultValue="test@example.com"
               />
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium dark:text-white text-gray-900 mb-2">
-                Password
-              </label>
-              <input
+            </FormField>
+
+            <FormField label="Password" required>
+              <Input
                 type="password"
                 id="password"
                 name="password"
                 required
                 disabled={isSubmitting}
-                className={theme.inputs.base}
                 placeholder="Enter your password"
                 defaultValue="password123"
               />
-            </div>
+            </FormField>
             
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 rounded focus:ring-2 focus:ring-info dark:checked:bg-info checked:bg-info accent-info"
-                />
-                <span className="ml-2 text-sm dark:text-gray-400 text-gray-600">Remember me</span>
-              </label>
-              <a href="#" className="text-sm text-info hover:text-info/80">
+              <Checkbox
+                label="Remember me"
+              />
+              <a href="#" className="text-sm text-indigo-600 dark:text-indigo-400 hover:opacity-80">
                 Forgot password?
               </a>
             </div>
@@ -140,7 +128,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="dark:text-gray-400 text-gray-600 text-sm">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-info hover:text-info/80">
+              <Link href="/signup" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
                 Start free trial
               </Link>
             </p>
