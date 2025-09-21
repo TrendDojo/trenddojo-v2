@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BrokerConnectionForm } from "./BrokerConnectionForm";
 import { FormField, Input } from "@/components/ui/FormField";
+import { Alert } from "@/components/ui/Panel";
 import { ExternalLink, FileText, AlertTriangle } from "lucide-react";
 
 export interface AlpacaCredentials {
@@ -128,11 +129,8 @@ export function AlpacaConnectionModal({
       </FormField>
 
       {/* How to Get API Keys */}
-      <div className="p-4 dark:bg-slate-800 bg-gray-50 rounded-lg">
-        <h4 className="font-medium dark:text-gray-300 text-gray-700 mb-2">
-          How to Get Your API Keys
-        </h4>
-        <ol className="text-sm dark:text-gray-400 text-gray-600 space-y-2">
+      <Alert intent="info" title="How to Get Your API Keys">
+        <ol className="text-sm space-y-2">
           <li className="flex items-start gap-2">
             <span className="font-semibold">1.</span>
             <span>
@@ -179,7 +177,7 @@ export function AlpacaConnectionModal({
             </span>
           </li>
         </ol>
-      </div>
+      </Alert>
     </BrokerConnectionForm>
   );
 }
