@@ -8,10 +8,15 @@ import { Card, Alert, Panel } from "@/components/ui/Panel";
 import { Modal, ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
+import { tableStyles, filterStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
+import { ChevronDown, Check } from "lucide-react";
 
 export default function ThemePage() {
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("active");
+  const [showStrategyDropdown, setShowStrategyDropdown] = useState(false);
+  const [selectedStrategies, setSelectedStrategies] = useState<string[]>(["strategy1", "strategy2"]);
 
   const showToastMessage = () => {
     setShowToast(true);
@@ -73,22 +78,11 @@ export default function ThemePage() {
                 <p className="text-xs dark:text-gray-500 text-gray-500">indigo-600</p>
               </div>
               
-              <div>
-                <div className="w-full h-20 bg-teal-500 rounded-lg mb-2"></div>
-                <p className="text-sm dark:text-gray-400 text-gray-600">Positive/Up</p>
-                <p className="text-xs dark:text-gray-500 text-gray-500">teal-500</p>
-              </div>
               
               <div>
-                <div className="w-full h-20 bg-purple-600 rounded-lg mb-2"></div>
-                <p className="text-sm dark:text-gray-400 text-gray-600">Negative/Down</p>
-                <p className="text-xs dark:text-gray-500 text-gray-500">purple-600</p>
-              </div>
-              
-              <div>
-                <div className="w-full h-20 bg-amber-500 rounded-lg mb-2"></div>
+                <div className="w-full h-20 bg-yellow-500 rounded-lg mb-2"></div>
                 <p className="text-sm dark:text-gray-400 text-gray-600">Warning</p>
-                <p className="text-xs dark:text-gray-500 text-gray-500">amber-500</p>
+                <p className="text-xs dark:text-gray-500 text-gray-500">yellow-500</p>
               </div>
               
               <div>
@@ -98,9 +92,9 @@ export default function ThemePage() {
               </div>
               
               <div>
-                <div className="w-full h-20 bg-emerald-500 rounded-lg mb-2"></div>
+                <div className="w-full h-20 bg-teal-500 rounded-lg mb-2"></div>
                 <p className="text-sm dark:text-gray-400 text-gray-600">Success</p>
-                <p className="text-xs dark:text-gray-500 text-gray-500">emerald-500</p>
+                <p className="text-xs dark:text-gray-500 text-gray-500">teal-500</p>
               </div>
               
               <div>
@@ -411,25 +405,41 @@ export default function ThemePage() {
             </div>
           </Card>
 
-          {/* Alerts & Messages Section */}
+          {/* Tabs Section */}
           <Card>
-            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Alerts & Messages</h2>
-            
-            <div className="space-y-4">
-              <div className="bg-sky-500/10 text-sky-500 px-4 py-3 rounded-lg">
-                <strong>Info:</strong> This is an informational message.
+            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Tabs</h2>
+
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Default Tabs</p>
+                <div className="border-b dark:border-slate-700 border-gray-200">
+                  <nav className="-mb-px flex space-x-8">
+                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600 dark:text-indigo-400">
+                      Active Tab
+                    </button>
+                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
+                      Inactive Tab
+                    </button>
+                    <button className="py-2 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
+                      Another Tab
+                    </button>
+                  </nav>
+                </div>
               </div>
-              
-              <div className="bg-emerald-500/10 text-emerald-500 px-4 py-3 rounded-lg">
-                <strong>Success:</strong> Operation completed successfully!
-              </div>
-              
-              <div className="bg-amber-500/10 text-amber-500 px-4 py-3 rounded-lg">
-                <strong>Warning:</strong> Please review before proceeding.
-              </div>
-              
-              <div className="bg-rose-500/10 text-rose-500 px-4 py-3 rounded-lg">
-                <strong>Error:</strong> Something went wrong. Please try again.
+
+              <div>
+                <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Pill Tabs</p>
+                <div className="flex space-x-2">
+                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-indigo-600 text-white">
+                    Active
+                  </button>
+                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600">
+                    Inactive
+                  </button>
+                  <button className="px-4 py-2 text-sm font-medium rounded-full bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600">
+                    Another
+                  </button>
+                </div>
               </div>
             </div>
           </Card>
@@ -452,32 +462,120 @@ export default function ThemePage() {
           {/* Tables Section */}
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Tables</h2>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b dark:border-slate-700 border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold dark:text-gray-300 text-gray-700">Symbol</th>
-                    <th className="text-left py-3 px-4 font-semibold dark:text-gray-300 text-gray-700">Price</th>
-                    <th className="text-left py-3 px-4 font-semibold dark:text-gray-300 text-gray-700">Change</th>
-                    <th className="text-left py-3 px-4 font-semibold dark:text-gray-300 text-gray-700">Volume</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b dark:border-slate-800 border-gray-100">
-                    <td className="py-3 px-4 dark:text-white text-gray-900">BTC/USD</td>
-                    <td className="py-3 px-4 dark:text-white text-gray-900">$45,234.56</td>
-                    <td className="py-3 px-4 text-teal-500">+2.34%</td>
-                    <td className="py-3 px-4 dark:text-gray-400 text-gray-600">$2.4B</td>
-                  </tr>
-                  <tr className="border-b dark:border-slate-800 border-gray-100">
-                    <td className="py-3 px-4 dark:text-white text-gray-900">ETH/USD</td>
-                    <td className="py-3 px-4 dark:text-white text-gray-900">$3,123.45</td>
-                    <td className="py-3 px-4 text-purple-500">-1.23%</td>
-                    <td className="py-3 px-4 dark:text-gray-400 text-gray-600">$1.2B</td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* Filter Tabs Example (from positions page) */}
+            <div className="mb-6">
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Filter Tabs (Toggle Button Group)</p>
+              <div className="flex items-center gap-4">
+                {/* Filter buttons */}
+                <div className={filterStyles.container}>
+                  <button
+                    className={getFilterButton(activeFilter === "active")}
+                    onClick={() => setActiveFilter("active")}
+                  >
+                    Active
+                  </button>
+                  <button
+                    className={getFilterButton(activeFilter === "pending")}
+                    onClick={() => setActiveFilter("pending")}
+                  >
+                    Pending
+                  </button>
+                  <button
+                    className={getFilterButton(activeFilter === "closed")}
+                    onClick={() => setActiveFilter("closed")}
+                  >
+                    Closed
+                  </button>
+                </div>
+
+                {/* Strategy Dropdown with Checkboxes */}
+                <div className={filterStyles.dropdown}>
+                  <button
+                    className={filterStyles.dropdownTrigger}
+                    onClick={() => setShowStrategyDropdown(!showStrategyDropdown)}
+                  >
+                    <span>Strategies ({selectedStrategies.length})</span>
+                    <ChevronDown className={cn("w-4 h-4 transition-transform", showStrategyDropdown && "rotate-180")} />
+                  </button>
+
+                  {showStrategyDropdown && (
+                    <div className={filterStyles.dropdownMenu}>
+                      <div className="p-2">
+                        <label className={filterStyles.dropdownItem}>
+                          <input
+                            type="checkbox"
+                            className={filterStyles.checkbox}
+                            checked={selectedStrategies.length === 3}
+                            onChange={() => {
+                              if (selectedStrategies.length === 3) {
+                                setSelectedStrategies([]);
+                              } else {
+                                setSelectedStrategies(["strategy1", "strategy2", "strategy3"]);
+                              }
+                            }}
+                          />
+                          <span className="text-sm">All Strategies</span>
+                        </label>
+                        <div className="border-t dark:border-slate-700 border-gray-200 my-2" />
+                        {["Strategy Alpha", "Strategy Beta", "Strategy Gamma"].map((strategy, index) => (
+                          <label key={strategy} className={filterStyles.dropdownItem}>
+                            <input
+                              type="checkbox"
+                              className={filterStyles.checkbox}
+                              checked={selectedStrategies.includes(`strategy${index + 1}`)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedStrategies([...selectedStrategies, `strategy${index + 1}`]);
+                                } else {
+                                  setSelectedStrategies(selectedStrategies.filter(s => s !== `strategy${index + 1}`));
+                                }
+                              }}
+                            />
+                            <span className="text-sm">{strategy}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Improved Table Example - Using Centralized Styles */}
+            <div className={tableStyles.wrapper}>
+              <div className="overflow-x-auto">
+                <table className={tableStyles.table}>
+                  <thead className={tableStyles.thead}>
+                    <tr className={tableStyles.headerRow}>
+                      <th className={tableStyles.th}>Symbol</th>
+                      <th className={tableStyles.th}>Price</th>
+                      <th className={tableStyles.th}>Change</th>
+                      <th className={tableStyles.th}>Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody className={tableStyles.tbody}>
+                    <tr className={tableStyles.tr}>
+                      <td className={tableStyles.tdBold}>BTC/USD</td>
+                      <td className={tableStyles.tdBold}>$45,234.56</td>
+                      <td className={tableStyles.tdSuccess}>+2.34%</td>
+                      <td className={tableStyles.tdMuted}>$2.4B</td>
+                    </tr>
+                    <tr className={tableStyles.tr}>
+                      <td className={tableStyles.tdBold}>ETH/USD</td>
+                      <td className={tableStyles.tdBold}>$3,123.45</td>
+                      <td className={tableStyles.tdDanger}>-1.23%</td>
+                      <td className={tableStyles.tdMuted}>$1.2B</td>
+                    </tr>
+                    <tr className={tableStyles.tr}>
+                      <td className={tableStyles.tdBold}>SOL/USD</td>
+                      <td className={tableStyles.tdBold}>$98.76</td>
+                      <td className={tableStyles.tdSuccess}>+5.67%</td>
+                      <td className={tableStyles.tdMuted}>$892M</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Card>
 
@@ -490,11 +588,9 @@ export default function ThemePage() {
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-2">Small Pills</p>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-2 py-1 text-xs bg-indigo-500 text-white rounded-full">Primary</span>
-                  <span className="px-2 py-1 text-xs bg-teal-500 text-white rounded-full">Positive</span>
-                  <span className="px-2 py-1 text-xs bg-purple-500 text-white rounded-full">Negative</span>
-                  <span className="px-2 py-1 text-xs bg-emerald-500 text-white rounded-full">Success</span>
-                  <span className="px-2 py-1 text-xs bg-amber-500 text-white rounded-full">Warning</span>
-                  <span className="px-2 py-1 text-xs bg-rose-500 text-white rounded-full">Danger</span>
+                  <span className="px-2 py-1 text-xs bg-success text-white rounded-full">Success</span>
+                  <span className="px-2 py-1 text-xs bg-warning text-white rounded-full">Warning</span>
+                  <span className="px-2 py-1 text-xs bg-danger text-white rounded-full">Danger</span>
                   <span className="px-2 py-1 text-xs bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full">Black/White</span>
                   <span className="px-2 py-1 text-xs dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-full">Neutral</span>
                 </div>
@@ -504,11 +600,9 @@ export default function ThemePage() {
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-2">Medium Pills</p>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-3 py-1.5 text-sm bg-indigo-500 text-white rounded-full">Primary</span>
-                  <span className="px-3 py-1.5 text-sm bg-teal-500 text-white rounded-full">Positive</span>
-                  <span className="px-3 py-1.5 text-sm bg-purple-500 text-white rounded-full">Negative</span>
-                  <span className="px-3 py-1.5 text-sm bg-emerald-500 text-white rounded-full">Success</span>
-                  <span className="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-full">Warning</span>
-                  <span className="px-3 py-1.5 text-sm bg-rose-500 text-white rounded-full">Danger</span>
+                  <span className="px-3 py-1.5 text-sm bg-success text-white rounded-full">Success</span>
+                  <span className="px-3 py-1.5 text-sm bg-warning text-white rounded-full">Warning</span>
+                  <span className="px-3 py-1.5 text-sm bg-danger text-white rounded-full">Danger</span>
                   <span className="px-3 py-1.5 text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full">Black/White</span>
                   <span className="px-3 py-1.5 text-sm dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700 rounded-full">Neutral</span>
                 </div>
@@ -547,7 +641,7 @@ export default function ThemePage() {
 
           {/* Toast */}
           {showToast && (
-            <div className="fixed bottom-4 right-4 bg-emerald-500 text-white px-4 py-3 rounded-lg shadow-xl z-50 animate-slide-in">
+            <div className="fixed bottom-4 right-4 bg-success text-white px-4 py-3 rounded-lg shadow-xl z-50 animate-slide-in">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

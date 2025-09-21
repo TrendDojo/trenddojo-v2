@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient, Prisma } from '@prisma/client'
 import { z } from 'zod'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -46,20 +47,20 @@ export async function GET(request: NextRequest) {
     
     if (portfolioId) {
       where.position = {
-        strategy: {
+        strategies: {
           portfolioId,
         },
       }
     }
 
-    const executions = await prisma.execution.findMany({
+    const executions = await prisma.executions.findMany({
       where,
       include: {
-        position: {
+        positions: {
           select: {
             symbol: true,
             assetType: true,
-            strategy: {
+            strategies: {
               select: {
                 name: true,
               },
@@ -102,12 +103,14 @@ export async function POST(request: NextRequest) {
       : grossValue - totalFees  // Subtract fees for sells
 
     // Create execution
-    const execution = await prisma.execution.create({
+    const execution = await prisma.executions.create({
       data: {
+        id: crypto.randomUUID(),
         ...validated,
         totalFees,
         grossValue,
         netValue,
+        createdAt: new Date(),
       },
     })
 
@@ -136,7 +139,7 @@ export async function POST(request: NextRequest) {
 
 // Helper function to update position metrics from executions
 async function updatePositionFromExecution(positionId: string) {
-  const executions = await prisma.execution.findMany({
+  const executions = await prisma.executions.findMany({
     where: { positionId },
     orderBy: { executedAt: 'asc' },
   })
@@ -180,7 +183,7 @@ async function updatePositionFromExecution(positionId: string) {
   )
 
   // Update position
-  await prisma.position.update({
+  await prisma.positions.update({
     where: { id: positionId },
     data: {
       currentQuantity,
@@ -209,7 +212,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const execution = await prisma.execution.findUnique({
+    const execution = await prisma.executions.findUnique({
       where: { id },
     })
 
@@ -220,7 +223,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    await prisma.execution.delete({
+    await prisma.executions.delete({
       where: { id },
     })
 

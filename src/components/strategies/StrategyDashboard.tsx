@@ -65,7 +65,7 @@ export function StrategyDashboard({ portfolioId }: StrategyDashboardProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-600 bg-green-50'
+      case 'active': return 'text-success bg-success/10'
       case 'paused': return 'text-yellow-600 bg-yellow-50'
       case 'closed': return 'text-gray-600 bg-gray-50'
       default: return 'text-gray-600 bg-gray-50'
@@ -123,7 +123,7 @@ export function StrategyDashboard({ portfolioId }: StrategyDashboardProps) {
                 {strategies.filter(s => s.status === 'active').length}
               </p>
             </div>
-            <Play className="h-8 w-8 text-green-600" />
+            <Play className="h-8 w-8 text-success" />
           </div>
         </div>
         
@@ -133,8 +133,8 @@ export function StrategyDashboard({ portfolioId }: StrategyDashboardProps) {
               <p className="text-sm text-gray-600">Total P&L</p>
               <p className={`text-2xl font-bold ${
                 strategies.reduce((sum, s) => sum + s.netPnl, 0) >= 0 
-                  ? 'text-green-600' 
-                  : 'text-red-600'
+                  ? 'text-success' 
+                  : 'text-danger'
               }`}>
                 ${strategies.reduce((sum, s) => sum + s.netPnl, 0).toLocaleString()}
               </p>
@@ -199,7 +199,7 @@ export function StrategyDashboard({ portfolioId }: StrategyDashboardProps) {
               
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Net P&L</span>
-                <span className={`font-medium ${strategy.netPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${strategy.netPnl >= 0 ? 'text-success' : 'text-danger'}`}>
                   ${strategy.netPnl.toLocaleString()}
                 </span>
               </div>
@@ -226,7 +226,7 @@ export function StrategyDashboard({ portfolioId }: StrategyDashboardProps) {
                 className={`flex items-center px-3 py-1 rounded text-sm font-medium transition ${
                   strategy.status === 'active'
                     ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-success/20 text-success hover:bg-success/30'
                 }`}
               >
                 {strategy.status === 'active' ? (

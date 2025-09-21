@@ -446,7 +446,7 @@ export default function ScreenerPage() {
                   position="left"
                   className="py-2"
                 >
-                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18.6 3L12 13.5L5.4 3H0L9.3 16.5L6 21H11.4L12 20.1L12.6 21H18L14.7 16.5L24 3H18.6Z" fill="#7B3FF2"/>
                       </svg>
@@ -466,7 +466,7 @@ export default function ScreenerPage() {
                         <path d="M2 12L12 17L22 12" stroke="#FF5722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <span className="text-base font-bold dark:text-gray-400 text-gray-600">Polygon.io</span>
-                      <span className="ml-auto text-xs bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded">Pro</span>
+                      <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Pro</span>
                     </button>
                     
                     <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
@@ -530,7 +530,7 @@ export default function ScreenerPage() {
                 </button>
               </>
             )}
-            {error && <span className="ml-2 text-amber-500">• Using mock data</span>}
+            {error && <span className="ml-2 text-yellow-500">• Using mock data</span>}
           </p>
 
           {/* Filter Dropdowns */}
@@ -626,9 +626,9 @@ export default function ScreenerPage() {
                                       ScreenerFilterService.deleteFilter(preset.id!);
                                       setSavedFilters(ScreenerFilterService.getLocalFilters());
                                     }}
-                                    className="ml-2 p-1 hover:bg-red-100 dark:hover:bg-red-950/30 rounded transition-colors"
+                                    className="ml-2 p-1 hover:bg-rose-100 dark:hover:bg-rose-950/30 rounded transition-colors"
                                   >
-                                    <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                   </button>
@@ -770,7 +770,7 @@ export default function ScreenerPage() {
                               >
                                 <div className={
                                   isSelected 
-                                    ? "text-indigo-500" 
+                                    ? "text-purple-600" 
                                     : hasSubcategorySelected 
                                       ? "text-gray-500 dark:text-gray-400"
                                       : "text-gray-500 dark:text-gray-400"
@@ -826,7 +826,7 @@ export default function ScreenerPage() {
                                   }
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className={`rounded border-gray-300 dark:border-gray-600 dark:bg-slate-700 text-indigo-600 focus:ring-indigo-500 ${
+                                className={`rounded border-gray-300 dark:border-gray-600 dark:bg-slate-700 text-purple-600 focus:ring-purple-600 ${
                                   hasSubcategorySelected ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                               />
@@ -1064,19 +1064,19 @@ export default function ScreenerPage() {
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 2%', '2')}
-                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-success/10 hover:bg-success/20 text-success rounded-lg transition-colors"
                         >
                           +2%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 5%', '5')}
-                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-success/10 hover:bg-success/20 text-success rounded-lg transition-colors"
                         >
                           +5%
                         </button>
                         <button
                           onClick={() => addCustomFilter('minChange', 'Up > 10%', '10')}
-                          className="px-3 py-2 text-sm bg-up/10 hover:bg-up/20 text-up rounded-lg transition-colors"
+                          className="px-3 py-2 text-sm bg-success/10 hover:bg-success/20 text-success rounded-lg transition-colors"
                         >
                           +10%
                         </button>
@@ -1204,7 +1204,7 @@ export default function ScreenerPage() {
               <div className="flex gap-2">
                 <button
                   onClick={clearAllFilters}
-                  className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline"
+                  className="text-sm text-danger hover:text-red-700 dark:hover:text-red-300 underline"
                 >
                   clear all
                 </button>
@@ -1330,8 +1330,8 @@ export default function ScreenerPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-              <p className="text-red-500 text-sm">{error}</p>
+            <div className="p-4 rounded-lg bg-danger/10 border border-danger/20">
+              <p className="text-danger text-sm">{error}</p>
             </div>
           )}
 
@@ -1414,7 +1414,7 @@ export default function ScreenerPage() {
                         ${stock.price.toFixed(2)}
                       </td>
                       <td className="px-4 py-3">
-                        <div className={stock.changePercent >= 0 ? "text-teal-500" : "text-purple-500"}>
+                        <div className={stock.changePercent >= 0 ? "text-success" : "text-danger"}>
                           <div>{stock.changePercent >= 0 ? "+" : ""}{stock.changePercent.toFixed(2)}%</div>
                           <div className="text-xs">{stock.change >= 0 ? "+" : ""}${stock.change.toFixed(2)}</div>
                         </div>
@@ -1430,8 +1430,8 @@ export default function ScreenerPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          stock.rsi > 70 ? "bg-purple-500/20 text-purple-500" :
-                          stock.rsi < 30 ? "bg-teal-500/20 text-teal-500" :
+                          stock.rsi > 70 ? "bg-danger/20 text-danger" :
+                          stock.rsi < 30 ? "bg-success/20 text-success" :
                           "dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700"
                         }`}>
                           {stock.rsi.toFixed(0)}
@@ -1473,7 +1473,7 @@ export default function ScreenerPage() {
                     value={filterName}
                     onChange={(e) => setFilterName(e.target.value)}
                     placeholder="e.g., High Volume Breakouts"
-                    className="w-full px-3 py-2 dark:bg-slate-800 bg-gray-100 rounded-lg dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 dark:bg-slate-800 bg-gray-100 rounded-lg dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-600"
                     autoFocus
                   />
                 </div>
@@ -1487,7 +1487,7 @@ export default function ScreenerPage() {
                     onChange={(e) => setFilterDescription(e.target.value)}
                     placeholder="Describe what this filter looks for..."
                     rows={3}
-                    className="w-full px-3 py-2 dark:bg-slate-800 bg-gray-100 rounded-lg dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full px-3 py-2 dark:bg-slate-800 bg-gray-100 rounded-lg dark:text-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"
                   />
                 </div>
                 

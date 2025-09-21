@@ -104,27 +104,27 @@ export default function AllocationPanelPage() {
                 </h3>
                 <ul className="space-y-2 text-sm dark:text-gray-300 text-gray-700">
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Interactive sliders for each strategy</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Auto-balance to maintain 100% allocation</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Lock strategies to prevent changes</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Quick actions: Equalize, Optimize, Reset</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Toggle between % and $ display</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-up mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span>Performance-based optimization</span>
                   </li>
                 </ul>

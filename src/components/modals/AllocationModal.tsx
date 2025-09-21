@@ -161,7 +161,7 @@ export function AllocationModal({
           {strategy.performance && (
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-up" />
+                <TrendingUp className="w-4 h-4 text-success" />
                 <span className="text-sm dark:text-gray-300 text-gray-700">
                   Win Rate: <span className="font-medium">{strategy.performance.winRate.toFixed(1)}%</span>
                 </span>
@@ -173,7 +173,7 @@ export function AllocationModal({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                <AlertTriangle className="w-4 h-4 text-yellow-500" />
                 <span className="text-sm dark:text-gray-300 text-gray-700">
                   Max DD: <span className="font-medium">{strategy.performance.maxDrawdown.toFixed(1)}%</span>
                 </span>
@@ -318,7 +318,7 @@ export function AllocationModal({
               <div className={cn(
                 "flex items-start gap-2 p-3 rounded-lg",
                 error.startsWith("Warning:")
-                  ? "bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400"
+                  ? "bg-yellow-50 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-400"
                   : "bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-400"
               )}>
                 <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />

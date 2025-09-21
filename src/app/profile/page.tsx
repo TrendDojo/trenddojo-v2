@@ -363,7 +363,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     {formData.twoFactorEnabled ? (
                       <>
-                        <span className="text-sm text-up font-medium">Enabled</span>
+                        <span className="text-sm text-success font-medium">Enabled</span>
                         <Button variant="secondary" size="sm">
                           Manage
                         </Button>
@@ -404,7 +404,7 @@ export default function ProfilePage() {
                         Chrome on MacOS • New York, US
                       </p>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded bg-up/20 text-up">
+                    <span className="text-xs px-2 py-1 rounded bg-success/20 text-success">
                       ACTIVE
                     </span>
                   </div>
@@ -501,7 +501,7 @@ export default function ProfilePage() {
             Cancel
           </Button>
           {changesSaved && (
-            <div className="flex items-center gap-2 text-up">
+            <div className="flex items-center gap-2 text-success">
               <Check className="w-4 h-4" />
               <span className="text-sm font-medium">Changes saved successfully</span>
             </div>

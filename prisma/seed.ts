@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
+import { generateId, now, withIdAndTimestamps, withId } from './seed-helpers'
 
 const prisma = new PrismaClient()
 
@@ -7,41 +8,41 @@ async function main() {
   console.log('🌱 Starting seed with new Portfolio > Strategy > Position > Execution structure...')
 
   // Clean database
-  await prisma.execution.deleteMany()
-  await prisma.positionNote.deleteMany()
-  await prisma.position.deleteMany()
-  await prisma.tradePlanNote.deleteMany()
-  await prisma.tradePlan.deleteMany()
-  await prisma.strategy.deleteMany()
-  await prisma.riskSettings.deleteMany()
-  await prisma.portfolio.deleteMany()
-  await prisma.user.deleteMany()
+  await prisma.executions.deleteMany()
+  await prisma.position_notes.deleteMany()
+  await prisma.positions.deleteMany()
+  await prisma.trade_plan_notes.deleteMany()
+  await prisma.trade_plans.deleteMany()
+  await prisma.strategies.deleteMany()
+  await prisma.risk_settings.deleteMany()
+  await prisma.portfolios.deleteMany()
+  await prisma.users.deleteMany()
 
   // Create test users
   const users = await Promise.all([
-    prisma.user.create({
-      data: {
+    prisma.users.create({
+      data: withIdAndTimestamps({
         email: 'pro@trader.com',
         name: 'Pro Trader',
         subscriptionTier: 'pro',
         subscriptionStatus: 'active',
-      },
+      }),
     }),
-    prisma.user.create({
-      data: {
+    prisma.users.create({
+      data: withIdAndTimestamps({
         email: 'swing@trader.com',
         name: 'Swing Trader',
         subscriptionTier: 'basic',
         subscriptionStatus: 'active',
-      },
+      }),
     }),
   ])
 
   const [proUser, swingUser] = users
 
   // Create portfolios
-  const proPortfolio = await prisma.portfolio.create({
-    data: {
+  const proPortfolio = await prisma.portfolios.create({
+    data: withIdAndTimestamps({
       userId: proUser.id,
       name: 'Pro Trading Account',
       broker: 'alpaca',
@@ -49,11 +50,11 @@ async function main() {
       baseCurrency: 'USD',
       startingBalance: 100000,
       currentBalance: 125000,
-    },
+    }),
   })
 
-  const swingPortfolio = await prisma.portfolio.create({
-    data: {
+  const swingPortfolio = await prisma.portfolios.create({
+    data: withIdAndTimestamps({
       userId: swingUser.id,
       name: 'Swing Trading Account',
       broker: 'manual',
@@ -61,12 +62,12 @@ async function main() {
       baseCurrency: 'USD',
       startingBalance: 50000,
       currentBalance: 52500,
-    },
+    }),
   })
 
   // Create strategies
-  const momentumStrategy = await prisma.strategy.create({
-    data: {
+  const momentumStrategy = await prisma.strategies.create({
+    data: withIdAndTimestamps({
       portfolioId: proPortfolio.id,
       name: 'Momentum Breakout',
       description: 'Trade breakouts on high volume with strong momentum indicators',
@@ -87,11 +88,11 @@ async function main() {
         trailingStop: 0.03,
         profitTarget: 0.10,
       },
-    },
+    }),
   })
 
-  const meanReversionStrategy = await prisma.strategy.create({
-    data: {
+  const meanReversionStrategy = await prisma.strategies.create({
+    data: withIdAndTimestamps({
       portfolioId: proPortfolio.id,
       name: 'Mean Reversion',
       description: 'Buy oversold conditions in quality stocks',
@@ -109,11 +110,11 @@ async function main() {
         rsiTarget: 50,
         stopLoss: 0.03,
       },
-    },
+    }),
   })
 
-  const swingStrategy = await prisma.strategy.create({
-    data: {
+  const swingStrategy = await prisma.strategies.create({
+    data: withIdAndTimestamps({
       portfolioId: swingPortfolio.id,
       name: 'Weekly Swing',
       description: 'Capture multi-day moves using daily charts',
@@ -122,14 +123,14 @@ async function main() {
       allocatedCapital: 25000,
       maxPositions: 4,
       maxRiskPercent: 2.5,
-    },
+    }),
   })
 
   // Create positions with executions
-  
+
   // Position 1: NVDA - Winning momentum trade (closed)
-  const nvdaPosition = await prisma.position.create({
-    data: {
+  const nvdaPosition = await prisma.positions.create({
+    data: withId({
       strategyId: momentumStrategy.id,
       symbol: 'NVDA',
       assetType: 'stock',
@@ -149,13 +150,13 @@ async function main() {
       rMultiple: 4.5,
       openedAt: new Date('2024-08-15T09:30:00Z'),
       closedAt: new Date('2024-08-30T15:45:00Z'),
-    },
+    }),
   })
 
   // NVDA executions
-  await prisma.execution.createMany({
+  await prisma.executions.createMany({
     data: [
-      {
+      withId({
         positionId: nvdaPosition.id,
         type: 'buy',
         quantity: 50,
@@ -167,8 +168,8 @@ async function main() {
         grossValue: 22425.00,
         netValue: 22433.00,
         executedAt: new Date('2024-08-15T09:30:00Z'),
-      },
-      {
+      }),
+      withId({
         positionId: nvdaPosition.id,
         type: 'buy',
         quantity: 50,
@@ -180,8 +181,8 @@ async function main() {
         grossValue: 22575.00,
         netValue: 22583.00,
         executedAt: new Date('2024-08-15T10:15:00Z'),
-      },
-      {
+      }),
+      withId({
         positionId: nvdaPosition.id,
         type: 'sell',
         quantity: 50,
@@ -193,8 +194,8 @@ async function main() {
         grossValue: 24600.00,
         netValue: 24591.75,
         executedAt: new Date('2024-08-30T14:00:00Z'),
-      },
-      {
+      }),
+      withId({
         positionId: nvdaPosition.id,
         type: 'sell',
         quantity: 50,
@@ -206,13 +207,13 @@ async function main() {
         grossValue: 24900.00,
         netValue: 24891.75,
         executedAt: new Date('2024-08-30T15:45:00Z'),
-      },
+      }),
     ],
   })
 
   // Position 2: AAPL - Open position with partial exit
-  const aaplPosition = await prisma.position.create({
-    data: {
+  const aaplPosition = await prisma.positions.create({
+    data: withId({
       strategyId: meanReversionStrategy.id,
       symbol: 'AAPL',
       assetType: 'stock',
@@ -227,12 +228,12 @@ async function main() {
       totalFees: 35.00,
       netPnl: 1215.00,
       openedAt: new Date('2024-09-01T09:30:00Z'),
-    },
+    }),
   })
 
-  await prisma.execution.createMany({
+  await prisma.executions.createMany({
     data: [
-      {
+      withId({
         positionId: aaplPosition.id,
         type: 'buy',
         quantity: 100,
@@ -242,8 +243,8 @@ async function main() {
         grossValue: 17450.00,
         netValue: 17455.00,
         executedAt: new Date('2024-09-01T09:30:00Z'),
-      },
-      {
+      }),
+      withId({
         positionId: aaplPosition.id,
         type: 'buy',
         quantity: 100,
@@ -253,8 +254,8 @@ async function main() {
         grossValue: 17550.00,
         netValue: 17555.00,
         executedAt: new Date('2024-09-02T10:00:00Z'),
-      },
-      {
+      }),
+      withId({
         positionId: aaplPosition.id,
         type: 'sell',
         quantity: 50,
@@ -265,13 +266,13 @@ async function main() {
         grossValue: 9000.00,
         netValue: 8994.75,
         executedAt: new Date('2024-09-05T14:30:00Z'),
-      },
+      }),
     ],
   })
 
   // Position 3: TSLA - Losing trade (closed)
-  const tslaPosition = await prisma.position.create({
-    data: {
+  const tslaPosition = await prisma.positions.create({
+    data: withId({
       strategyId: momentumStrategy.id,
       symbol: 'TSLA',
       assetType: 'stock',
@@ -290,12 +291,12 @@ async function main() {
       rMultiple: -0.8,
       openedAt: new Date('2024-08-20T09:30:00Z'),
       closedAt: new Date('2024-08-25T09:35:00Z'),
-    },
+    }),
   })
 
   // Position 4: SPY - Swing trade (open)
-  const spyPosition = await prisma.position.create({
-    data: {
+  const spyPosition = await prisma.positions.create({
+    data: withId({
       strategyId: swingStrategy.id,
       symbol: 'SPY',
       assetType: 'etf',
@@ -309,13 +310,13 @@ async function main() {
       totalFees: 10.00,
       netPnl: 240.00,
       openedAt: new Date('2024-09-08T09:30:00Z'),
-    },
+    }),
   })
 
   // Create trade plans
-  const tradePlans = await prisma.tradePlan.createMany({
+  const tradePlans = await prisma.trade_plans.createMany({
     data: [
-      {
+      withIdAndTimestamps({
         portfolioId: proPortfolio.id,
         positionId: nvdaPosition.id,
         symbol: 'NVDA',
@@ -336,8 +337,8 @@ async function main() {
         lessons: 'Good entry timing, could have held longer for full target',
         executedAt: new Date('2024-08-15T09:30:00Z'),
         reviewedAt: new Date('2024-09-01T10:00:00Z'),
-      },
-      {
+      }),
+      withIdAndTimestamps({
         portfolioId: proPortfolio.id,
         symbol: 'META',
         direction: 'long',
@@ -352,8 +353,8 @@ async function main() {
         setupQuality: 4,
         confidence: 7,
         status: 'pending',
-      },
-      {
+      }),
+      withIdAndTimestamps({
         portfolioId: swingPortfolio.id,
         symbol: 'QQQ',
         direction: 'short',
@@ -367,28 +368,28 @@ async function main() {
         setupQuality: 3,
         confidence: 6,
         status: 'idea',
-      },
+      }),
     ],
   })
 
   // Add position notes
-  await prisma.positionNote.createMany({
+  await prisma.position_notes.createMany({
     data: [
-      {
+      withId({
         positionId: aaplPosition.id,
         noteType: 'management',
         content: 'Took partial profits at 180, letting rest run with trailing stop',
-      },
-      {
+      }),
+      withId({
         positionId: nvdaPosition.id,
         noteType: 'observation',
         content: 'Strong volume on breakout, institutional buying evident',
-      },
+      }),
     ],
   })
 
   // Update strategy performance metrics
-  await prisma.strategy.update({
+  await prisma.strategies.update({
     where: { id: momentumStrategy.id },
     data: {
       totalPositions: 2,
@@ -406,7 +407,7 @@ async function main() {
     },
   })
 
-  await prisma.strategy.update({
+  await prisma.strategies.update({
     where: { id: meanReversionStrategy.id },
     data: {
       totalPositions: 1,
@@ -419,9 +420,9 @@ async function main() {
   })
 
   // Create risk settings
-  await prisma.riskSettings.createMany({
+  await prisma.risk_settings.createMany({
     data: [
-      {
+      withIdAndTimestamps({
         userId: proUser.id,
         portfolioId: proPortfolio.id,
         maxRiskPerTrade: 2.0,
@@ -430,8 +431,8 @@ async function main() {
         maxOpenPositions: 10,
         maxCorrelatedPositions: 4,
         positionSizingMethod: 'fixed_risk',
-      },
-      {
+      }),
+      withIdAndTimestamps({
         userId: swingUser.id,
         portfolioId: swingPortfolio.id,
         maxRiskPerTrade: 2.5,
@@ -440,7 +441,7 @@ async function main() {
         maxOpenPositions: 5,
         maxCorrelatedPositions: 2,
         positionSizingMethod: 'fixed_units',
-      },
+      }),
     ],
   })
 

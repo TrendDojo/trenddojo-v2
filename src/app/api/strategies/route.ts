@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const strategies = await prisma.strategy.findMany({
+    const strategies = await prisma.strategies.findMany({
       where: { portfolioId },
       include: {
         positions: {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
     const validated = CreateStrategySchema.parse(body)
 
     // Verify portfolio ownership (in production, check session)
-    const portfolio = await prisma.portfolio.findUnique({
+    const portfolio = await prisma.portfolios.findUnique({
       where: { id: validated.portfolioId },
     })
 
@@ -80,8 +81,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const strategy = await prisma.strategy.create({
-      data: validated,
+    const strategy = await prisma.strategies.create({
+      data: {
+        id: crypto.randomUUID(),
+        ...validated,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json(strategy, { status: 201 })
@@ -114,7 +120,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const strategy = await prisma.strategy.update({
+    const strategy = await prisma.strategies.update({
       where: { id },
       data: updates,
     })
@@ -143,7 +149,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check for open positions
-    const openPositions = await prisma.position.count({
+    const openPositions = await prisma.positions.count({
       where: {
         strategyId: id,
         status: 'open',
@@ -158,7 +164,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Soft delete by updating status
-    const strategy = await prisma.strategy.update({
+    const strategy = await prisma.strategies.update({
       where: { id },
       data: {
         status: 'closed',

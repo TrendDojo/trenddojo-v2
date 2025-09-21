@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getBrokerManager, SupportedBroker } from '@/lib/brokers/BrokerManager';
+import { getEncryption } from '@/lib/security/encryption';
+import { prisma } from '@/lib/db';
+import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -24,8 +27,9 @@ export async function POST(request: Request) {
     const supportedBrokers: SupportedBroker[] = [
       'interactive_brokers',
       'alpaca',
+      'alpaca_paper',
+      'alpaca_live',
       'td_ameritrade',
-      'paper',
     ];
     
     if (!supportedBrokers.includes(broker)) {
@@ -35,6 +39,38 @@ export async function POST(request: Request) {
       );
     }
     
+    // Store encrypted credentials in database (paper trading only for now)
+    const encryption = getEncryption();
+
+    // @business-critical: Credential encryption for broker API keys
+    // MUST have unit tests before deployment
+    const encryptedCredentials = encryption.encryptObject(config);
+
+    // Store or update broker connection
+    await prisma.broker_connections.upsert({
+      where: {
+        userId_broker: {
+          userId: session.user.id,
+          broker: broker
+        }
+      },
+      update: {
+        credentials: encryptedCredentials,
+        isPaper: true, // ALWAYS paper trading for initial launch
+        isActive: true,
+        lastSync: new Date()
+      },
+      create: {
+        id: crypto.randomUUID(),
+        userId: session.user.id,
+        broker: broker,
+        credentials: encryptedCredentials,
+        isPaper: true, // ALWAYS paper trading for initial launch
+        isActive: true,
+        createdAt: new Date()
+      }
+    });
+
     // Connect to broker
     const brokerManager = getBrokerManager();
     const success = await brokerManager.connectBroker(

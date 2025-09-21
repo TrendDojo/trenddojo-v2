@@ -20,11 +20,11 @@ const sizeClasses = {
 
 const variantClasses = {
   default: "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900",
-  primary: "bg-indigo-500 text-white",
-  secondary: "bg-purple-500 text-white",
-  success: "bg-up text-white",
-  warning: "bg-amber-500 text-white",
-  danger: "bg-down text-white",
+  primary: "bg-indigo-600 text-white",
+  secondary: "bg-purple-700 text-white",
+  success: "bg-success text-white",
+  warning: "bg-warning text-white",
+  danger: "bg-danger text-white",
 };
 
 export function Pill({

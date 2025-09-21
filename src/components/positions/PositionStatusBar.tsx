@@ -62,9 +62,9 @@ const PlaySymbol = ({ color }: { color: "green" | "red" }) => {
 
 // Bullseye for targets (◎/◉) - three concentric circles
 const Bullseye = ({ filled, color }: { filled: boolean; color: "green" | "red" }) => {
-  // Using theme colors: bg-up (green) for longs, bg-down (red) for shorts
-  const centerColor = color === "green" ? "bg-up" : "bg-down";
-  const borderColor = color === "green" ? "border-up" : "border-down";
+  // Using theme colors: bg-success (teal) for longs, bg-danger (rose) for shorts
+  const centerColor = color === "green" ? "bg-success" : "bg-danger";
+  const borderColor = color === "green" ? "border-success" : "border-danger";
 
   // Total size: 3px center + 1px transparent + 2px outer = 9px total
   return (
@@ -95,7 +95,7 @@ const StopSquare = ({ color }: { color: "green" | "red" }) => (
   <div
     className={cn(
       "w-[9px] h-[9px] flex-shrink-0",
-      color === "green" ? "bg-up" : "bg-down"
+      color === "green" ? "bg-success" : "bg-danger"
     )}
     title="Stop"
   />
@@ -112,8 +112,8 @@ const ScalingIndicator = ({ executed, color }: { executed: boolean; color: "gree
     className={cn(
       "w-1 h-1 rounded-full flex-shrink-0",
       executed
-        ? (color === "green" ? "bg-up" : "bg-down")
-        : `border ${color === "green" ? "border-up" : "border-down"}`
+        ? (color === "green" ? "bg-success" : "bg-danger")
+        : `border ${color === "green" ? "border-success" : "border-danger"}`
     )}
     title={executed ? "Scaling level (executed)" : "Scaling level"}
   />
@@ -200,10 +200,10 @@ export function PositionStatusBar({
               className={cn(
                 "h-2 rounded-full flex-shrink-0",
                 exitReason === "stop_loss"
-                  ? (stopColor === "green" ? "bg-up" : "bg-down")
+                  ? (stopColor === "green" ? "bg-success" : "bg-danger")
                   : isClosedPosition
                   ? "bg-gray-300 dark:bg-gray-700"
-                  : `border ${stopColor === "green" ? "border-up" : "border-down"}`
+                  : `border ${stopColor === "green" ? "border-success" : "border-danger"}`
               )}
               style={{ width: `${CONFIG.minStopWidth + 9}px` }} // Extended to cover stop square (9px)
             />
@@ -221,14 +221,14 @@ export function PositionStatusBar({
                       className={cn(
                         "h-2 flex-grow",
                         needsOpenEndedSegment
-                          ? `rounded-l-full border-t border-b border-l ${targetColor === "green" ? "border-up" : "border-down"}`
+                          ? `rounded-l-full border-t border-b border-l ${targetColor === "green" ? "border-success" : "border-danger"}`
                           : "rounded-full",
                         !needsOpenEndedSegment && (
                           exitReason === "take_profit"
-                            ? (targetColor === "green" ? "bg-up" : "bg-down")
+                            ? (targetColor === "green" ? "bg-success" : "bg-danger")
                             : isClosedPosition
                             ? "bg-gray-300 dark:bg-gray-700"
-                            : `border ${targetColor === "green" ? "border-up" : "border-down"}`
+                            : `border ${targetColor === "green" ? "border-success" : "border-danger"}`
                         )
                       )}
                     />
@@ -283,8 +283,8 @@ export function PositionStatusBar({
                     className={cn(
                       "h-2 rounded-full", // All segments have fully rounded ends
                       segment.executed
-                        ? (targetColor === "green" ? "bg-up" : "bg-down")
-                        : `border ${targetColor === "green" ? "border-up" : "border-down"}`
+                        ? (targetColor === "green" ? "bg-success" : "bg-danger")
+                        : `border ${targetColor === "green" ? "border-success" : "border-danger"}`
                     )}
                     style={{ width: segment.width }}
                   />

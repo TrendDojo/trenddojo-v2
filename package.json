@@ -28,6 +28,7 @@
     "db:seed:staging": "dotenv -e .env.staging -- tsx prisma/seed.ts --type staging",
     "db:reset": "prisma migrate reset --force && npm run db:seed:dev",
     "db:status": "prisma migrate status",
+    "test:alpaca": "node scripts/test-secure-alpaca.js",
     "db:status:staging": "dotenv -e .env.staging -- prisma migrate status",
     "db:status:production": "dotenv -e .env.production -- prisma migrate status",
     "deploy-safe": "npm run test:run && npm run build",

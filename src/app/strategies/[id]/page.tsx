@@ -80,9 +80,9 @@ export default function StrategyDetailPage() {
               <span className={cn(
                 "px-2 py-1 rounded text-xs font-medium",
                 strategy.status === "active"
-                  ? "bg-up/20 text-up"
+                  ? "bg-success/20 text-success"
                   : strategy.status === "paused"
-                  ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                  ? "bg-warning/20 text-warning"
                   : "dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700"
               )}>
                 {strategy.status.toUpperCase()}
@@ -117,7 +117,7 @@ export default function StrategyDetailPage() {
             <p className="text-sm dark:text-gray-400 text-gray-600 mb-1">Net P&L</p>
             <p className={cn(
               "text-2xl font-bold",
-              strategy.netPnl >= 0 ? "text-up" : "text-down"
+              strategy.netPnl >= 0 ? "text-success" : "text-danger"
             )}>
               ${strategy.netPnl.toLocaleString()}
             </p>
@@ -213,25 +213,25 @@ export default function StrategyDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="dark:text-gray-400 text-gray-600">Winning Trades</span>
-                  <span className="font-medium text-up">
+                  <span className="font-medium text-success">
                     {strategy.winningPositions}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="dark:text-gray-400 text-gray-600">Losing Trades</span>
-                  <span className="font-medium text-down">
+                  <span className="font-medium text-danger">
                     {strategy.losingPositions}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="dark:text-gray-400 text-gray-600">Average Win</span>
-                  <span className="font-medium text-up">
+                  <span className="font-medium text-success">
                     ${strategy.avgWin.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="dark:text-gray-400 text-gray-600">Average Loss</span>
-                  <span className="font-medium text-down">
+                  <span className="font-medium text-danger">
                     ${Math.abs(strategy.avgLoss).toFixed(2)}
                   </span>
                 </div>
@@ -315,13 +315,13 @@ export default function StrategyDetailPage() {
                     </td>
                     <td className={cn(
                       "py-3 px-4 text-right font-medium",
-                      position.pnl >= 0 ? "text-up" : "text-down"
+                      position.pnl >= 0 ? "text-success" : "text-danger"
                     )}>
                       ${position.pnl >= 0 ? "+" : ""}{position.pnl.toFixed(2)}
                     </td>
                     <td className={cn(
                       "py-3 px-4 text-right font-medium",
-                      position.pnlPercent >= 0 ? "text-up" : "text-down"
+                      position.pnlPercent >= 0 ? "text-success" : "text-danger"
                     )}>
                       {position.pnlPercent >= 0 ? "+" : ""}{position.pnlPercent.toFixed(2)}%
                     </td>
@@ -373,13 +373,13 @@ export default function StrategyDetailPage() {
                     </td>
                     <td className={cn(
                       "py-3 px-4 text-right font-medium",
-                      trade.pnl >= 0 ? "text-up" : "text-down"
+                      trade.pnl >= 0 ? "text-success" : "text-danger"
                     )}>
                       ${trade.pnl >= 0 ? "+" : ""}{trade.pnl.toFixed(2)}
                     </td>
                     <td className={cn(
                       "py-3 px-4 text-right font-medium",
-                      trade.pnlPercent >= 0 ? "text-up" : "text-down"
+                      trade.pnlPercent >= 0 ? "text-success" : "text-danger"
                     )}>
                       {trade.pnlPercent >= 0 ? "+" : ""}{trade.pnlPercent.toFixed(1)}%
                     </td>

@@ -56,8 +56,8 @@ export function EntriesTab() {
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                    <Icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <Icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
                     <h3 className="font-semibold dark:text-white">{rule.name}</h3>

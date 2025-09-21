@@ -74,7 +74,7 @@ export default function PositionDetailPage() {
               <span className={cn(
                 "px-2 py-1 rounded text-xs font-medium",
                 position.status === "open"
-                  ? "bg-up/20 text-up"
+                  ? "bg-success/20 text-success"
                   : "dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700"
               )}>
                 {position.status.toUpperCase()}
@@ -111,7 +111,7 @@ export default function PositionDetailPage() {
             <p className="text-sm dark:text-gray-400 text-gray-600 mb-1">Unrealized P&L</p>
             <p className={cn(
               "text-2xl font-bold",
-              position.unrealizedPnl >= 0 ? "text-up" : "text-down"
+              position.unrealizedPnl >= 0 ? "text-success" : "text-danger"
             )}>
               ${position.unrealizedPnl.toFixed(2)}
               <span className="text-sm ml-2">
@@ -143,13 +143,13 @@ export default function PositionDetailPage() {
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Stop Loss</span>
-                <span className="font-medium text-down">
+                <span className="font-medium text-danger">
                   ${position.stopLoss.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Take Profit</span>
-                <span className="font-medium text-up">
+                <span className="font-medium text-success">
                   ${position.takeProfit.toFixed(2)}
                 </span>
               </div>
@@ -170,13 +170,13 @@ export default function PositionDetailPage() {
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Max Gain</span>
-                <span className="font-medium text-up">
+                <span className="font-medium text-success">
                   +{position.maxGainPercent.toFixed(2)}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Max Loss</span>
-                <span className="font-medium text-down">
+                <span className="font-medium text-danger">
                   {position.maxLossPercent.toFixed(2)}%
                 </span>
               </div>
@@ -248,8 +248,8 @@ export default function PositionDetailPage() {
                           <span className={cn(
                             "px-2 py-1 rounded text-xs font-medium",
                             'subType' in item && item.subType === "buy"
-                              ? "bg-up/20 text-up"
-                              : "bg-down/20 text-down"
+                              ? "bg-success/20 text-success"
+                              : "bg-danger/20 text-danger"
                           )}>
                             {'subType' in item ? item.subType?.toUpperCase() : ''}
                           </span>

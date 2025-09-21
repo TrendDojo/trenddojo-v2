@@ -22,35 +22,35 @@ export function AccountStatusBar({
         return {
           icon: Shield,
           label: 'Active',
-          color: 'text-up bg-up/10 border-up/20',
+          color: 'text-success bg-alert-success',
           message: 'All systems normal'
         };
       case 'warning':
         return {
           icon: AlertTriangle,
           label: 'Warning',
-          color: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20',
+          color: 'text-warning bg-alert-warning',
           message: 'Approaching risk limits'
         };
       case 'recovery':
         return {
           icon: TrendingDown,
           label: 'Recovery Mode',
-          color: 'text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-500/20',
+          color: 'text-warning bg-alert-warning',
           message: 'Position sizes reduced'
         };
       case 'locked':
         return {
           icon: Lock,
           label: 'Locked',
-          color: 'text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20',
+          color: 'text-danger bg-alert-danger',
           message: 'Trading suspended - circuit breaker activated'
         };
       default:
         return {
           icon: Shield,
           label: 'Unknown',
-          color: 'text-gray-600 dark:text-gray-400 bg-gray-500/10 border-gray-500/20',
+          color: 'text-gray-600 dark:text-gray-400 bg-gray-500/10',
           message: ''
         };
     }
@@ -62,14 +62,14 @@ export function AccountStatusBar({
   // Drawdown color based on severity
   const getDrawdownColor = (drawdown: number) => {
     if (drawdown >= -5) return 'text-gray-600 dark:text-gray-400';
-    if (drawdown >= -10) return 'text-amber-600 dark:text-amber-400';
-    if (drawdown >= -15) return 'text-orange-600 dark:text-orange-400';
-    return 'text-red-600 dark:text-red-400';
+    if (drawdown >= -10) return 'text-warning';
+    if (drawdown >= -15) return 'text-warning';
+    return 'text-danger';
   };
 
   return (
     <div className={cn(
-      "flex items-center justify-between px-4 py-2 border rounded-lg",
+      "flex items-center justify-between px-4 py-3 rounded-lg",
       config.color,
       className
     )}>
@@ -106,9 +106,9 @@ export function AccountStatusBar({
             className={cn(
               "h-full transition-all",
               currentDrawdown >= -5 && "bg-gray-500",
-              currentDrawdown < -5 && currentDrawdown >= -10 && "bg-amber-500",
-              currentDrawdown < -10 && currentDrawdown >= -15 && "bg-orange-500",
-              currentDrawdown < -15 && "bg-red-500"
+              currentDrawdown < -5 && currentDrawdown >= -10 && "bg-warning",
+              currentDrawdown < -10 && currentDrawdown >= -15 && "bg-warning",
+              currentDrawdown < -15 && "bg-danger"
             )}
             style={{ width: `${Math.min(100, Math.abs(currentDrawdown) * (100 / 30))}%` }}
           />
@@ -116,9 +116,9 @@ export function AccountStatusBar({
         {/* Tier markers */}
         <div className="relative h-1 mt-1">
           <div className="absolute left-[16.7%] w-px h-full bg-gray-400" title="-5%" />
-          <div className="absolute left-[33.3%] w-px h-full bg-amber-500" title="-10%" />
-          <div className="absolute left-[50%] w-px h-full bg-orange-500" title="-15%" />
-          <div className="absolute left-[66.7%] w-px h-full bg-red-500" title="-20%" />
+          <div className="absolute left-[33.3%] w-px h-full bg-warning" title="-10%" />
+          <div className="absolute left-[50%] w-px h-full bg-warning" title="-15%" />
+          <div className="absolute left-[66.7%] w-px h-full bg-danger" title="-20%" />
         </div>
       </div>
     </div>

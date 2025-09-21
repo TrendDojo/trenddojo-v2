@@ -5,12 +5,14 @@
  */
 
 import NextAuth, { type DefaultSession } from "next-auth"
+import { getServerSession } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
-// import { compare } from "bcryptjs" // TODO: Re-enable when password auth is implemented
+import { compare, hash } from "bcryptjs"
 import { z } from "zod"
+import crypto from "crypto"
 // Extend the built-in session types
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -74,31 +76,34 @@ export const authConfig = {
             return null
           }
 
-          const { email } = parsed.data
+          const { email, password } = parsed.data
 
           // In development mode, create a user on the fly for any email
-          if (process.env.NODE_ENV === 'development' && parsed.data.password === 'password123') {
+          if (process.env.NODE_ENV === 'development' && password === 'password123') {
             // Try to find existing user first
-            let user = await prisma.user.findUnique({
+            let user = await prisma.users.findUnique({
               where: { email: email.toLowerCase() },
               include: {
                 portfolios: true,
-                riskSettings: true
+                risk_settings: true
               }
             })
 
             // If user doesn't exist in dev mode, create one
             if (!user) {
               console.log("[AUTH] Creating development user:", email)
-              user = await prisma.user.create({
+              user = await prisma.users.create({
                 data: {
+                  id: crypto.randomUUID(),
                   email: email.toLowerCase(),
                   name: email.split('@')[0],
-                  subscriptionTier: 'free'
+                  subscriptionTier: 'free',
+                  createdAt: new Date(),
+                  updatedAt: new Date()
                 },
                 include: {
                   portfolios: true,
-                  riskSettings: true
+                  risk_settings: true
                 }
               })
             }
@@ -122,11 +127,11 @@ export const authConfig = {
           }
 
           // Production mode - strict user lookup
-          const user = await prisma.user.findUnique({
+          const user = await prisma.users.findUnique({
             where: { email: email.toLowerCase() },
             include: {
               portfolios: true,
-              riskSettings: true
+              risk_settings: true
             }
           })
 
@@ -135,9 +140,18 @@ export const authConfig = {
             return null
           }
 
-          // TODO: Implement password checking when password field is added to User schema
-          if (process.env.NODE_ENV === 'production') {
-            console.warn("[AUTH] Password authentication not yet implemented for production")
+          // Check password in production mode
+          if (!user.passwordHash) {
+            console.warn("[AUTH] User has no password set:", email)
+            return null
+          }
+
+          // @business-critical: Password verification for authentication
+          // MUST have unit tests before deployment
+          const passwordValid = await compare(password, user.passwordHash)
+
+          if (!passwordValid) {
+            console.warn("[AUTH] Invalid password for user:", email)
             return null
           }
 
@@ -180,9 +194,9 @@ export const authConfig = {
         // Add profile callback to handle subscription data
         profile: async (profile) => {
           // When a user signs in with Google, create/update their profile
-          const existingUser = await prisma.user.findUnique({
+          const existingUser = await prisma.users.findUnique({
             where: { email: profile.email },
-            include: { portfolios: true, riskSettings: true }
+            include: { portfolios: true, risk_settings: true }
           })
 
           const subscriptionTier = existingUser?.subscriptionTier || 'free'
@@ -297,4 +311,6 @@ export const authConfig = {
 const handler = NextAuth(authConfig as any)
 
 export default handler
-export const auth = handler.auth
+
+// For NextAuth v4, we need to use getServerSession
+export const auth = () => getServerSession(authConfig)

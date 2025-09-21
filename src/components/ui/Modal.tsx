@@ -206,7 +206,7 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   const iconColors = {
     danger: 'text-rose-500',
-    warning: 'text-amber-500',
+    warning: 'text-yellow-500',
     info: 'text-blue-500',
   };
 

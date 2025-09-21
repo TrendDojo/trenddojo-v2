@@ -65,116 +65,53 @@ Implement the hierarchical risk management system with Account → Strategy → 
 ### Outcome
 **Success** - Full hierarchical risk system implemented with minimal database changes. UI updated to reflect new features. Framework updated with three-file context system.
 
-## WB-2025-01-19-001: Trading Strategy Implementation - MVP
-**State**: completed
+
+## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
+**State**: doing
 **Timeframe**: NOW
-**Created**: 2025-01-19 14:00
-**Updated**: 2025-01-19 15:00 (Simplified to MVP scope)
-**Completed**: 2025-01-19 16:30
-**Duration**: 2.5 hours
-**Outcome**: Success - MVP UI fully implemented
-**Dependencies**: None (simplified)
-**Tags**: #trading #strategies #mvp #business-critical
+**Created**: 2025-01-20 09:00
+**Dependencies**: None
+**Tags**: #brokers #integration #paper-trading #business-critical
 
 ### Goal
-Ship a dead-simple strategy management page where users can create strategies by picking 3 rules (entry, position, exit) and track basic performance.
+Complete Alpaca broker integration for paper trading to enable actual trade execution from strategies.
 
-### MVP Requirements (Simplified from Original)
-1. **Single Page with Two Tabs**
-   - Strategies Tab: List view with Name, Status, P&L, Win Rate
-   - Rules Tab: Three sections showing available rules
-   - "New Strategy" button opens modal
+### Current Status
+- BrokerManager architecture exists
+- AlpacaClient partially implemented
+- API routes created
+- UI broker connection page exists
+- Missing: Actual connectivity and order execution
 
-2. **Strategy Creation**
-   - Modal with 3 dropdowns (Entry, Position, Exit)
-   - No editing after creation
-   - Can only pause/resume
-
-3. **Fixed Rules (9 Total)**
-   - Entry: Breakout, Pullback, Manual
-   - Position: 2% Risk (only one for now)
-   - Exit: 2R Target, Trail 20MA, Manual
-
-4. **Basic Performance Tracking**
-   - Count trades
-   - Calculate win rate
-   - Sum P&L
-   - That's it
-
-### Tasks (MVP Only)
-- [x] Review and align with MVP requirements
-- [ ] Create rules table migration (id, type, name, config_json)
-- [ ] Seed database with 9 fixed rules
-- [ ] Build strategies page with tabs (Strategies/Rules)
-- [ ] Create strategy list table component
-- [ ] Build rules display (3 sections, simple list)
-- [ ] Create "New Strategy" modal (3 dropdowns + create)
-- [ ] Implement pause/resume functionality
-- [ ] Add basic P&L calculation from trades
-- [ ] Calculate and display win rate
-- [ ] Connect to trades table for performance data
-- [ ] Add expandable row to show positions
-- [ ] Basic testing with mock trades
-
-### What We're NOT Building (Yet)
-- ❌ Complex strategy builder
-- ❌ Backtesting
-- ❌ Signal generation
-- ❌ Custom indicators
-- ❌ Rule versioning
-- ❌ Strategy cloning
-- ❌ Advanced metrics (Sharpe, etc.)
-- ❌ Automated trading
-
-### Database Changes Needed
-```sql
--- New rules table
-CREATE TABLE rules (
-  id SERIAL PRIMARY KEY,
-  type VARCHAR(20), -- 'entry', 'position', 'exit'
-  name VARCHAR(50),
-  config_json JSONB
-);
-
--- Simplified strategies table
-CREATE TABLE strategies (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100),
-  entry_rule_id INT REFERENCES rules(id),
-  position_rule_id INT REFERENCES rules(id),
-  exit_rule_id INT REFERENCES rules(id),
-  status VARCHAR(20) DEFAULT 'active',
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Basic trades table
-CREATE TABLE trades (
-  id SERIAL PRIMARY KEY,
-  strategy_id INT REFERENCES strategies(id),
-  symbol VARCHAR(10),
-  entry_price DECIMAL,
-  exit_price DECIMAL,
-  pnl DECIMAL,
-  status VARCHAR(20),
-  created_at TIMESTAMP DEFAULT NOW()
-);
-```
+### Tasks
+- [ ] Complete AlpacaClient implementation
+  - [ ] Finish order placement methods
+  - [ ] Implement position fetching
+  - [ ] Add market data streaming
+  - [ ] Handle WebSocket connections
+- [ ] Test Alpaca paper trading connection
+- [ ] Implement credential encryption
+- [ ] Connect strategies to order execution
+- [ ] Add position monitoring
+- [ ] Create paper trading dashboard
+- [ ] Test full order lifecycle
+- [ ] Add error recovery mechanisms
 
 ### Success Criteria
-✅ User can create a strategy in <30 seconds
-✅ Strategy appears in list immediately
-✅ Can see P&L updating as trades happen
-✅ Can pause/resume strategies
-✅ Total implementation time: 2-3 days max
+- Can connect to Alpaca paper account
+- Can place buy/sell orders
+- Can fetch positions and P&L
+- Strategies can execute trades automatically
+- Real-time position updates work
 
 ### Notes
-- This is a radical simplification of the original work block
-- Focus on shipping something users can interact with TODAY
-- Once MVP works, we can add complexity incrementally
-- No automation in MVP - all trades can be manual
+- Focus on paper trading first for safety
+- Alpaca provides free paper trading accounts
+- Simpler API than Interactive Brokers
+- No local gateway required
 
 ## WB-2025-01-18-001: Position Indicator Graphic Enhancement
-**State**: doing
+**State**: paused
 **Timeframe**: NOW
 **Created**: 2025-01-18 12:00
 **Dependencies**: None

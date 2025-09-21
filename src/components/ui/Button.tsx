@@ -30,8 +30,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: "bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white focus:ring-indigo-500",
       secondary: "dark:bg-transparent bg-transparent border dark:border-slate-700 border-gray-300 dark:hover:bg-slate-800 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
       ghost: "bg-transparent dark:hover:bg-slate-700/30 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
-      danger: "bg-down hover:opacity-90 text-white focus:ring-down",
-      success: "bg-up hover:opacity-90 text-white focus:ring-up",
+      danger: "bg-danger hover:opacity-90 text-white focus:ring-red-500",
+      success: "bg-success hover:opacity-90 text-white focus:ring-green-500",
     };
     
     // Size styles

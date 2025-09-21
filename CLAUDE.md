@@ -82,14 +82,20 @@
     2. Update `_shared-framework/news/trenddojo-solutions.md` with brief summary
 - **SCOPE**: Infrastructure solutions only - skip business logic and domain-specific features
 
-### RULE #10: [LOCAL] Financial Accuracy First - No Exceptions
+### RULE #10: [UNIVERSAL] Visual Changes Are Unverified
+- **AI cannot see rendered output** - only report code changes made, not appearance
+- When changing styles/UI: "Changed X to Y at file:line" NOT "Fixed/matches/looks like"
+- Copy exact classes from source - don't interpret or "improve"
+- Always state "Please verify appearance" after visual changes
+
+### RULE #11: [LOCAL] Financial Accuracy First - No Exceptions
 - All financial calculations MUST have unit tests before deployment
 - Position sizing, P&L, risk calculations require validation
 - Backend validation mandatory for all financial operations
 - Never deploy financial logic without explicit approval
 - **NEVER test against live trading APIs during development**
 
-### RULE #11: [LOCAL] Production Safety & Documentation
+### RULE #12: [LOCAL] Production Safety & Documentation
 - All broker integrations require comprehensive mocks for development
 - Risk management changes need extra review
 - Staging environment mirrors production exactly

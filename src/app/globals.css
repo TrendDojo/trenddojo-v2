@@ -9,47 +9,204 @@
 }
 
 @layer utilities {
-  .text-up {
-    color: rgb(16, 185, 129); /* Teal/green for positive */
+  /* Text Colors */
+  .text-success {
+    color: rgb(20, 184, 166); /* Teal-500 for success */
   }
-  .text-down {
-    color: rgb(205, 3, 91); /* Custom red for negative */
+  .text-warning {
+    color: rgb(234, 179, 8); /* Yellow-500 for warnings */
   }
-  .dark .text-up {
-    color: rgb(52, 211, 153); /* Lighter teal for dark mode */
+  .text-danger {
+    color: rgb(244, 63, 94); /* Rose-500 for danger */
   }
-  .dark .text-down {
-    color: rgb(225, 29, 115); /* Lighter red for dark mode */
+  .text-info {
+    color: rgb(59, 130, 246); /* Blue-500 for information */
   }
-  .bg-up {
-    background-color: rgb(16, 185, 129);
+
+  /* Dark Mode Text */
+  .dark .text-success {
+    color: rgb(45, 212, 191); /* Teal-400 for dark mode */
   }
-  .bg-down {
-    background-color: rgb(205, 3, 91);
+  .dark .text-warning {
+    color: rgb(250, 204, 21); /* Yellow-400 for dark mode */
   }
-  .dark .bg-up {
-    background-color: rgb(52, 211, 153);
+  .dark .text-danger {
+    color: rgb(251, 113, 133); /* Rose-400 for dark mode */
   }
-  .dark .bg-down {
-    background-color: rgb(225, 29, 115);
+  .dark .text-info {
+    color: rgb(96, 165, 250); /* Blue-400 for dark mode */
   }
-  .border-up {
-    border-color: rgb(16, 185, 129);
+
+  /* Background Colors */
+  .bg-success {
+    background-color: rgb(20, 184, 166);
   }
-  .border-down {
-    border-color: rgb(205, 3, 91);
+  .bg-warning {
+    background-color: rgb(234, 179, 8);
   }
-  .dark .border-up {
-    border-color: rgb(52, 211, 153);
+  .bg-danger {
+    background-color: rgb(244, 63, 94);
   }
-  .dark .border-down {
-    border-color: rgb(225, 29, 115);
+  .bg-info {
+    background-color: rgb(59, 130, 246);
+  }
+
+  /* Dark Mode Backgrounds */
+  .dark .bg-success {
+    background-color: rgb(45, 212, 191);
+  }
+  .dark .bg-warning {
+    background-color: rgb(250, 204, 21);
+  }
+  .dark .bg-danger {
+    background-color: rgb(251, 113, 133);
+  }
+  .dark .bg-info {
+    background-color: rgb(96, 165, 250);
+  }
+
+  /* Alert-specific backgrounds using CSS variable */
+  .bg-alert-success {
+    background-color: rgb(20 184 166 / var(--alert-bg-opacity));
+  }
+  .bg-alert-warning {
+    background-color: rgb(234 179 8 / var(--alert-bg-opacity));
+  }
+  .bg-alert-danger {
+    background-color: rgb(244 63 94 / var(--alert-bg-opacity));
+  }
+  .bg-alert-info {
+    background-color: rgb(59 130 246 / var(--alert-bg-opacity));
+  }
+
+  .dark .bg-alert-success {
+    background-color: rgb(45 212 191 / var(--alert-bg-opacity));
+  }
+  .dark .bg-alert-warning {
+    background-color: rgb(250 204 21 / var(--alert-bg-opacity));
+  }
+  .dark .bg-alert-danger {
+    background-color: rgb(251 113 133 / var(--alert-bg-opacity));
+  }
+  .dark .bg-alert-info {
+    background-color: rgb(96 165 250 / var(--alert-bg-opacity));
+  }
+
+  /* Background with Opacity (for alerts/badges) */
+  .bg-success\/10 {
+    background-color: rgb(20 184 166 / var(--alert-bg-opacity));
+  }
+  .bg-success\/20 {
+    background-color: rgb(20 184 166 / 0.2);
+  }
+  .bg-warning\/10 {
+    background-color: rgb(234 179 8 / var(--alert-bg-opacity));
+  }
+  .bg-warning\/20 {
+    background-color: rgb(234 179 8 / 0.2);
+  }
+  .bg-danger\/10 {
+    background-color: rgb(244 63 94 / var(--alert-bg-opacity));
+  }
+  .bg-danger\/20 {
+    background-color: rgb(244 63 94 / 0.2);
+  }
+  .bg-info\/10 {
+    background-color: rgb(59 130 246 / var(--alert-bg-opacity));
+  }
+  .bg-info\/20 {
+    background-color: rgb(59 130 246 / 0.2);
+  }
+
+  /* Dark Mode Background Opacity */
+  .dark .bg-success\/10 {
+    background-color: rgb(45 212 191 / var(--alert-bg-opacity));
+  }
+  .dark .bg-success\/20 {
+    background-color: rgb(45 212 191 / 0.2);
+  }
+  .dark .bg-warning\/10 {
+    background-color: rgb(250 204 21 / var(--alert-bg-opacity));
+  }
+  .dark .bg-warning\/20 {
+    background-color: rgb(250 204 21 / 0.2);
+  }
+  .dark .bg-danger\/10 {
+    background-color: rgb(251 113 133 / var(--alert-bg-opacity));
+  }
+  .dark .bg-danger\/20 {
+    background-color: rgb(251 113 133 / 0.2);
+  }
+  .dark .bg-info\/10 {
+    background-color: rgb(96 165 250 / var(--alert-bg-opacity));
+  }
+  .dark .bg-info\/20 {
+    background-color: rgb(96 165 250 / 0.2);
+  }
+
+  /* Border Colors */
+  .border-success {
+    border-color: rgb(20, 184, 166);
+  }
+  .border-warning {
+    border-color: rgb(234, 179, 8);
+  }
+  .border-danger {
+    border-color: rgb(244, 63, 94);
+  }
+  .border-info {
+    border-color: rgb(59, 130, 246);
+  }
+
+  /* Border with Opacity */
+  .border-success\/20 {
+    border-color: rgb(20 184 166 / 0.2);
+  }
+  .border-warning\/20 {
+    border-color: rgb(234 179 8 / 0.2);
+  }
+  .border-danger\/20 {
+    border-color: rgb(244 63 94 / 0.2);
+  }
+  .border-info\/20 {
+    border-color: rgb(59 130 246 / 0.2);
+  }
+
+  /* Dark Mode Borders */
+  .dark .border-success {
+    border-color: rgb(45, 212, 191);
+  }
+  .dark .border-warning {
+    border-color: rgb(250, 204, 21);
+  }
+  .dark .border-danger {
+    border-color: rgb(251, 113, 133);
+  }
+  .dark .border-info {
+    border-color: rgb(96, 165, 250);
+  }
+
+  /* Dark Mode Border Opacity */
+  .dark .border-success\/20 {
+    border-color: rgb(45 212 191 / 0.2);
+  }
+  .dark .border-warning\/20 {
+    border-color: rgb(250 204 21 / 0.2);
+  }
+  .dark .border-danger\/20 {
+    border-color: rgb(251 113 133 / 0.2);
+  }
+  .dark .border-info\/20 {
+    border-color: rgb(96 165 250 / 0.2);
   }
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Alert/Message Background Opacity */
+  --alert-bg-opacity: 0.15; /* 15% - adjust this value to change all alert backgrounds */
 }
 
 @media (prefers-color-scheme: dark) {

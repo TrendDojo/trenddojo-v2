@@ -125,7 +125,7 @@ export default function SubscriptionPage() {
                 <h2 className="text-xl font-semibold dark:text-white text-gray-900">
                   Current Plan: {currentSubscription.tier.charAt(0).toUpperCase() + currentSubscription.tier.slice(1)}
                 </h2>
-                <span className="px-2 py-1 rounded text-xs font-medium bg-up/20 text-up">
+                <span className="px-2 py-1 rounded text-xs font-medium bg-success/20 text-success">
                   {currentSubscription.status.toUpperCase()}
                 </span>
               </div>
@@ -208,7 +208,7 @@ export default function SubscriptionPage() {
                 <div className="space-y-3 mb-6">
                   {tier.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-up mt-0.5 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
                       <span className="text-sm dark:text-gray-300 text-gray-700">
                         {feature}
                       </span>
@@ -216,7 +216,7 @@ export default function SubscriptionPage() {
                   ))}
                   {tier.limitations.map((limitation, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <X className="w-4 h-4 text-down mt-0.5 flex-shrink-0" />
+                      <X className="w-4 h-4 text-danger mt-0.5 flex-shrink-0" />
                       <span className="text-sm dark:text-gray-500 text-gray-500">
                         {limitation}
                       </span>
@@ -286,8 +286,8 @@ export default function SubscriptionPage() {
                         <span className={cn(
                           "px-2 py-1 rounded text-xs font-medium",
                           item.status === "paid"
-                            ? "bg-up/20 text-up"
-                            : "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                            ? "bg-success/20 text-success"
+                            : "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400"
                         )}>
                           {item.status.toUpperCase()}
                         </span>

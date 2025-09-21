@@ -236,7 +236,7 @@ export function AllocationPanel({
           <p className="text-xs dark:text-gray-400 text-gray-600">Total Allocated</p>
           <p className={cn(
             "text-lg font-bold",
-            isValid ? "dark:text-white text-gray-900" : "text-down"
+            isValid ? "dark:text-white text-gray-900" : "text-danger"
           )}>
             {totalAllocation.toFixed(1)}%
           </p>
@@ -300,7 +300,7 @@ export function AllocationPanel({
                     disabled={!isActive}
                   >
                     {strategy.locked ? (
-                      <Lock className="w-4 h-4 text-amber-500" />
+                      <Lock className="w-4 h-4 text-yellow-500" />
                     ) : (
                       <Unlock className="w-4 h-4 dark:text-gray-400 text-gray-600" />
                     )}
@@ -313,7 +313,7 @@ export function AllocationPanel({
                       <span>Win: {strategy.winRate.toFixed(1)}%</span>
                       <span>Sharpe: {strategy.sharpeRatio.toFixed(1)}</span>
                       <span className={cn(
-                        strategy.netPnl >= 0 ? "text-up" : "text-down"
+                        strategy.netPnl >= 0 ? "text-success" : "text-danger"
                       )}>
                         P&L: ${strategy.netPnl.toLocaleString()}
                       </span>
@@ -365,9 +365,9 @@ export function AllocationPanel({
 
       {/* Validation Message */}
       {!isValid && (
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30">
-          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800 dark:text-amber-400">
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950/30">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-yellow-800 dark:text-yellow-400">
             <p className="font-medium">Allocation must total 100%</p>
             <p>Current total: {totalAllocation.toFixed(1)}%</p>
           </div>

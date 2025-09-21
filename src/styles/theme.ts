@@ -50,9 +50,9 @@ export const trendDojoTheme = {
 
   // Status Colors
   status: {
-    success: '#10b981', // Green for paper trading
-    warning: '#f59e0b', // Amber for warnings
-    error: '#ef4444',   // Red for real money alerts
+    success: '#14b8a6', // Teal-500 for success states
+    warning: '#eab308', // Yellow-500 for warnings
+    danger: '#f43f5e',  // Rose-500 for danger/error states
     info: '#3b82f6',    // Blue for information
   },
 
@@ -75,10 +75,9 @@ export const trendDojoTheme = {
 
   // Environment Indicators
   environment: {
-    development: '#f59e0b',  // Amber
-    staging: '#3b82f6',      // Blue  
-    production: '#ef4444',   // Red (should rarely be seen)
-    paperTrading: '#10b981', // Green
+    development: '#eab308',  // Yellow-500
+    staging: '#3b82f6',      // Blue
+    production: '#f43f5e',   // Rose-500 for production warnings
   },
 
   // Shadows

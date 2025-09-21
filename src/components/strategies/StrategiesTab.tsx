@@ -88,7 +88,7 @@ export function StrategiesTab() {
             <p className="text-sm text-gray-500 dark:text-gray-400">Total P&L</p>
             <p className={cn(
               "text-2xl font-bold",
-              totalPnL >= 0 ? "text-teal-600 dark:text-teal-400" : "text-purple-600 dark:text-purple-400"
+              totalPnL >= 0 ? "text-success" : "text-danger"
             )}>
               ${totalPnL >= 0 ? '+' : ''}{totalPnL.toLocaleString()}
             </p>
@@ -150,8 +150,8 @@ export function StrategiesTab() {
                     <span className={cn(
                       "inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium",
                       strategy.status === 'active'
-                        ? "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400"
-                        : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                        ? "bg-success/20 text-success"
+                        : "bg-warning/20 text-warning"
                     )}>
                       {strategy.status === 'active' ? (
                         <Play className="w-3 h-3" />
@@ -165,8 +165,8 @@ export function StrategiesTab() {
                     <p className={cn(
                       "font-medium",
                       strategy.pnl >= 0
-                        ? "text-teal-600 dark:text-teal-400"
-                        : "text-purple-600 dark:text-purple-400"
+                        ? "text-success"
+                        : "text-danger"
                     )}>
                       ${strategy.pnl >= 0 ? '+' : ''}{strategy.pnl.toLocaleString()}
                     </p>
@@ -219,8 +219,8 @@ export function StrategiesTab() {
                             <span className={cn(
                               "font-medium",
                               position.pnl >= 0
-                                ? "text-teal-600 dark:text-teal-400"
-                                : "text-purple-600 dark:text-purple-400"
+                                ? "text-success"
+                                : "text-danger"
                             )}>
                               ${position.pnl >= 0 ? '+' : ''}{position.pnl}
                             </span>

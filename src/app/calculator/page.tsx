@@ -222,14 +222,14 @@ export default function PositionCalculatorPage() {
                 <>
                   <div className="flex justify-between py-2 border-b border-slate-700">
                     <span className="text-gray-400">Potential Profit</span>
-                    <span className={`font-medium ${potentialProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`font-medium ${potentialProfit >= 0 ? 'text-success' : 'text-danger'}`}>
                       ${potentialProfit.toFixed(2)}
                     </span>
                   </div>
 
                   <div className="flex justify-between py-2 border-b border-slate-700">
                     <span className="text-gray-400">Risk:Reward Ratio</span>
-                    <span className={`font-medium ${riskRewardRatio >= 2 ? 'text-green-400' : riskRewardRatio >= 1 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span className={`font-medium ${riskRewardRatio >= 2 ? 'text-success' : riskRewardRatio >= 1 ? 'text-warning' : 'text-danger'}`}>
                       1:{riskRewardRatio.toFixed(2)}
                     </span>
                   </div>
@@ -240,7 +240,7 @@ export default function PositionCalculatorPage() {
             {/* Risk Warning */}
             {positionValue > parseFloat(accountBalance) && (
               <div className="mt-4 p-3 bg-red-900/30 border border-red-700 rounded-lg">
-                <p className="text-red-400 text-sm">
+                <p className="text-danger text-sm">
                   ⚠️ Position size exceeds account balance. Consider reducing risk or using margin carefully.
                 </p>
               </div>
@@ -248,7 +248,7 @@ export default function PositionCalculatorPage() {
 
             {riskRewardRatio > 0 && riskRewardRatio < 1 && (
               <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-700 rounded-lg">
-                <p className="text-yellow-400 text-sm">
+                <p className="text-warning text-sm">
                   ⚠️ Risk:Reward ratio is less than 1:1. Consider adjusting your targets.
                 </p>
               </div>

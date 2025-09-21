@@ -27,7 +27,7 @@ export const prismaMock = {
     update: vi.fn(),
     delete: vi.fn(),
   },
-  riskSettings: {
+  risk_settings: {
     findUnique: vi.fn(),
     findMany: vi.fn(),
     create: vi.fn(),
@@ -41,7 +41,7 @@ export const prismaMock = {
     update: vi.fn(),
     delete: vi.fn(),
   },
-  strategy: {
+  strategies: {
     findUnique: vi.fn(),
     findMany: vi.fn(),
     create: vi.fn(),

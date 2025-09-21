@@ -28,7 +28,7 @@ export class StrategyLifecycle {
     }
   ) {
     // Get original strategy
-    const original = await prisma.strategy.findUnique({
+    const original = await prisma.strategies.findUnique({
       where: { id: strategyId },
       include: { positions: { where: { status: 'open' } } }
     });
@@ -44,16 +44,16 @@ export class StrategyLifecycle {
     return await prisma.$transaction(async (tx) => {
       // If original has open positions, block it from opening new ones
       if (hasOpenPositions) {
-        await tx.strategy.update({
+        await tx.strategies.update({
           where: { id: strategyId },
           data: {
             status: 'blocked',
-            blockedReason: 'Superseded by updated strategy version'
+            blocked_reason: 'Superseded by updated strategy version'
           }
         });
       } else {
         // No open positions, can safely close the original
-        await tx.strategy.update({
+        await tx.strategies.update({
           where: { id: strategyId },
           data: {
             status: 'closed',
@@ -63,15 +63,18 @@ export class StrategyLifecycle {
       }
 
       // Create new strategy with updated rules
-      const newStrategy = await tx.strategy.create({
+      const newStrategy = await tx.strategies.create({
         data: {
+          id: crypto.randomUUID(),
           portfolioId: original.portfolioId,
-          parentStrategyId: strategyId,
+          parent_strategy_id: strategyId,
           name: updates.name || `${original.name} v2`,
           description: updates.description || original.description,
           status: 'active',
           type: original.type,
           allocatedCapital: original.allocatedCapital,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           maxPositions: original.maxPositions,
           maxRiskPercent: original.maxRiskPercent,
           maxDrawdown: original.maxDrawdown,
@@ -96,11 +99,11 @@ export class StrategyLifecycle {
    * Used when drawdown limits are hit or manual intervention needed
    */
   static async blockStrategy(strategyId: string, reason: string) {
-    return await prisma.strategy.update({
+    return await prisma.strategies.update({
       where: { id: strategyId },
       data: {
         status: 'blocked',
-        blockedReason: reason
+        blocked_reason: reason
       }
     });
   }
@@ -110,7 +113,7 @@ export class StrategyLifecycle {
    * Cannot archive with open positions
    */
   static async archiveStrategy(strategyId: string) {
-    const strategy = await prisma.strategy.findUnique({
+    const strategy = await prisma.strategies.findUnique({
       where: { id: strategyId },
       include: {
         positions: { where: { status: 'open' } }
@@ -128,7 +131,7 @@ export class StrategyLifecycle {
       );
     }
 
-    return await prisma.strategy.update({
+    return await prisma.strategies.update({
       where: { id: strategyId },
       data: {
         status: 'closed',
@@ -142,7 +145,7 @@ export class StrategyLifecycle {
    */
   static async getStrategyLineage(strategyId: string) {
     // Find the root strategy
-    let currentStrategy: any = await prisma.strategy.findUnique({
+    let currentStrategy: any = await prisma.strategies.findUnique({
       where: { id: strategyId }
     });
 
@@ -152,7 +155,7 @@ export class StrategyLifecycle {
 
     // Walk up to find the root
     while (currentStrategy && currentStrategy.parentStrategyId) {
-      const parent: any = await prisma.strategy.findUnique({
+      const parent: any = await prisma.strategies.findUnique({
         where: { id: currentStrategy.parentStrategyId }
       });
       if (!parent) break;
@@ -171,12 +174,13 @@ export class StrategyLifecycle {
 
   /**
    * Recursively get all child strategies
+   * TODO: Implement when parent-child relations are added to schema
    */
   private static async getDescendants(strategyId: string): Promise<any[]> {
-    const strategy = await prisma.strategy.findUnique({
+    // For now, just return the single strategy
+    const strategy = await prisma.strategies.findUnique({
       where: { id: strategyId },
       include: {
-        childStrategies: true,
         positions: {
           select: {
             id: true,
@@ -191,14 +195,17 @@ export class StrategyLifecycle {
 
     if (!strategy) return [];
 
-    const descendants = [strategy];
+    return [strategy];
 
+    // TODO: When parent-child relations are added:
+    /*
+    const descendants = [strategy];
     for (const child of strategy.childStrategies) {
       const childDescendants = await this.getDescendants(child.id);
       descendants.push(...childDescendants);
     }
-
     return descendants;
+    */
   }
 
   /**
@@ -208,10 +215,10 @@ export class StrategyLifecycle {
     allowed: boolean;
     reason?: string;
   }> {
-    const strategy = await prisma.strategy.findUnique({
+    const strategy = await prisma.strategies.findUnique({
       where: { id: strategyId },
       include: {
-        portfolio: true,
+        portfolios: true,
         positions: { where: { status: 'open' } }
       }
     });
@@ -224,7 +231,7 @@ export class StrategyLifecycle {
     if (strategy.status === 'blocked') {
       return {
         allowed: false,
-        reason: strategy.blockedReason || 'Strategy is blocked'
+        reason: strategy.blocked_reason || 'Strategy is blocked'
       };
     }
 
@@ -237,7 +244,7 @@ export class StrategyLifecycle {
     }
 
     // Check portfolio status
-    if (strategy.portfolio.accountStatus === 'locked') {
+    if (strategy.portfolios.account_status === 'locked') {
       return {
         allowed: false,
         reason: 'Portfolio is locked due to risk limits'

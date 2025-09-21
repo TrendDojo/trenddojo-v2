@@ -8,6 +8,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { tableStyles, filterStyles, getFilterButton } from "@/lib/tableStyles";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { AccountStatusBar } from "@/components/portfolio/AccountStatusBar";
@@ -513,7 +514,7 @@ export default function PositionsPage() {
             </Card>
             <Card>
               <p className="text-sm dark:text-gray-400 text-gray-600">Combined Risk</p>
-              <p className="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
+              <p className="text-2xl font-bold mt-1 text-warning">
                 ${totalRisk.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 <span className="text-base font-normal ml-2">({totalValue > 0 ? `${((totalRisk / totalValue) * 100).toFixed(1)}%` : '0%'})</span>
               </p>
@@ -522,7 +523,7 @@ export default function PositionsPage() {
               <p className="text-sm dark:text-gray-400 text-gray-600">Active P&L</p>
               <p className={cn(
                 "text-2xl font-bold mt-1",
-                totalPnL >= 0 ? "text-up" : "text-down"
+                totalPnL >= 0 ? "text-success" : "text-danger"
               )}>
                 {totalPnL >= 0 ? "+" : ""}${Math.abs(totalPnL).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
@@ -875,7 +876,7 @@ export default function PositionsPage() {
                                 <p className="text-lg font-bold dark:text-white text-gray-900">{position.symbol}</p>
                               )}
                               {position.side === "short" && (
-                                <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-down">
+                                <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-danger">
                                   SHORT
                                 </span>
                               )}
@@ -908,7 +909,7 @@ export default function PositionsPage() {
                             </div>
                             <div className={cn(
                               "text-sm font-medium",
-                              position.currentPrice > position.entryPrice ? "text-up" : "text-down"
+                              position.currentPrice > position.entryPrice ? "text-success" : "text-danger"
                             )}>
                               {position.currentPrice > position.entryPrice ? "+" : ""}
                               {(((position.currentPrice - position.entryPrice) / position.entryPrice) * 100).toFixed(2)}%
@@ -968,8 +969,8 @@ export default function PositionsPage() {
                             <div className={cn(
                               "text-sm font-semibold",
                               isProtected
-                                ? "text-up"  // Green when protected by profits
-                                : "text-down"  // Red when at risk
+                                ? "text-success"  // Green when protected by profits
+                                : "text-danger"  // Red when at risk
                             )}>
                               {remainingRisk > 0 ? (
                                 <>
@@ -1250,7 +1251,7 @@ export default function PositionsPage() {
                     {/* Executed Profit Segment */}
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-16 flex justify-center">
-                        <div className="h-2 w-12 rounded-full bg-up" />
+                        <div className="h-2 w-12 rounded-full bg-success" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium dark:text-white text-gray-900 mb-1">Executed Profit</h4>

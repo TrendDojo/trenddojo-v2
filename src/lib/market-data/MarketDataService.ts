@@ -376,7 +376,7 @@ export class MarketDataService {
   
   private async getDbCachedPrice(symbol: string): Promise<PriceData | null> {
     try {
-      const cached = await prisma.marketDataCache.findFirst({
+      const cached = await prisma.market_data_cache.findFirst({
         where: {
           symbol,
           timeframe: 'current',
@@ -408,7 +408,7 @@ export class MarketDataService {
     
     // Update database cache
     try {
-      await prisma.marketDataCache.create({
+      await prisma.market_data_cache.create({
         data: {
           symbol,
           timeframe: 'current',
@@ -431,7 +431,7 @@ export class MarketDataService {
     try {
       const cutoff = new Date(Date.now() - this.config.cache.historicalDataTTL);
       
-      const cached = await prisma.marketDataCache.findMany({
+      const cached = await prisma.market_data_cache.findMany({
         where: {
           symbol: options.symbol,
           timeframe: options.timeframe,
@@ -467,7 +467,7 @@ export class MarketDataService {
   ): Promise<void> {
     try {
       // Batch insert historical data
-      await prisma.marketDataCache.createMany({
+      await prisma.market_data_cache.createMany({
         data: data.map(candle => ({
           symbol: options.symbol,
           timeframe: options.timeframe,
@@ -486,8 +486,11 @@ export class MarketDataService {
   }
   
   private async getDbCachedTechnicalData(symbol: string): Promise<TechnicalData | null> {
+    // TODO: stock_technicals table not yet created in schema
+    // Uncomment when table is added
+    /*
     try {
-      const cached = await prisma.stockTechnicals.findFirst({
+      const cached = await prisma.stock_technicals.findFirst({
         where: {
           symbol,
           updated_at: {
@@ -495,7 +498,7 @@ export class MarketDataService {
           },
         },
       });
-      
+
       if (cached) {
         return {
           symbol: cached.symbol,
@@ -510,7 +513,8 @@ export class MarketDataService {
     } catch (error) {
       console.error('Failed to get cached technical data from DB:', error);
     }
-    
+    */
+
     return null;
   }
   
@@ -518,8 +522,11 @@ export class MarketDataService {
     symbol: string,
     data: TechnicalData
   ): Promise<void> {
+    // TODO: stock_technicals table not yet created in schema
+    // Uncomment when table is added
+    /*
     try {
-      await prisma.stockTechnicals.upsert({
+      await prisma.stock_technicals.upsert({
         where: { symbol },
         create: {
           symbol,
@@ -542,6 +549,7 @@ export class MarketDataService {
     } catch (error) {
       console.error('Failed to cache technical data in DB:', error);
     }
+    */
   }
   
   private notifySubscribers(symbol: string, price: PriceData): void {

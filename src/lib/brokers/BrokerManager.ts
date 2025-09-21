@@ -7,7 +7,7 @@ import { BrokerClient, BrokerConfig, OrderRequest, OrderResponse, AccountInfo } 
 import { InteractiveBrokersClient, IBConfig } from './interactive-brokers/IBClient';
 import { AlpacaClient, AlpacaConfig } from './alpaca/AlpacaClient';
 
-export type SupportedBroker = 'interactive_brokers' | 'alpaca' | 'td_ameritrade' | 'paper';
+export type SupportedBroker = 'interactive_brokers' | 'alpaca' | 'alpaca_paper' | 'alpaca_live' | 'td_ameritrade';
 
 interface BrokerConnection {
   broker: SupportedBroker;
@@ -194,15 +194,19 @@ export class BrokerManager {
       
       case 'alpaca':
         return new AlpacaClient(config as AlpacaConfig);
-      
-      case 'paper':
-        // Paper trading can use either IB or Alpaca in mock/paper mode
-        // Default to Alpaca for paper trading (commission-free)
+
+      case 'alpaca_paper':
         return new AlpacaClient({
           ...config,
           paperTrading: true,
         } as AlpacaConfig);
-      
+
+      case 'alpaca_live':
+        return new AlpacaClient({
+          ...config,
+          paperTrading: false,
+        } as AlpacaConfig);
+
       // Add other brokers here
       case 'td_ameritrade':
         throw new Error(`${broker} integration not yet implemented`);

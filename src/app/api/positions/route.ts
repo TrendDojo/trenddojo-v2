@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -38,10 +39,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const positions = await prisma.position.findMany({
+    const positions = await prisma.positions.findMany({
       where,
       include: {
-        strategy: {
+        strategies: {
           select: {
             name: true,
             type: true,
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             executions: true,
-            notes: true,
+            position_notes: true,
           },
         },
       },
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     const validated = CreatePositionSchema.parse(body)
 
     // Verify strategy exists and is active
-    const strategy = await prisma.strategy.findUnique({
+    const strategy = await prisma.strategies.findUnique({
       where: { id: validated.strategyId },
       include: {
         _count: {
@@ -126,8 +127,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const position = await prisma.position.create({
+    const position = await prisma.positions.create({
       data: {
+        id: crypto.randomUUID(),
         ...validated,
         status: 'open',
         currentQuantity: 0,
@@ -165,7 +167,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const position = await prisma.position.update({
+    const position = await prisma.positions.update({
       where: { id },
       data: updates,
     })
@@ -185,7 +187,7 @@ export async function PATCH(request: NextRequest) {
 
 // Helper function to update strategy performance metrics
 async function updateStrategyMetrics(strategyId: string) {
-  const positions = await prisma.position.findMany({
+  const positions = await prisma.positions.findMany({
     where: { strategyId },
   })
 
@@ -211,7 +213,7 @@ async function updateStrategyMetrics(strategyId: string) {
 
   const profitFactor = avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? 999 : 0
 
-  await prisma.strategy.update({
+  await prisma.strategies.update({
     where: { id: strategyId },
     data: {
       totalPositions: positions.length,

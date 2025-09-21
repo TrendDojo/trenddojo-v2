@@ -164,16 +164,16 @@ const alertIcons = {
 
 const alertColors = {
   info: 'text-blue-600 dark:text-blue-400',
-  warning: 'text-amber-600 dark:text-amber-400',
-  error: 'text-down',
-  success: 'text-up',
+  warning: 'text-warning',
+  error: 'text-danger',
+  success: 'text-success',
 };
 
 const alertBackgrounds = {
-  info: 'dark:bg-blue-900/20 bg-blue-50',
-  warning: 'dark:bg-amber-900/20 bg-amber-50',
-  error: 'bg-down/10',
-  success: 'bg-up/10',
+  info: 'bg-alert-info',
+  warning: 'bg-alert-warning',
+  error: 'bg-alert-danger',
+  success: 'bg-alert-success',
 };
 
 export function Alert({ 

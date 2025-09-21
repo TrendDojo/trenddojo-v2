@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 
 interface NewStrategyModalProps {
   onClose: () => void
-  onCreate: (strategy: { name: string; entryRule: string; positionRule: string; exitRule: string }) => void
+  onCreate: (strategies: { name: string; entryRule: string; positionRule: string; exitRule: string }) => void
 }
 
 export function NewStrategyModal({ onClose, onCreate }: NewStrategyModalProps) {
@@ -58,7 +58,7 @@ export function NewStrategyModal({ onClose, onCreate }: NewStrategyModalProps) {
               onChange={(e) => setEntryRule(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300
                        bg-white dark:bg-slate-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
+                       focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent"
             >
               <option value="">Select entry rule...</option>
               <option value="Breakout">Breakout - Enter on break above resistance</option>
@@ -96,7 +96,7 @@ export function NewStrategyModal({ onClose, onCreate }: NewStrategyModalProps) {
               onChange={(e) => setExitRule(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300
                        bg-white dark:bg-slate-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent"
+                       focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent"
             >
               <option value="">Select exit rule...</option>
               <option value="2R Target">2R Target - Exit at 2x risk reward</option>

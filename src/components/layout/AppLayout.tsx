@@ -142,7 +142,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                       aria-label="Theme showcase"
                     >
                       <Palette className="w-6 h-6 dark:text-gray-400 text-gray-600" />
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 font-normal">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 font-normal">
                         DEV
                       </span>
                     </Link>

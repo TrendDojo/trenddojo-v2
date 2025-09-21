@@ -1,6 +1,3 @@
-// TrendDojo Trading Platform - Complete Schema Refactor
-// Portfolio > Strategy > Position > Execution hierarchy
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,377 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                            String    @id @default(cuid())
-  email                         String    @unique
-  name                          String?
-  subscriptionTier              String    @default("free") // 'free', 'starter', 'basic', 'pro'
-  subscriptionStatus            String    @default("active") // 'active', 'cancelled', 'past_due'
-  airwallexCustomerId           String?
-  airwallexPaymentMethodId      String?
-  subscriptionExpiresAt         DateTime?
-  createdAt                     DateTime  @default(now())
-  updatedAt                     DateTime  @updatedAt
-
-  // Relations
-  portfolios                    Portfolio[]
-  riskSettings                  RiskSettings[]
-  brokerConnections             BrokerConnection[]
-  tradeChecklistItems           TradeChecklistItem[]
-  
-  @@map("users")
-}
-
-// Renamed from Account
-model Portfolio {
-  id              String    @id @default(cuid())
-  userId          String
-  name            String
-  broker          String?   // 'alpaca', 'ibkr', 'manual'
-  accountType     String?   // 'live', 'paper', 'tracking'
-  baseCurrency    String    @default("USD")
-  startingBalance Decimal?  @db.Decimal(15, 2)
-  currentBalance  Decimal?  @db.Decimal(15, 2)
-
-  // Circuit breaker tracking
-  accountStatus   String    @default("active") // 'active', 'warning', 'recovery', 'locked'
-  currentDrawdown Decimal   @default(0) @db.Decimal(5, 2) // Current % drawdown from peak
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  // Relations
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  riskSettings    RiskSettings[]
-  strategies      Strategy[]
-  tradePlans      TradePlan[] // All trade ideas/journal entries
-
-  @@map("portfolios")
-}
-
-model Strategy {
-  id                String    @id @default(cuid())
-  portfolioId       String
-  name              String
-  description       String?
-  status            String    @default("active") // 'active', 'paused', 'blocked', 'closed', 'testing'
-  type              String?   // 'momentum', 'mean_reversion', 'breakout', 'swing', 'trend_following'
-
-  // Versioning - link to parent when cloned
-  parentStrategyId  String?   // References the strategy this was cloned from
-  blockedReason     String?   // Why strategy was blocked (if applicable)
-
-  // Allocation and Risk
-  allocatedCapital  Decimal?  @db.Decimal(15, 2)
-  maxPositions      Int       @default(5)
-  maxRiskPercent    Decimal?  @db.Decimal(5, 2) @default(2.0)
-  maxDrawdown       Decimal?  @db.Decimal(5, 2) @default(10.0)
-
-  // Rules Configuration
-  entryRules        Json?
-  exitRules         Json?
-  positionSizingRules Json?
-  
-  // Performance Tracking (calculated from positions)
-  totalPositions    Int       @default(0)
-  openPositions     Int       @default(0)
-  closedPositions   Int       @default(0)
-  winningPositions  Int       @default(0)
-  losingPositions   Int       @default(0)
-  
-  totalPnl          Decimal   @default(0) @db.Decimal(15, 2)
-  totalFees         Decimal   @default(0) @db.Decimal(15, 2)
-  netPnl            Decimal   @default(0) @db.Decimal(15, 2)
-  
-  winRate           Decimal?  @db.Decimal(5, 2)
-  avgWin            Decimal?  @db.Decimal(15, 2)
-  avgLoss           Decimal?  @db.Decimal(15, 2)
-  profitFactor      Decimal?  @db.Decimal(5, 2)
-  sharpeRatio       Decimal?  @db.Decimal(5, 2)
-  
-  lastCalculated    DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  closedAt          DateTime?
-  
-  // Relations
-  portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  parentStrategy    Strategy? @relation("StrategyVersions", fields: [parentStrategyId], references: [id])
-  childStrategies   Strategy[] @relation("StrategyVersions")
-  positions         Position[]
-
-  @@index([portfolioId])
-  @@index([status])
-  @@index([parentStrategyId])
-  @@map("strategies")
-}
-
-// NEW: Represents an aggregate holding in a symbol
-model Position {
-  id                String    @id @default(cuid())
-  strategyId        String
-  symbol            String
-  assetType         String    @default("stock") // 'stock', 'crypto', 'forex', 'option', 'future'
-  direction         String    @default("long")  // 'long', 'short'
-  status            String    @default("open")  // 'open', 'closed', 'partial'
-  
-  // Current state (calculated from executions)
-  currentQuantity   Decimal   @default(0) @db.Decimal(15, 6)
-  avgEntryPrice     Decimal?  @db.Decimal(15, 6)
-  avgExitPrice      Decimal?  @db.Decimal(15, 6)
-  
-  // Risk Management
-  stopLoss          Decimal?  @db.Decimal(15, 6)
-  takeProfit        Decimal?  @db.Decimal(15, 6)
-  trailingStop      Decimal?  @db.Decimal(15, 6)
-  
-  // P&L Tracking
-  realizedPnl       Decimal   @default(0) @db.Decimal(15, 2)
-  unrealizedPnl     Decimal   @default(0) @db.Decimal(15, 2)
-  totalFees         Decimal   @default(0) @db.Decimal(15, 2)
-  netPnl            Decimal   @default(0) @db.Decimal(15, 2)
-  
-  // Metrics
-  maxGainPercent    Decimal?  @db.Decimal(5, 2)
-  maxLossPercent    Decimal?  @db.Decimal(5, 2)
-  holdingDays       Int?
-  rMultiple         Decimal?  @db.Decimal(5, 2)
-  
-  // Timestamps
-  openedAt          DateTime  @default(now())
-  closedAt          DateTime?
-  lastExecutionAt   DateTime?
-  
-  // Relations
-  strategy          Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
-  executions        Execution[]
-  tradePlans        TradePlan[] // Can have multiple plans over time
-  notes             PositionNote[]
-  
-  @@index([strategyId])
-  @@index([symbol])
-  @@index([status])
-  @@map("positions")
-}
-
-// NEW: Individual fills/transactions
-model Execution {
-  id                String    @id @default(cuid())
-  positionId        String
-  
-  type              String    // 'buy', 'sell', 'dividend', 'interest', 'fee_only'
-  quantity          Decimal   @db.Decimal(15, 6)
-  price             Decimal   @db.Decimal(15, 6)
-  
-  // Fees breakdown (all part of execution)
-  commission        Decimal   @default(0) @db.Decimal(10, 4)
-  exchangeFees      Decimal   @default(0) @db.Decimal(10, 4)
-  secFees           Decimal   @default(0) @db.Decimal(10, 4)  // SEC fees
-  tafFees           Decimal   @default(0) @db.Decimal(10, 4)  // FINRA TAF
-  clearingFees      Decimal   @default(0) @db.Decimal(10, 4)
-  otherFees         Decimal   @default(0) @db.Decimal(10, 4)
-  totalFees         Decimal   @default(0) @db.Decimal(10, 4)  // Sum of all fees
-  
-  // Net amounts
-  grossValue        Decimal   @db.Decimal(15, 2) // quantity * price
-  netValue          Decimal   @db.Decimal(15, 2) // gross +/- fees (depending on buy/sell)
-  
-  // Broker integration
-  brokerName        String?   // Which broker executed
-  brokerExecId      String?   // Broker's execution ID
-  brokerOrderId     String?   // Broker's order ID
-  
-  // Timestamps
-  executedAt        DateTime
-  settlementDate    DateTime?
-  createdAt         DateTime  @default(now())
-  
-  // Relations
-  position          Position  @relation(fields: [positionId], references: [id], onDelete: Cascade)
-  
-  @@index([positionId])
-  @@index([executedAt])
-  @@map("executions")
-}
-
-// Renamed from Trade - Now represents planning/journaling
-model TradePlan {
-  id                String    @id @default(cuid())
-  portfolioId       String
-  positionId        String?   // Links to actual position when executed
-  
-  // Planning
-  symbol            String
-  direction         String    // 'long', 'short'
-  timeframe         String?   // '5min', '1h', '4h', '1d', '1w'
-  
-  // The Thesis
-  thesis            String    @db.Text
-  setupType         String?   // 'breakout', 'pullback', 'reversal', etc.
-  
-  // Planned levels
-  plannedEntry      Decimal   @db.Decimal(15, 6)
-  plannedStop       Decimal   @db.Decimal(15, 6)
-  plannedTarget     Decimal?  @db.Decimal(15, 6)
-  plannedTarget2    Decimal?  @db.Decimal(15, 6)
-  plannedTarget3    Decimal?  @db.Decimal(15, 6)
-  
-  // Planned risk
-  plannedQuantity   Decimal?  @db.Decimal(15, 6)
-  plannedRiskAmount Decimal?  @db.Decimal(15, 2)
-  plannedRiskPercent Decimal? @db.Decimal(5, 2)
-  riskRewardRatio   Decimal?  @db.Decimal(5, 2)
-  
-  // Analysis
-  setupQuality      Int?      // 1-5 score
-  confidence        Int?      // 1-10 score
-  marketCondition   String?   // 'trending', 'ranging', 'volatile'
-  
-  // Outcome tracking
-  status            String    @default("idea") // 'idea', 'pending', 'executed', 'cancelled', 'expired'
-  outcome           String?   // 'win', 'loss', 'breakeven', 'partial'
-  
-  // Review
-  executionQuality  Int?      // 1-5 - How well did I execute?
-  lessons           String?   @db.Text
-  mistakes          String?   @db.Text
-  
-  // Timestamps
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  executedAt        DateTime? // When actually entered
-  reviewedAt        DateTime? // When reviewed
-  
-  // Relations
-  portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  position          Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
-  notes             TradePlanNote[]
-  checklistResponses TradeChecklistResponse[]
-  
-  @@index([portfolioId])
-  @@index([symbol])
-  @@index([status])
-  @@map("trade_plans")
-}
-
-// Notes for trade plans (journal entries)
-model TradePlanNote {
-  id          String    @id @default(cuid())
-  tradePlanId String
-  noteType    String    // 'analysis', 'entry', 'management', 'exit', 'review'
-  content     String    @db.Text
-  imageUrl    String?   // For chart screenshots
-  createdAt   DateTime  @default(now())
-
-  // Relations
-  tradePlan   TradePlan @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
-  
-  @@map("trade_plan_notes")
-}
-
-// Notes for actual positions
-model PositionNote {
-  id          String    @id @default(cuid())
-  positionId  String
-  noteType    String    // 'management', 'observation', 'adjustment'
-  content     String    @db.Text
-  createdAt   DateTime  @default(now())
-
-  // Relations
-  position    Position  @relation(fields: [positionId], references: [id], onDelete: Cascade)
-  
-  @@map("position_notes")
-}
-
-// Keep existing supporting models with updated relations
-
-model RiskSettings {
-  id                       String    @id @default(cuid())
-  userId                   String
-  portfolioId              String
-  maxRiskPerTrade          Decimal   @default(1.0) @db.Decimal(5, 2)
-  maxDailyRisk             Decimal   @default(3.0) @db.Decimal(5, 2)
-  maxWeeklyRisk            Decimal   @default(6.0) @db.Decimal(5, 2)
-  maxOpenPositions         Int       @default(5)
-  maxCorrelatedPositions   Int       @default(3)
-  positionSizingMethod     String    @default("fixed_risk")
-
-  // Flexible risk management via JSON
-  assetClassLimits         Json?     // Different drawdown limits per asset class
-  drawdownActions          Json?     // What happens at -5%, -10%, -15% etc
-
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
-
-  // Relations
-  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  portfolio                Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-
-  @@map("risk_settings")
-}
-
-model BrokerConnection {
-  id          String    @id @default(cuid())
+model broker_connections {
+  id          String    @id
   userId      String
   broker      String
-  credentials String    // Encrypted JSON
+  credentials String
   isPaper     Boolean   @default(true)
   isActive    Boolean   @default(true)
   lastSync    DateTime?
   createdAt   DateTime  @default(now())
+  users       users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("broker_connections")
+  @@unique([userId, broker])  // One connection per broker per user
+  @@index([userId])
 }
 
-model TradeChecklistItem {
-  id         String   @id @default(cuid())
-  userId     String
-  question   String
-  isRequired Boolean  @default(true)
-  orderIndex Int?
-  createdAt  DateTime @default(now())
+model executions {
+  id             String    @id
+  positionId     String
+  type           String
+  quantity       Decimal   @db.Decimal(15, 6)
+  price          Decimal   @db.Decimal(15, 6)
+  commission     Decimal   @default(0) @db.Decimal(10, 4)
+  exchangeFees   Decimal   @default(0) @db.Decimal(10, 4)
+  secFees        Decimal   @default(0) @db.Decimal(10, 4)
+  tafFees        Decimal   @default(0) @db.Decimal(10, 4)
+  clearingFees   Decimal   @default(0) @db.Decimal(10, 4)
+  otherFees      Decimal   @default(0) @db.Decimal(10, 4)
+  totalFees      Decimal   @default(0) @db.Decimal(10, 4)
+  grossValue     Decimal   @db.Decimal(15, 2)
+  netValue       Decimal   @db.Decimal(15, 2)
+  brokerName     String?
+  brokerExecId   String?
+  brokerOrderId  String?
+  executedAt     DateTime
+  settlementDate DateTime?
+  createdAt      DateTime  @default(now())
+  positions      positions @relation(fields: [positionId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  responses  TradeChecklistResponse[]
-  
-  @@map("trade_checklist_items")
+  @@index([executedAt])
+  @@index([positionId])
 }
 
-model TradeChecklistResponse {
-  id               String    @id @default(cuid())
-  tradePlanId      String
-  checklistItemId  String
-  response         Boolean?
-  createdAt        DateTime  @default(now())
-
-  // Relations
-  tradePlan        TradePlan @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
-  checklistItem    TradeChecklistItem @relation(fields: [checklistItemId], references: [id])
-  
-  @@map("trade_checklist_responses")
-}
-
-model SubscriptionLimit {
-  tier                     String   @id
-  maxAccounts              Int
-  maxPositions             Int
-  maxScreenerResults       Int
-  screenerRefreshSeconds   Int
-  hasFundamentals          Boolean
-  hasRealtimeData          Boolean
-  hasApiAccess             Boolean
-  hasBrokerIntegration     Boolean
-  monthlyPrice             Decimal  @db.Decimal(6, 2)
-  
-  @@map("subscription_limits")
-}
-
-// Keep market data tables unchanged
-model MarketDataCache {
+model market_data_cache {
   symbol    String
   timeframe String
   open      Decimal  @db.Decimal(15, 6)
@@ -393,49 +62,252 @@ model MarketDataCache {
   @@id([symbol, timeframe, timestamp])
   @@index([symbol, timestamp])
   @@index([timeframe, timestamp])
-  @@map("market_data_cache")
 }
 
-model StockTechnicals {
-  symbol           String   @id
-  price            Decimal? @db.Decimal(15, 6)
-  sma_20           Decimal? @db.Decimal(15, 6)
-  sma_50           Decimal? @db.Decimal(15, 6)
-  sma_200          Decimal? @db.Decimal(15, 6)
-  ema_12           Decimal? @db.Decimal(15, 6)
-  ema_26           Decimal? @db.Decimal(15, 6)
-  rsi              Decimal? @db.Decimal(5, 2)
-  macd             Decimal? @db.Decimal(15, 6)
-  macd_signal      Decimal? @db.Decimal(15, 6)
-  macd_histogram   Decimal? @db.Decimal(15, 6)
-  atr_20           Decimal? @db.Decimal(15, 6)
-  bb_upper         Decimal? @db.Decimal(15, 6)
-  bb_middle        Decimal? @db.Decimal(15, 6)
-  bb_lower         Decimal? @db.Decimal(15, 6)
-  updated_at       DateTime @default(now())
-
-  @@map("stock_technicals")
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model portfolios {
+  id               String          @id
+  userId           String
+  name             String
+  broker           String?
+  accountType      String?
+  baseCurrency     String          @default("USD")
+  startingBalance  Decimal?        @db.Decimal(15, 2)
+  currentBalance   Decimal?        @db.Decimal(15, 2)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime
+  account_status   String          @default("active")
+  current_drawdown Decimal         @default(0) @db.Decimal(5, 2)
+  users            users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  risk_settings    risk_settings[]
+  strategies       strategies[]
+  trade_plans      trade_plans[]
 }
 
-model StockFundamentals {
-  symbol           String   @id
-  marketCap        BigInt?
-  peRatio          Decimal? @db.Decimal(10, 2)
-  pegRatio         Decimal? @db.Decimal(10, 2)
-  pbRatio          Decimal? @db.Decimal(10, 2)
-  psRatio          Decimal? @db.Decimal(10, 2)
-  dividendYield    Decimal? @db.Decimal(5, 2)
-  eps              Decimal? @db.Decimal(10, 2)
-  revenue          BigInt?
-  grossMargin      Decimal? @db.Decimal(5, 2)
-  operatingMargin  Decimal? @db.Decimal(5, 2)
-  profitMargin     Decimal? @db.Decimal(5, 2)
-  roe              Decimal? @db.Decimal(5, 2)
-  roa              Decimal? @db.Decimal(5, 2)
-  debtToEquity     Decimal? @db.Decimal(10, 2)
-  currentRatio     Decimal? @db.Decimal(5, 2)
-  quickRatio       Decimal? @db.Decimal(5, 2)
-  lastUpdated      DateTime @default(now())
+model position_notes {
+  id         String    @id
+  positionId String
+  noteType   String
+  content    String
+  createdAt  DateTime  @default(now())
+  positions  positions @relation(fields: [positionId], references: [id], onDelete: Cascade)
+}
 
-  @@map("stock_fundamentals")
+model positions {
+  id              String           @id
+  strategyId      String
+  symbol          String
+  assetType       String           @default("stock")
+  direction       String           @default("long")
+  status          String           @default("open")
+  currentQuantity Decimal          @default(0) @db.Decimal(15, 6)
+  avgEntryPrice   Decimal?         @db.Decimal(15, 6)
+  avgExitPrice    Decimal?         @db.Decimal(15, 6)
+  stopLoss        Decimal?         @db.Decimal(15, 6)
+  takeProfit      Decimal?         @db.Decimal(15, 6)
+  trailingStop    Decimal?         @db.Decimal(15, 6)
+  realizedPnl     Decimal          @default(0) @db.Decimal(15, 2)
+  unrealizedPnl   Decimal          @default(0) @db.Decimal(15, 2)
+  totalFees       Decimal          @default(0) @db.Decimal(15, 2)
+  netPnl          Decimal          @default(0) @db.Decimal(15, 2)
+  maxGainPercent  Decimal?         @db.Decimal(5, 2)
+  maxLossPercent  Decimal?         @db.Decimal(5, 2)
+  holdingDays     Int?
+  rMultiple       Decimal?         @db.Decimal(5, 2)
+  openedAt        DateTime         @default(now())
+  closedAt        DateTime?
+  lastExecutionAt DateTime?
+  executions      executions[]
+  position_notes  position_notes[]
+  strategies      strategies       @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  trade_plans     trade_plans[]
+
+  @@index([status])
+  @@index([strategyId])
+  @@index([symbol])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model risk_settings {
+  id                     String     @id
+  userId                 String
+  maxRiskPerTrade        Decimal    @default(1.0) @db.Decimal(5, 2)
+  maxDailyRisk           Decimal    @default(3.0) @db.Decimal(5, 2)
+  maxWeeklyRisk          Decimal    @default(6.0) @db.Decimal(5, 2)
+  maxOpenPositions       Int        @default(5)
+  maxCorrelatedPositions Int        @default(3)
+  positionSizingMethod   String     @default("fixed_risk")
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime
+  portfolioId            String
+  asset_class_limits     Json?
+  drawdown_actions       Json?
+  portfolios             portfolios @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  users                  users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model stock_fundamentals {
+  symbol          String   @id
+  marketCap       BigInt?
+  peRatio         Decimal? @db.Decimal(10, 2)
+  pegRatio        Decimal? @db.Decimal(10, 2)
+  pbRatio         Decimal? @db.Decimal(10, 2)
+  psRatio         Decimal? @db.Decimal(10, 2)
+  dividendYield   Decimal? @db.Decimal(5, 2)
+  eps             Decimal? @db.Decimal(10, 2)
+  revenue         BigInt?
+  grossMargin     Decimal? @db.Decimal(5, 2)
+  operatingMargin Decimal? @db.Decimal(5, 2)
+  profitMargin    Decimal? @db.Decimal(5, 2)
+  roe             Decimal? @db.Decimal(5, 2)
+  roa             Decimal? @db.Decimal(5, 2)
+  debtToEquity    Decimal? @db.Decimal(10, 2)
+  currentRatio    Decimal? @db.Decimal(5, 2)
+  quickRatio      Decimal? @db.Decimal(5, 2)
+  lastUpdated     DateTime @default(now())
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model strategies {
+  id                  String      @id
+  name                String
+  description         String?
+  status              String      @default("active")
+  type                String?
+  maxPositions        Int         @default(5)
+  maxDrawdown         Decimal?    @default(10.0) @db.Decimal(5, 2)
+  entryRules          Json?
+  exitRules           Json?
+  positionSizingRules Json?
+  totalPnl            Decimal     @default(0) @db.Decimal(15, 2)
+  avgWin              Decimal?    @db.Decimal(15, 2)
+  avgLoss             Decimal?    @db.Decimal(15, 2)
+  winRate             Decimal?    @db.Decimal(5, 2)
+  profitFactor        Decimal?    @db.Decimal(5, 2)
+  sharpeRatio         Decimal?    @db.Decimal(5, 2)
+  lastCalculated      DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime
+  closedAt            DateTime?
+  allocatedCapital    Decimal?    @db.Decimal(15, 2)
+  closedPositions     Int         @default(0)
+  losingPositions     Int         @default(0)
+  maxRiskPercent      Decimal?    @default(2.0) @db.Decimal(5, 2)
+  netPnl              Decimal     @default(0) @db.Decimal(15, 2)
+  openPositions       Int         @default(0)
+  portfolioId         String
+  totalFees           Decimal     @default(0) @db.Decimal(15, 2)
+  totalPositions      Int         @default(0)
+  winningPositions    Int         @default(0)
+  parent_strategy_id  String?
+  blocked_reason      String?
+  positions           positions[]
+  portfolios          portfolios  @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([parent_strategy_id])
+  @@index([portfolioId])
+  @@index([status])
+}
+
+model subscription_limits {
+  tier                   String  @id
+  maxAccounts            Int
+  maxPositions           Int
+  maxScreenerResults     Int
+  screenerRefreshSeconds Int
+  hasFundamentals        Boolean
+  hasRealtimeData        Boolean
+  hasApiAccess           Boolean
+  hasBrokerIntegration   Boolean
+  monthlyPrice           Decimal @db.Decimal(6, 2)
+}
+
+model trade_checklist_items {
+  id                        String                      @id
+  userId                    String
+  question                  String
+  isRequired                Boolean                     @default(true)
+  orderIndex                Int?
+  createdAt                 DateTime                    @default(now())
+  users                     users                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trade_checklist_responses trade_checklist_responses[]
+}
+
+model trade_checklist_responses {
+  id                    String                @id
+  checklistItemId       String
+  response              Boolean?
+  createdAt             DateTime              @default(now())
+  tradePlanId           String
+  trade_checklist_items trade_checklist_items @relation(fields: [checklistItemId], references: [id])
+  trade_plans           trade_plans           @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
+}
+
+model trade_plan_notes {
+  id          String      @id
+  tradePlanId String
+  noteType    String
+  content     String
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  trade_plans trade_plans @relation(fields: [tradePlanId], references: [id], onDelete: Cascade)
+}
+
+model trade_plans {
+  id                        String                      @id
+  portfolioId               String
+  positionId                String?
+  symbol                    String
+  direction                 String
+  timeframe                 String?
+  thesis                    String
+  setupType                 String?
+  plannedEntry              Decimal                     @db.Decimal(15, 6)
+  plannedStop               Decimal                     @db.Decimal(15, 6)
+  plannedTarget             Decimal?                    @db.Decimal(15, 6)
+  plannedTarget2            Decimal?                    @db.Decimal(15, 6)
+  plannedTarget3            Decimal?                    @db.Decimal(15, 6)
+  plannedQuantity           Decimal?                    @db.Decimal(15, 6)
+  plannedRiskAmount         Decimal?                    @db.Decimal(15, 2)
+  plannedRiskPercent        Decimal?                    @db.Decimal(5, 2)
+  riskRewardRatio           Decimal?                    @db.Decimal(5, 2)
+  setupQuality              Int?
+  confidence                Int?
+  marketCondition           String?
+  status                    String                      @default("idea")
+  outcome                   String?
+  executionQuality          Int?
+  lessons                   String?
+  mistakes                  String?
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime
+  executedAt                DateTime?
+  reviewedAt                DateTime?
+  trade_checklist_responses trade_checklist_responses[]
+  trade_plan_notes          trade_plan_notes[]
+  portfolios                portfolios                  @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  positions                 positions?                  @relation(fields: [positionId], references: [id])
+
+  @@index([portfolioId])
+  @@index([status])
+  @@index([symbol])
+}
+
+model users {
+  id                       String                  @id
+  email                    String                  @unique
+  name                     String?
+  passwordHash             String?                 // For password authentication
+  emailVerified            DateTime?               // Email verification timestamp
+  subscriptionTier         String                  @default("free")
+  subscriptionStatus       String                  @default("active")
+  airwallexCustomerId      String?
+  airwallexPaymentMethodId String?
+  subscriptionExpiresAt    DateTime?
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime
+  broker_connections       broker_connections[]
+  portfolios               portfolios[]
+  risk_settings            risk_settings[]
+  trade_checklist_items    trade_checklist_items[]
 }

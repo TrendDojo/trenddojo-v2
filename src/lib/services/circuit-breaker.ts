@@ -17,10 +17,10 @@ export class CircuitBreaker {
    * Check portfolio health and update status based on drawdown
    */
   static async checkPortfolioHealth(portfolioId: string): Promise<SystemMetrics> {
-    const portfolio = await prisma.portfolio.findUnique({
+    const portfolio = await prisma.portfolios.findUnique({
       where: { id: portfolioId },
       include: {
-        riskSettings: true,
+        risk_settings: true,
         strategies: {
           where: { status: 'active' },
           include: {
@@ -34,8 +34,8 @@ export class CircuitBreaker {
       throw new Error('Portfolio not found');
     }
 
-    const riskSettings = portfolio.riskSettings[0];
-    if (!riskSettings) {
+    const risk_settings = portfolio.risk_settings[0];
+    if (!risk_settings) {
       throw new Error('No risk settings found for portfolio');
     }
 
@@ -47,7 +47,7 @@ export class CircuitBreaker {
     const currentDrawdown = ((currentBalance - startingBalance) / startingBalance) * 100;
 
     // Get drawdown actions from risk settings
-    const drawdownActions = riskSettings.drawdownActions as DrawdownActions | null;
+    const drawdownActions = risk_settings.drawdown_actions as DrawdownActions | null;
 
     if (!drawdownActions) {
       // No actions defined, just track metrics
@@ -59,7 +59,7 @@ export class CircuitBreaker {
         openPositions: portfolio.strategies.reduce((sum, s) => sum + s.positions.length, 0),
         totalExposure: 0, // Would calculate from positions
         dailyPnL: 0, // Would calculate from today's trades
-        accountStatus: portfolio.accountStatus as AccountStatus,
+        accountStatus: portfolio.account_status as AccountStatus,
         activeBreakers: [],
         lastUpdated: new Date()
       };
@@ -86,12 +86,12 @@ export class CircuitBreaker {
     }
 
     // Update portfolio status if changed
-    if (newStatus !== portfolio.accountStatus) {
-      await prisma.portfolio.update({
+    if (newStatus !== portfolio.account_status) {
+      await prisma.portfolios.update({
         where: { id: portfolioId },
         data: {
-          accountStatus: newStatus,
-          currentDrawdown
+          account_status: newStatus,
+          current_drawdown: currentDrawdown
         }
       });
 
@@ -127,14 +127,14 @@ export class CircuitBreaker {
    * Block all strategies in a portfolio
    */
   private static async blockAllStrategies(portfolioId: string, reason: string) {
-    await prisma.strategy.updateMany({
+    await prisma.strategies.updateMany({
       where: {
         portfolioId,
         status: 'active'
       },
       data: {
         status: 'blocked',
-        blockedReason: reason
+        blocked_reason: reason
       }
     });
   }
@@ -143,42 +143,42 @@ export class CircuitBreaker {
    * Check if recovery conditions are met
    */
   static async checkRecoveryConditions(portfolioId: string): Promise<boolean> {
-    const portfolio = await prisma.portfolio.findUnique({
+    const portfolio = await prisma.portfolios.findUnique({
       where: { id: portfolioId },
-      include: { riskSettings: true }
+      include: { risk_settings: true }
     });
 
-    if (!portfolio || portfolio.accountStatus !== 'recovery') {
+    if (!portfolio || portfolio.account_status !== 'recovery') {
       return false;
     }
 
-    const riskSettings = portfolio.riskSettings[0];
-    const drawdownActions = riskSettings?.drawdownActions as DrawdownActions | null;
+    const risk_settings = portfolio.risk_settings[0];
+    const drawdownActions = risk_settings?.drawdown_actions as DrawdownActions | null;
 
     if (!drawdownActions?.recoveryRules) {
       return false;
     }
 
-    const currentDrawdown = Number(portfolio.currentDrawdown);
+    const currentDrawdown = Number(portfolio.current_drawdown);
     const exitThreshold = drawdownActions.recoveryRules.exitPercent;
 
     // Exit recovery if drawdown improves past threshold
     if (currentDrawdown > exitThreshold) {
-      await prisma.portfolio.update({
+      await prisma.portfolios.update({
         where: { id: portfolioId },
-        data: { accountStatus: 'active' }
+        data: { account_status: 'active' }
       });
 
       // Unblock strategies
-      await prisma.strategy.updateMany({
+      await prisma.strategies.updateMany({
         where: {
           portfolioId,
           status: 'blocked',
-          blockedReason: { contains: 'recovery mode' }
+          blocked_reason: { contains: 'recovery mode' }
         },
         data: {
           status: 'active',
-          blockedReason: null
+          blocked_reason: null
         }
       });
 
@@ -194,28 +194,28 @@ export class CircuitBreaker {
   static async emergencyStop(portfolioId: string, reason: string) {
     return await prisma.$transaction(async (tx) => {
       // Lock the portfolio
-      await tx.portfolio.update({
+      await tx.portfolios.update({
         where: { id: portfolioId },
         data: {
-          accountStatus: 'locked',
-          currentDrawdown: -100 // Flag for emergency
+          account_status: 'locked',
+          current_drawdown: -100 // Flag for emergency
         }
       });
 
       // Block all strategies
-      await tx.strategy.updateMany({
+      await tx.strategies.updateMany({
         where: { portfolioId },
         data: {
           status: 'blocked',
-          blockedReason: `EMERGENCY STOP: ${reason}`
+          blocked_reason: `EMERGENCY STOP: ${reason}`
         }
       });
 
       // Mark all open positions for closing
       // In real system, this would trigger actual market orders
-      const positions = await tx.position.updateMany({
+      const positions = await tx.positions.updateMany({
         where: {
-          strategy: { portfolioId },
+          strategies: { portfolioId },
           status: 'open'
         },
         data: {
@@ -239,11 +239,11 @@ export class CircuitBreaker {
     strategyId: string,
     baseSize: number
   ): Promise<number> {
-    const strategy = await prisma.strategy.findUnique({
+    const strategy = await prisma.strategies.findUnique({
       where: { id: strategyId },
       include: {
-        portfolio: {
-          include: { riskSettings: true }
+        portfolios: {
+          include: { risk_settings: true }
         }
       }
     });
@@ -252,16 +252,16 @@ export class CircuitBreaker {
       throw new Error('Strategy not found');
     }
 
-    const portfolio = strategy.portfolio;
-    const riskSettings = portfolio.riskSettings[0];
-    const drawdownActions = riskSettings?.drawdownActions as DrawdownActions | null;
+    const portfolio = strategy.portfolios;
+    const risk_settings = portfolio.risk_settings[0];
+    const drawdownActions = risk_settings?.drawdown_actions as DrawdownActions | null;
 
     if (!drawdownActions) {
       return baseSize; // No adjustments defined
     }
 
     // Apply drawdown-based adjustment
-    const currentDrawdown = Number(portfolio.currentDrawdown);
+    const currentDrawdown = Number(portfolio.current_drawdown);
     const adjustedSize = RiskManager.calculatePositionSizeAdjustment(
       baseSize,
       currentDrawdown,
@@ -269,7 +269,7 @@ export class CircuitBreaker {
     );
 
     // Apply recovery mode adjustment if applicable
-    if (portfolio.accountStatus === 'recovery' && drawdownActions.recoveryRules) {
+    if (portfolio.account_status === 'recovery' && drawdownActions.recoveryRules) {
       const recoveryMax = drawdownActions.recoveryRules.maxPositionSize;
       return Math.min(adjustedSize, baseSize * recoveryMax);
     }

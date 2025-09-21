@@ -86,8 +86,8 @@ export default function AllocationExamplePage() {
                         </h3>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
                           strategy.status === "active"
-                            ? "bg-up/20 text-up"
-                            : "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                            ? "bg-success/20 text-success"
+                            : "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400"
                         }`}>
                           {strategy.status.toUpperCase()}
                         </span>
@@ -97,7 +97,7 @@ export default function AllocationExamplePage() {
                       </p>
                       <div className="flex items-center gap-6 text-sm">
                         <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-up" />
+                          <TrendingUp className="w-4 h-4 text-success" />
                           <span className="dark:text-gray-300 text-gray-700">
                             Win Rate: <span className="font-medium">{strategy.winRate.toFixed(1)}%</span>
                           </span>

@@ -70,14 +70,14 @@ export default function LoginPage() {
         <Panel variant="default" padding="xl" rounded="xl">
           {/* Development Mode Notice */}
           <Alert intent="info" className="mb-6">
-            <p className="dark:text-blue-300 text-blue-700 text-sm">
+            <p className="text-info text-sm">
               <strong>Development Mode:</strong> Sign in with any email and password "password123"
             </p>
           </Alert>
           
           {error && (
             <Alert intent="error" className="mb-6">
-              <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
+              <p className="text-danger text-sm">{error}</p>
             </Alert>
           )}
           
@@ -118,11 +118,11 @@ export default function LoginPage() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 dark:checked:bg-blue-600 checked:bg-blue-600 accent-blue-600"
+                  className="w-4 h-4 dark:bg-slate-700 bg-white dark:border-gray-600 border-gray-300 rounded focus:ring-2 focus:ring-info dark:checked:bg-info checked:bg-info accent-info"
                 />
                 <span className="ml-2 text-sm dark:text-gray-400 text-gray-600">Remember me</span>
               </label>
-              <a href="#" className="text-sm text-blue-400 hover:text-blue-300">
+              <a href="#" className="text-sm text-info hover:text-info/80">
                 Forgot password?
               </a>
             </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="dark:text-gray-400 text-gray-600 text-sm">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-blue-400 hover:text-blue-300">
+              <Link href="/signup" className="text-info hover:text-info/80">
                 Start free trial
               </Link>
             </p>
