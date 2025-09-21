@@ -5,7 +5,7 @@ import { BrokerConnectionForm } from "./BrokerConnectionForm";
 import { FormField, Input } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Panel";
-import { AlertTriangle } from "lucide-react";
+import { Zap, Layers } from "lucide-react";
 
 export interface IBCredentials {
   host: string;
@@ -62,16 +62,16 @@ export function IBConnectionModal({ isOpen, onClose, onConnect }: IBConnectionMo
       loading={loading}
       error={error}
       submitText={credentials.paperTrading ? "Connect Paper Account" : "Connect LIVE Account"}
-      submitVariant={credentials.paperTrading ? "primary" : "danger"}
+      submitVariant="primary"
       tradingModeAlert={{
-        intent: "warning",
+        intent: credentials.paperTrading ? "success" : "error",
         title: credentials.paperTrading ? "Paper Trading Mode" : "LIVE Trading Mode",
         message: credentials.paperTrading
           ? "Trade with virtual money for practice"
-          : "Trade with real money - use caution",
-        icon: AlertTriangle,
+          : "You are about to connect to your LIVE account. Real money will be at risk. All trades executed will use actual funds. Please ensure you understand the risks before proceeding.",
+        icon: credentials.paperTrading ? Layers : Zap,
       }}
-      liveWarning={!credentials.paperTrading}
+      liveWarning={false}
     >
       {/* Trading Mode Selection */}
       <div>
@@ -101,7 +101,7 @@ export function IBConnectionModal({ isOpen, onClose, onConnect }: IBConnectionMo
       {/* Host Input */}
       <FormField
         label="Gateway Host"
-        helpText='Usually "localhost" if IB Gateway is on this machine'
+        helper='Usually "localhost" if IB Gateway is on this machine'
         required
       >
         <Input
@@ -117,7 +117,7 @@ export function IBConnectionModal({ isOpen, onClose, onConnect }: IBConnectionMo
       {/* Port Input */}
       <FormField
         label="Gateway Port"
-        helpText="Paper: 7497, Live: 7496 (default IB Gateway ports)"
+        helper="Paper: 7497, Live: 7496 (default IB Gateway ports)"
         required
       >
         <Input
@@ -134,7 +134,7 @@ export function IBConnectionModal({ isOpen, onClose, onConnect }: IBConnectionMo
       {/* Client ID Input */}
       <FormField
         label="Client ID"
-        helpText="Unique ID for this connection (usually 1)"
+        helper="Unique ID for this connection (usually 1)"
         required
       >
         <Input

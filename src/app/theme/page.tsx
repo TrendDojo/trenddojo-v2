@@ -10,7 +10,8 @@ import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/component
 import { cn } from "@/lib/utils";
 import { tableStyles, filterStyles, tabStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
 import { ChevronDown, Check } from "lucide-react";
-import { Icon, Icons } from "@/lib/icons";
+// Icon system - using Lucide icons directly with Tailwind sizing
+import { Info, AlertTriangle, XCircle, CheckCircle, Gauge, ArrowUpWideNarrow, MapPin, Atom, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, CreditCard, Plus, Edit, Trash, Download, Save } from "lucide-react";
 import { Tabs } from "@/components/ui/Tabs";
 
 export default function ThemePage() {
@@ -156,7 +157,19 @@ export default function ThemePage() {
           {/* Alerts Section */}
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Alerts</h2>
-            
+
+            <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-3">
+                <Info className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                <div>
+                  <h3 className="font-semibold text-sm text-blue-900 dark:text-blue-100">Design Standard: Message Header Icons</h3>
+                  <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                    All alert and message header icons use <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded text-xs">w-7 h-7</code> (1.75rem / 28px) for consistent visual hierarchy
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-4">
               <Alert intent="info" title="Information">
                 This is an informational alert message with helpful details.
@@ -480,55 +493,67 @@ export default function ThemePage() {
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Icons</h2>
             <p className="text-sm dark:text-gray-400 text-gray-600 mb-4">
-              Centralized icon system with consistent sizing. All icons are from lucide-react.
+              Icons from lucide-react with Tailwind sizing classes. Consistent sizing across the app.
             </p>
 
-            {/* Icon Sizes */}
+            {/* Standard Icon Sizes */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Preset Icon Sizes</h3>
+              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Standard Icon Sizes (Tailwind Classes)</h3>
               <div className="flex items-center gap-6">
                 <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.alert.info} size="xs" className="text-gray-600 dark:text-gray-400" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">xs (1rem)</span>
+                  <Info className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-3 h-3 (12px)</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.alert.info} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">sm (1.25rem)</span>
+                  <Info className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-4 h-4 (16px)</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.alert.info} size="md" className="text-gray-600 dark:text-gray-400" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">md (1.75rem)</span>
+                  <Info className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-5 h-5 (20px)</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.alert.info} size="lg" className="text-gray-600 dark:text-gray-400" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">lg (2.25rem)</span>
+                  <Info className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-6 h-6 (24px)</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.alert.info} size="xl" className="text-gray-600 dark:text-gray-400" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">xl (3rem)</span>
+                  <Info className="w-8 h-8 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-8 h-8 (32px)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Info className="w-10 h-10 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-10 h-10 (40px)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Info className="w-12 h-12 text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">w-12 h-12 (48px)</span>
                 </div>
               </div>
             </div>
 
-            {/* Custom Icon Sizes */}
+            {/* Recommended Usage */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Custom Icon Sizes</h3>
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.trading.trendingUp} size={12} className="text-success" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">12px</span>
+              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Recommended Usage by Context</h3>
+              <div className="space-y-2 text-sm dark:text-gray-400 text-gray-600">
+                <div className="flex items-center gap-3">
+                  <Info className="w-3 h-3" />
+                  <span><code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 rounded">w-3 h-3</code> - Tiny inline icons, badges</span>
                 </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.trading.trendingUp} size={18} className="text-success" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">18px</span>
+                <div className="flex items-center gap-3">
+                  <Info className="w-4 h-4" />
+                  <span><code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 rounded">w-4 h-4</code> - Small buttons, input decorations</span>
                 </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.trading.trendingUp} size={32} className="text-success" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">32px</span>
+                <div className="flex items-center gap-3">
+                  <Info className="w-5 h-5" />
+                  <span><code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 rounded">w-5 h-5</code> - Standard size (alerts, navigation)</span>
                 </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Icon icon={Icons.trading.trendingUp} size={40} className="text-success" />
-                  <span className="text-xs dark:text-gray-500 text-gray-500">40px</span>
+                <div className="flex items-center gap-3">
+                  <Info className="w-6 h-6" />
+                  <span><code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 rounded">w-6 h-6</code> - Emphasized actions, headers</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Info className="w-8 h-8" />
+                  <span><code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 rounded">w-8 h-8</code> - Feature icons, empty states</span>
                 </div>
               </div>
             </div>
@@ -538,42 +563,42 @@ export default function ThemePage() {
               <div>
                 <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Alert Icons</h3>
                 <div className="flex items-center gap-4">
-                  <Icon icon={Icons.alert.info} size="sm" className="text-blue-600 dark:text-blue-400" />
-                  <Icon icon={Icons.alert.warning} size="sm" className="text-warning" />
-                  <Icon icon={Icons.alert.error} size="sm" className="text-danger" />
-                  <Icon icon={Icons.alert.success} size="sm" className="text-success" />
+                  <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <AlertTriangle className="w-5 h-5 text-warning" />
+                  <XCircle className="w-5 h-5 text-danger" />
+                  <CheckCircle className="w-5 h-5 text-success" />
                 </div>
               </div>
 
               <div>
                 <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Navigation Icons</h3>
                 <div className="flex items-center gap-4">
-                  <Icon icon={Icons.navigation.gauge} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.navigation.arrowUpWideNarrow} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.navigation.mapPin} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.navigation.atom} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.navigation.arrowRightLeft} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Gauge className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <ArrowUpWideNarrow className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <MapPin className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Atom className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <ArrowRightLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
 
               <div>
                 <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Trading Icons</h3>
                 <div className="flex items-center gap-4">
-                  <Icon icon={Icons.trading.trendingUp} size="sm" className="text-success" />
-                  <Icon icon={Icons.trading.trendingDown} size="sm" className="text-danger" />
-                  <Icon icon={Icons.trading.dollarSign} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.trading.creditCard} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <TrendingUp className="w-5 h-5 text-success" />
+                  <TrendingDown className="w-5 h-5 text-danger" />
+                  <DollarSign className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
 
               <div>
                 <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Action Icons</h3>
                 <div className="flex items-center gap-4">
-                  <Icon icon={Icons.action.plus} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.action.edit} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.action.trash} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.action.download} size="sm" className="text-gray-600 dark:text-gray-400" />
-                  <Icon icon={Icons.action.save} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Plus className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Edit className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Trash className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Download className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Save className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </div>
@@ -581,13 +606,13 @@ export default function ThemePage() {
             <div className="mt-6 p-3 bg-gray-100 dark:bg-slate-800 rounded">
               <div className="text-xs dark:text-gray-400 text-gray-600 space-y-2">
                 <p>
-                  <strong>Import:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">import {"{ Icon, Icons }"} from "@/lib/icons"</code>
+                  <strong>Import:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">import {"{ IconName }"} from "lucide-react"</code>
                 </p>
                 <p>
-                  <strong>Preset sizes:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">size="xs" | "sm" | "md" | "lg" | "xl"</code>
+                  <strong>Sizing:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">className="w-[size] h-[size]"</code>
                 </p>
                 <p>
-                  <strong>Custom size:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">size={"{"}24{"}"}</code> (in pixels)
+                  <strong>Example:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">{"<Info className=\"w-5 h-5 text-blue-500\" />"}</code>
                 </p>
               </div>
             </div>

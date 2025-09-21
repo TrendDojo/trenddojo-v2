@@ -57,15 +57,20 @@ export class AlpacaClient implements BrokerClient {
       if (this.connected) {
         return true;
       }
-      
+
       // Test connection by fetching account info
       const accountInfo = await this.getAccountInfo();
       if (accountInfo) {
+        // Validate that we're connected to the right environment
+        // Paper trading accounts typically have different characteristics
+        // Note: This is a heuristic check as Alpaca doesn't explicitly indicate paper vs live
+        await this.validateTradingMode(accountInfo);
+
         this.connected = true;
         console.log(`Connected to Alpaca (${this.config.paperTrading ? 'Paper' : 'Live'} trading)`);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       throw new BrokerError(
@@ -75,6 +80,23 @@ export class AlpacaClient implements BrokerClient {
         { paperTrading: this.config.paperTrading }
       );
     }
+  }
+
+  /**
+   * Validate that credentials match the intended trading mode
+   */
+  private async validateTradingMode(accountInfo: AccountInfo): Promise<void> {
+    // Try to detect if we're in paper trading mode
+    // Paper accounts often have specific patterns in account IDs or high starting balances
+
+    // If we're expecting paper trading but get a live account warning
+    if (this.config.paperTrading && accountInfo.accountId && !accountInfo.accountId.includes('PA')) {
+      console.warn('Warning: Credentials may be for a live account but paper trading mode is selected');
+      // In production, you might want to throw an error here
+      // throw new BrokerError('Live credentials detected but paper trading mode selected', 'alpaca');
+    }
+
+    // Additional checks could be added here based on Alpaca's response patterns
   }
   
   /**

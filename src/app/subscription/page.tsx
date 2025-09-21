@@ -5,7 +5,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
-import { Icon, Icons } from "@/lib/icons";
+// import { Icon, Icons } from "@/lib/icons"; // Removed - using Lucide icons directly
+import { Check, X, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { tableStyles } from "@/lib/tableStyles";
 
@@ -197,7 +198,7 @@ export default function SubscriptionPage() {
                 <div className="space-y-3 mb-6">
                   {tier.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <Icon icon={Icons.action.check} size="xs" className="text-success mt-0.5" />
+                      <Check className="w-4 h-4 text-success mt-0.5" />
                       <span className="text-sm dark:text-gray-300 text-gray-700">
                         {feature}
                       </span>
@@ -205,7 +206,7 @@ export default function SubscriptionPage() {
                   ))}
                   {tier.limitations.map((limitation, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <Icon icon={Icons.action.close} size="xs" className="text-danger mt-0.5" />
+                      <X className="w-4 h-4 text-danger mt-0.5" />
                       <span className="text-sm dark:text-gray-500 text-gray-500">
                         {limitation}
                       </span>
@@ -234,7 +235,7 @@ export default function SubscriptionPage() {
                 Billing History
               </h3>
               <Button variant="secondary" size="sm">
-                <Icon icon={Icons.action.download} size="xs" className="mr-2" />
+                <Download className="w-4 h-4 mr-2" />
                 Export All
               </Button>
             </div>

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui/Tooltip';
-import { Icon, Icons } from '@/lib/icons';
+import { LucideIcon, Gauge, ArrowUpWideNarrow, MapPin, Atom, ArrowRightLeft } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -15,17 +15,17 @@ interface SidebarProps {
 }
 
 const navigationItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Icons.navigation.gauge },
-  { href: "/screener", label: "Screener", icon: Icons.navigation.arrowUpWideNarrow },
-  { href: "/positions", label: "Positions", icon: Icons.navigation.mapPin },
-  { href: "/strategies", label: "Strategies", icon: Icons.navigation.atom },
-  { href: "/brokers", label: "Brokers", icon: Icons.navigation.arrowRightLeft },
+  { href: "/dashboard", label: "Dashboard", icon: Gauge },
+  { href: "/screener", label: "Screener", icon: ArrowUpWideNarrow },
+  { href: "/positions", label: "Positions", icon: MapPin },
+  { href: "/strategies", label: "Strategies", icon: Atom },
+  { href: "/brokers", label: "Brokers", icon: ArrowRightLeft },
 ];
 
 interface NavItemProps {
   href: string;
   label: string;
-  icon: typeof Icons.navigation.gauge;  // LucideIcon type
+  icon: LucideIcon;
   isActive?: boolean;
   isCollapsed?: boolean;
   onClick?: () => void;
@@ -52,7 +52,7 @@ function NavItem({
           : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/50 hover:bg-gray-100"
       )}
     >
-      <Icon icon={iconComponent} size="md" />
+      {React.createElement(iconComponent, { className: "w-5 h-5" })}
       {!isCollapsed && <span className="truncate">{label}</span>}
     </Link>
   );

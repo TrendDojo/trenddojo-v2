@@ -5,11 +5,89 @@ import { getEncryption } from '@/lib/security/encryption';
 import { prisma } from '@/lib/db';
 import crypto from 'crypto';
 
+export async function GET() {
+  try {
+    // Check authentication
+    const session = await auth();
+    if (!session || !(session as any)?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get all active broker connections for the user
+    const connections = await prisma.broker_connections.findMany({
+      where: {
+        userId: (session as any).user.id,
+        isActive: true
+      },
+      select: {
+        broker: true,
+        isPaper: true,
+        lastSync: true,
+        createdAt: true,
+        credentials: true
+      }
+    });
+
+    // Decrypt and reconnect to get account info
+    const encryption = getEncryption();
+    const brokerManager = getBrokerManager();
+
+    const connectionDetails = await Promise.all(
+      connections.map(async (conn) => {
+        try {
+          // Decrypt credentials
+          const decryptedConfig = encryption.decryptObject(conn.credentials);
+
+          // Add paperTrading flag for Alpaca
+          if (conn.broker === 'alpaca_paper' || conn.broker === 'alpaca_live') {
+            decryptedConfig.paperTrading = conn.broker === 'alpaca_paper';
+          }
+
+          // Connect to broker temporarily to get account info
+          await brokerManager.connectBroker(
+            conn.broker as SupportedBroker,
+            decryptedConfig,
+            false // Don't set as primary
+          );
+
+          const brokerClient = brokerManager.getBroker(conn.broker as SupportedBroker);
+          const accountInfo = brokerClient ? await brokerClient.getAccountInfo() : null;
+
+          return {
+            broker: conn.broker,
+            isPaper: conn.isPaper,
+            accountInfo,
+            lastSync: conn.lastSync,
+            status: 'connected'
+          };
+        } catch (error) {
+          console.error(`Failed to reconnect to ${conn.broker}:`, error);
+          return {
+            broker: conn.broker,
+            isPaper: conn.isPaper,
+            accountInfo: null,
+            lastSync: conn.lastSync,
+            status: 'error'
+          };
+        }
+      })
+    );
+
+    return NextResponse.json({ connections: connectionDetails });
+  } catch (error) {
+    console.error('Failed to fetch broker connections:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch connections' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     // Check authentication
     const session = await auth();
-    if (!session?.user) {
+    if (!session || !(session as any)?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
@@ -46,26 +124,34 @@ export async function POST(request: Request) {
     // MUST have unit tests before deployment
     const encryptedCredentials = encryption.encryptObject(config);
 
+    // Determine if this is paper trading based on broker type
+    const isPaperTrading = broker === 'alpaca_paper' || broker === 'interactive_brokers_paper';
+
+    // Add paperTrading flag to config for Alpaca
+    if (broker === 'alpaca_paper' || broker === 'alpaca_live') {
+      config.paperTrading = broker === 'alpaca_paper';
+    }
+
     // Store or update broker connection
     await prisma.broker_connections.upsert({
       where: {
         userId_broker: {
-          userId: session.user.id,
+          userId: (session as any).user.id,
           broker: broker
         }
       },
       update: {
         credentials: encryptedCredentials,
-        isPaper: true, // ALWAYS paper trading for initial launch
+        isPaper: isPaperTrading,
         isActive: true,
         lastSync: new Date()
       },
       create: {
         id: crypto.randomUUID(),
-        userId: session.user.id,
+        userId: (session as any).user.id,
         broker: broker,
         credentials: encryptedCredentials,
-        isPaper: true, // ALWAYS paper trading for initial launch
+        isPaper: isPaperTrading,
         isActive: true,
         createdAt: new Date()
       }
@@ -105,43 +191,12 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const brokerManager = getBrokerManager();
-    const connectedBrokers = brokerManager.getConnectedBrokers();
-    
-    // Get account info for each connected broker
-    const accounts = await brokerManager.getAggregatedAccountInfo();
-    
-    return NextResponse.json({
-      connectedBrokers,
-      totalBalance: accounts.totalBalance,
-      totalBuyingPower: accounts.totalBuyingPower,
-      accounts: Array.from(accounts.accounts.entries()).map(([broker, info]) => ({
-        broker,
-        ...info,
-      })),
-    });
-  } catch (error) {
-    console.error('Error fetching broker info:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch broker information' },
-      { status: 500 }
-    );
-  }
-}
 
 export async function DELETE(request: Request) {
   try {
     // Check authentication
     const session = await auth();
-    if (!session?.user) {
+    if (!session || !(session as any)?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     

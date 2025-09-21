@@ -83,18 +83,7 @@ export function BrokerConnectionForm({
         {/* Error Display */}
         {error && (
           <Alert intent="error">
-            {error}
-          </Alert>
-        )}
-
-        {/* Live Trading Warning */}
-        {liveWarning && (
-          <Alert intent="warning" title="LIVE TRADING MODE" icon={AlertTriangle}>
-            <p className="text-sm">
-              You are about to connect to your LIVE account. Real money
-              will be at risk. All trades executed will use actual funds. Please
-              ensure you understand the risks before proceeding.
-            </p>
+            <span className="text-base font-bold">{error}</span>
           </Alert>
         )}
 
@@ -102,7 +91,7 @@ export function BrokerConnectionForm({
         <div className="flex gap-3 justify-end">
           <Button
             type="button"
-            variant="ghost"
+            variant="secondary"
             onClick={handleClose}
             disabled={loading}
           >

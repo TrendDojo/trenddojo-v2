@@ -7,7 +7,7 @@
 
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-import { Icon, Icons } from "@/lib/icons";
+import { LucideIcon, Info, AlertTriangle, XCircle, CheckCircle } from "lucide-react";
 
 interface PanelProps {
   children: ReactNode;
@@ -137,14 +137,14 @@ export function Section({ className, children, ...props }: Omit<PanelProps, 'var
 interface AlertProps extends Omit<PanelProps, 'variant' | 'intent'> {
   intent?: 'info' | 'warning' | 'error' | 'success';
   title?: string;
-  icon?: boolean;
+  icon?: boolean | LucideIcon;
 }
 
 const alertIconMap = {
-  info: Icons.alert.info,
-  warning: Icons.alert.warning,
-  error: Icons.alert.error,
-  success: Icons.alert.success,
+  info: Info,
+  warning: AlertTriangle,
+  error: XCircle,
+  success: CheckCircle,
 };
 
 const alertColors = {
@@ -179,11 +179,19 @@ export function Alert({
       {...props}
     >
       {icon && (
-        <Icon
-          icon={alertIconMap[intent]}
-          size="md"
-          className={alertColors[intent]}
-        />
+        <>
+          {typeof icon === 'boolean' ? (
+            (() => {
+              const IconComponent = alertIconMap[intent];
+              return <IconComponent className={cn("w-7 h-7 flex-shrink-0", alertColors[intent])} />;
+            })()
+          ) : (
+            (() => {
+              const IconComponent = icon;
+              return <IconComponent className={cn("w-7 h-7 flex-shrink-0", alertColors[intent])} />;
+            })()
+          )}
+        </>
       )}
       <div className="flex-1">
         {title && (

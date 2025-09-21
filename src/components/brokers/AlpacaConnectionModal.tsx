@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BrokerConnectionForm } from "./BrokerConnectionForm";
 import { FormField, Input } from "@/components/ui/FormField";
 import { Alert } from "@/components/ui/Panel";
-import { ExternalLink, AlertTriangle } from "lucide-react";
+import { ExternalLink, Zap, Layers } from "lucide-react";
 
 export interface AlpacaCredentials {
   apiKeyId: string;
@@ -74,25 +74,25 @@ export function AlpacaConnectionModal({
       loading={loading}
       error={error}
       submitText={isPaperTrading ? "Connect Paper Account" : "Connect LIVE Account"}
-      submitVariant={isPaperTrading ? "primary" : "danger"}
+      submitVariant="primary"
       tradingModeAlert={{
-        intent: "warning",
+        intent: isPaperTrading ? "success" : "error",
         title: isPaperTrading ? "Paper Trading Mode" : "LIVE Trading Mode",
         message: isPaperTrading
           ? "Using simulated trading environment - perfect for testing strategies"
-          : "Using LIVE trading environment - real money at risk!",
-        icon: AlertTriangle,
+          : "You are about to connect to your LIVE account. Real money will be at risk. All trades executed will use actual funds. Please ensure you understand the risks before proceeding.",
+        icon: isPaperTrading ? Layers : Zap,
       }}
-      liveWarning={!isPaperTrading}
+      liveWarning={false}
     >
       {/* API Key ID Field */}
       <FormField
         label="API Key ID"
         required
-        helpText="This starts with 'PK' and is your public key identifier"
+        helper={isPaperTrading ? "This starts with 'PK' for paper trading" : "This starts with 'AK' for live trading"}
       >
         <Input
-          placeholder="PKXXXXXXXXXXXXXXXX (starts with PK)"
+          placeholder={isPaperTrading ? "PKXXXXXXXXXXXXXXXX (starts with PK)" : "AKXXXXXXXXXXXXXXXX (starts with AK)"}
           value={credentials.apiKeyId}
           onChange={(e) =>
             setCredentials({ ...credentials, apiKeyId: e.target.value })
@@ -107,7 +107,7 @@ export function AlpacaConnectionModal({
       <FormField
         label="Secret Key"
         required
-        helpText="This is your private secret key - keep it secure"
+        helper="This is your private secret key - keep it secure"
       >
         <Input
           type="password"
@@ -137,47 +137,24 @@ export function AlpacaConnectionModal({
         <ol className="text-sm space-y-2">
           <li className="flex items-start gap-2">
             <span className="font-semibold">1.</span>
-            <span>
-              Go to{" "}
-              <a
-                href={
-                  isPaperTrading
-                    ? "https://app.alpaca.markets/paper/dashboard/overview"
-                    : "https://app.alpaca.markets/brokerage/dashboard/overview"
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
-              >
-                Alpaca Dashboard
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </span>
+            <span>Log in to your Alpaca account</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-semibold">2.</span>
-            <span>Navigate to "API Keys" in the left sidebar</span>
+            <span>Navigate to <strong>Profile Settings → Manage Accounts</strong></span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-semibold">3.</span>
-            <span>
-              {isPaperTrading
-                ? "Make sure you're in Paper Trading mode (toggle at top)"
-                : "Make sure you're in Live Trading mode (toggle at top)"}
-            </span>
+            <span>Click <strong>Generate New Key</strong></span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-semibold">4.</span>
-            <span>Generate a new API key or use an existing one</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-semibold">5.</span>
             <span>
-              Copy both values:
+              Copy both values immediately:
               <br />
-              • <strong>Key ID</strong>: Starts with "PK" (this is your API Key ID)
+              • <strong>Key ID</strong>: {isPaperTrading ? 'Starts with "PK"' : 'Starts with "AK"'} (this is your API Key ID)
               <br />
-              • <strong>Secret Key</strong>: Longer private key for authentication
+              • <strong>Secret Key</strong>: Longer private key - save this now as it won't be shown again!
             </span>
           </li>
         </ol>

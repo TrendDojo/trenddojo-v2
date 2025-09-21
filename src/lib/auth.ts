@@ -313,4 +313,4 @@ const handler = NextAuth(authConfig as any)
 export default handler
 
 // For NextAuth v4, we need to use getServerSession
-export const auth = () => getServerSession(authConfig)
+export const auth = () => getServerSession(authConfig as any)
