@@ -494,7 +494,6 @@ export default function BrokersPage() {
                 placeholder="Type 'I agree' to continue"
                 value={agreementText}
                 onChange={(e) => setAgreementText(e.target.value)}
-                className="text-center"
               />
 
               <Button

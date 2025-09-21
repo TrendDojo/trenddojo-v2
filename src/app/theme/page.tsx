@@ -348,10 +348,9 @@ export default function ThemePage() {
               
               <div>
                 <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Textarea</p>
-                <textarea
+                <Textarea
                   rows={4}
                   placeholder="Enter multiple lines of text..."
-                  className="w-full px-3 py-2 dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white text-gray-900"
                 />
               </div>
               

@@ -45,16 +45,16 @@ export function Input({ className, error, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        "w-full px-3 py-2 rounded-lg border transition-colors",
-        "dark:bg-slate-800 bg-white",
+        "w-full px-4 py-3 rounded-lg transition-colors",
+        "dark:bg-slate-900/50 bg-gray-50",
         "dark:text-white text-gray-900",
+        "placeholder:text-gray-500 dark:placeholder:text-gray-500",
         error
-          ? "border-rose-500 dark:border-rose-400 focus:ring-rose-500"
-          : "dark:border-slate-600 border-gray-300 dark:hover:border-slate-500 hover:border-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2",
-        "dark:focus:ring-offset-slate-900 focus:ring-offset-gray-50",
+          ? "ring-2 ring-rose-500 dark:ring-rose-400 focus:ring-rose-500"
+          : "ring-1 ring-gray-200 dark:ring-slate-700",
+        "focus:outline-none focus:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        !error && "focus:ring-indigo-500 dark:focus:border-slate-400 focus:border-indigo-500",
+        !error && "focus:ring-indigo-500 dark:focus:ring-indigo-400",
         className
       )}
       {...props}
@@ -70,16 +70,16 @@ export function Textarea({ className, error, ...props }: TextareaProps) {
   return (
     <textarea
       className={cn(
-        "w-full px-3 py-2 rounded-lg border transition-colors",
-        "dark:bg-slate-800 bg-white",
+        "w-full px-4 py-3 rounded-lg transition-colors",
+        "dark:bg-slate-900/50 bg-gray-50",
         "dark:text-white text-gray-900",
+        "placeholder:text-gray-500 dark:placeholder:text-gray-500",
         error
-          ? "border-rose-500 dark:border-rose-400 focus:ring-rose-500"
-          : "dark:border-slate-600 border-gray-300 dark:hover:border-slate-500 hover:border-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2",
-        "dark:focus:ring-offset-slate-900 focus:ring-offset-gray-50",
+          ? "ring-2 ring-rose-500 dark:ring-rose-400 focus:ring-rose-500"
+          : "ring-1 ring-gray-200 dark:ring-slate-700",
+        "focus:outline-none focus:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        !error && "focus:ring-indigo-500 dark:focus:border-slate-400 focus:border-indigo-500",
+        !error && "focus:ring-indigo-500 dark:focus:ring-indigo-400",
         "min-h-[100px] resize-y",
         className
       )}
@@ -96,16 +96,15 @@ export function Select({ className, error, children, ...props }: SelectProps) {
   return (
     <select
       className={cn(
-        "w-full px-3 py-2 rounded-lg border transition-colors",
-        "dark:bg-slate-800 bg-white",
+        "w-full px-4 py-3 rounded-lg transition-colors",
+        "dark:bg-slate-900/50 bg-gray-50",
         "dark:text-white text-gray-900",
         error
-          ? "border-rose-500 dark:border-rose-400 focus:ring-rose-500"
-          : "dark:border-slate-600 border-gray-300 dark:hover:border-slate-500 hover:border-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2",
-        "dark:focus:ring-offset-slate-900 focus:ring-offset-gray-50",
+          ? "ring-2 ring-rose-500 dark:ring-rose-400 focus:ring-rose-500"
+          : "ring-1 ring-gray-200 dark:ring-slate-700",
+        "focus:outline-none focus:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        !error && "focus:ring-indigo-500 dark:focus:border-slate-400 focus:border-indigo-500",
+        !error && "focus:ring-indigo-500 dark:focus:ring-indigo-400",
         "cursor-pointer",
         className
       )}
