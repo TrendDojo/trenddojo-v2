@@ -187,7 +187,7 @@ export function Sidebar({
 
         {/* Navigation */}
         <nav className="flex-1 px-2 pb-6 overflow-y-auto">
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Main navigation items */}
             {navigationItems.map((item) => (
               <NavItem
