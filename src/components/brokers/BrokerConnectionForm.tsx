@@ -25,10 +25,6 @@ export interface BrokerConnectionFormProps {
     message: string;
     icon?: LucideIcon;
   };
-  securityNotice?: {
-    message: string;
-    details?: string;
-  };
   liveWarning?: boolean;
 }
 
@@ -46,7 +42,6 @@ export function BrokerConnectionForm({
   cancelText = "Cancel",
   submitVariant = "primary",
   tradingModeAlert,
-  securityNotice,
   liveWarning = false,
 }: BrokerConnectionFormProps) {
   const handleFormSubmit = async (e: FormEvent) => {
@@ -89,20 +84,6 @@ export function BrokerConnectionForm({
         {error && (
           <Alert intent="error">
             {error}
-          </Alert>
-        )}
-
-        {/* Security Notice */}
-        {securityNotice && (
-          <Alert intent="info">
-            <p className="text-sm">
-              {securityNotice.message}
-            </p>
-            {securityNotice.details && (
-              <p className="text-xs mt-2 opacity-90">
-                {securityNotice.details}
-              </p>
-            )}
           </Alert>
         )}
 

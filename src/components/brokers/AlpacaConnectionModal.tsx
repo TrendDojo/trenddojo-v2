@@ -83,12 +83,6 @@ export function AlpacaConnectionModal({
           : "Using LIVE trading environment - real money at risk!",
         icon: AlertTriangle,
       }}
-      securityNotice={{
-        message: "Your API credentials will be encrypted before storage. We never store plain text credentials.",
-        details: isPaperTrading
-          ? "Paper trading uses simulated money only."
-          : "LIVE TRADING - Real money at risk!",
-      }}
       liveWarning={!isPaperTrading}
     >
       {/* API Key ID Field */}
@@ -127,6 +121,16 @@ export function AlpacaConnectionModal({
           className="font-mono"
         />
       </FormField>
+
+      {/* Security Notice */}
+      <Alert intent="warning" title="Security Notice">
+        <p className="text-sm">
+          Your API credentials will be encrypted before storage. We never store
+          plain text credentials. {isPaperTrading
+            ? "Paper trading uses simulated money only."
+            : "LIVE TRADING - Real money at risk!"}
+        </p>
+      </Alert>
 
       {/* How to Get API Keys */}
       <Alert intent="info" title="How to Get Your API Keys">
