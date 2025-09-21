@@ -87,8 +87,8 @@ export function ExitsTab() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                      <Icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <div className="p-2 bg-warning/20 rounded-lg">
+                      <Icon className="w-5 h-5 text-warning" />
                     </div>
                     <div>
                       <h3 className="font-semibold dark:text-white">{rule.name}</h3>
@@ -109,7 +109,7 @@ export function ExitsTab() {
                 </p>
 
                 <div className="pt-4 border-t dark:border-slate-700 border-gray-200">
-                  <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="text-xs text-warning font-medium">
                     Default for all strategies (MVP)
                   </span>
                 </div>
@@ -219,7 +219,7 @@ export function ExitsTab() {
                 </p>
 
                 <div className="pt-4 border-t dark:border-slate-700 border-gray-300">
-                  <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="text-xs text-warning font-medium">
                     Coming in Next Version
                   </span>
                 </div>
@@ -230,14 +230,14 @@ export function ExitsTab() {
       </div>
 
       {/* Warning Box */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+      <div className="bg-warning/10 border border-warning/30 rounded-xl p-4">
         <div className="flex gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-sm font-medium text-amber-900 dark:text-amber-300 mb-1">
+            <h3 className="text-sm font-medium text-warning mb-1">
               Important: Stop Loss in MVP
             </h3>
-            <p className="text-sm text-amber-700 dark:text-amber-300">
+            <p className="text-sm text-warning/80">
               In the current MVP version, stop losses must be set manually for each trade.
               Automated stop loss rules will be added in the next version. Always set a stop loss
               before entering a position to properly calculate position size using the 2% risk rule.

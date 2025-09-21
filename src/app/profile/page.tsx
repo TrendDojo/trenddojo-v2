@@ -370,7 +370,7 @@ export default function ProfilePage() {
                       </>
                     ) : (
                       <>
-                        <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">Disabled</span>
+                        <span className="text-sm text-warning font-medium">Disabled</span>
                         <Button variant="primary" size="sm">
                           Enable
                         </Button>
@@ -380,12 +380,12 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="p-4 dark:bg-amber-950/20 bg-amber-50 border dark:border-amber-800 border-amber-200 rounded-lg">
+              <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
                 <div className="flex gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium dark:text-amber-400 text-amber-800">Security Recommendation</p>
-                    <p className="text-sm dark:text-amber-400/80 text-amber-700 mt-1">
+                    <p className="font-medium text-warning">Security Recommendation</p>
+                    <p className="text-sm text-warning/80 mt-1">
                       Enable two-factor authentication to protect your account from unauthorized access.
                     </p>
                   </div>

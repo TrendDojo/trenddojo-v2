@@ -21,11 +21,11 @@ interface SidebarProps {
 }
 
 const navigationItems = [
-  { href: "/dashboard", label: "Dashboard", icon: () => <Gauge className="w-6 h-6 flex-shrink-0" /> },
-  { href: "/screener", label: "Screener", icon: () => <ArrowUpWideNarrow className="w-6 h-6 flex-shrink-0" /> },
-  { href: "/positions", label: "Positions", icon: () => <MapPin className="w-6 h-6 flex-shrink-0" /> },
-  { href: "/strategies", label: "Strategies", icon: () => <Atom className="w-6 h-6 flex-shrink-0" /> },
-  { href: "/brokers", label: "Brokers", icon: () => <ArrowRightLeft className="w-6 h-6 flex-shrink-0" /> },
+  { href: "/dashboard", label: "Dashboard", icon: () => <Gauge className="w-6 h-6" /> },
+  { href: "/screener", label: "Screener", icon: () => <ArrowUpWideNarrow className="w-6 h-6" /> },
+  { href: "/positions", label: "Positions", icon: () => <MapPin className="w-6 h-6" /> },
+  { href: "/strategies", label: "Strategies", icon: () => <Atom className="w-6 h-6" /> },
+  { href: "/brokers", label: "Brokers", icon: () => <ArrowRightLeft className="w-6 h-6" /> },
 ];
 
 interface NavItemProps {
@@ -50,11 +50,9 @@ function NavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 transition-all duration-200",
+        "flex items-center gap-3 rounded-lg transition-all duration-200",
         "font-medium relative group",
-        isCollapsed
-          ? "py-3.5 mx-2 justify-center rounded-lg"
-          : "px-5 py-3.5 mx-2 rounded-lg",
+        isCollapsed ? "px-3 py-3.5 mx-2 justify-center" : "px-5 py-3.5 mx-2",
         isActive
           ? "text-white dark:text-gray-900 bg-gray-900 dark:bg-gray-100"
           : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/50 hover:bg-gray-100"
@@ -66,7 +64,7 @@ function NavItem({
 
       {/* Tooltip for collapsed state */}
       {isCollapsed && (
-        <div className="absolute left-full ml-6 px-2 py-1 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 hidden lg:block">
+        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 hidden lg:block">
           {label}
         </div>
       )}
@@ -143,7 +141,6 @@ export function Sidebar({
           </div>
         </div>
 
-
         {/* Collapse/Expand Button - Desktop only */}
         <div className="hidden lg:flex px-2 pb-4">
           {collapsed ? (
@@ -196,29 +193,21 @@ export function Sidebar({
         <nav className="flex-1 px-2 pb-6 overflow-y-auto">
           <div className="space-y-2">
             {/* Main navigation items */}
-            {navigationItems.map((item) => {
-              // Check if current path starts with the item's href (for sub-pages)
-              // Special case for dashboard - only exact match
-              const isActive = item.href === '/dashboard'
-                ? pathname === item.href
-                : pathname.startsWith(item.href);
-
-              return (
-                <NavItem
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  icon={item.icon}
-                  isActive={isActive}
-                  isCollapsed={collapsed}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) {
-                      onToggle();
-                    }
-                  }}
-                />
-              );
-            })}
+            {navigationItems.map((item) => (
+              <NavItem
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                icon={item.icon}
+                isActive={pathname === item.href}
+                isCollapsed={collapsed}
+                onClick={() => {
+                  if (window.innerWidth < 1024) {
+                    onToggle();
+                  }
+                }}
+              />
+            ))}
           </div>
         </nav>
       </aside>

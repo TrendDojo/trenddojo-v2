@@ -91,9 +91,9 @@ export default function TermsOfService() {
                 <li><strong>Subscription Payments:</strong> Maintaining current payment information</li>
               </ul>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                <h4 className="font-medium text-amber-800 mb-2">Age and Eligibility:</h4>
-                <p className="text-amber-700 text-sm">You must be at least 18 years old and legally eligible to trade securities in your jurisdiction. Some features may require additional verification or qualifications.</p>
+              <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-warning mb-2">Age and Eligibility:</h4>
+                <p className="text-warning/80 text-sm">You must be at least 18 years old and legally eligible to trade securities in your jurisdiction. Some features may require additional verification or qualifications.</p>
               </div>
             </section>
 

@@ -5,6 +5,7 @@ import { Play, Pause, Plus, ChevronDown, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { NewStrategyModal } from './NewStrategyModal'
 import { cn } from '@/lib/utils'
+import { tableStyles, getTableCell } from '@/lib/tableStyles'
 
 // Mock data for MVP
 const mockStrategies = [
@@ -101,35 +102,35 @@ export function StrategiesTab() {
       </div>
 
       {/* Strategies Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 border-gray-200">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b dark:border-slate-700 border-gray-200">
-              <th className="text-left py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+      <div className={tableStyles.wrapper}>
+        <table className={tableStyles.table}>
+          <thead className={tableStyles.thead}>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.th}>
 
               </th>
-              <th className="text-left py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+              <th className={tableStyles.th}>
                 Name
               </th>
-              <th className="text-center py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+              <th className={tableStyles.thCenter}>
                 Status
               </th>
-              <th className="text-right py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+              <th className={tableStyles.thRight}>
                 P&L
               </th>
-              <th className="text-right py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+              <th className={tableStyles.thRight}>
                 Win Rate
               </th>
-              <th className="text-center py-4 px-6 font-medium text-gray-700 dark:text-gray-300">
+              <th className={tableStyles.thCenter}>
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y dark:divide-slate-700 divide-gray-200">
+          <tbody className={tableStyles.tbody}>
             {strategies.map(strategy => (
               <React.Fragment key={strategy.id}>
-                <tr className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                  <td className="py-4 px-6">
+                <tr className={tableStyles.tr}>
+                  <td className={tableStyles.td}>
                     {strategy.positions.length > 0 && (
                       <button
                         onClick={() => toggleRowExpansion(strategy.id)}
@@ -143,10 +144,10 @@ export function StrategiesTab() {
                       </button>
                     )}
                   </td>
-                  <td className="py-4 px-6">
+                  <td className={tableStyles.td}>
                     <p className="font-medium dark:text-white">{strategy.name}</p>
                   </td>
-                  <td className="py-4 px-6 text-center">
+                  <td className={tableStyles.tdCenter}>
                     <span className={cn(
                       "inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium",
                       strategy.status === 'active'
@@ -161,7 +162,7 @@ export function StrategiesTab() {
                       {strategy.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-right">
+                  <td className={tableStyles.tdRight}>
                     <p className={cn(
                       "font-medium",
                       strategy.pnl >= 0
@@ -171,7 +172,7 @@ export function StrategiesTab() {
                       ${strategy.pnl >= 0 ? '+' : ''}{strategy.pnl.toLocaleString()}
                     </p>
                   </td>
-                  <td className="py-4 px-6 text-right">
+                  <td className={tableStyles.tdRight}>
                     <div>
                       <p className="font-medium dark:text-white">{strategy.winRate}%</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -179,13 +180,13 @@ export function StrategiesTab() {
                       </p>
                     </div>
                   </td>
-                  <td className="py-4 px-6 text-center">
+                  <td className={tableStyles.tdCenter}>
                     <button
                       onClick={() => toggleStrategy(strategy.id)}
                       className={cn(
                         "px-3 py-1 rounded text-sm font-medium transition-colors",
                         strategy.status === 'active'
-                          ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"
+                          ? "bg-warning/20 text-warning hover:bg-warning/30"
                           : "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 hover:bg-teal-200 dark:hover:bg-teal-900/50"
                       )}
                     >

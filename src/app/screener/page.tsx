@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
+import { tableStyles, getTableCell } from "@/lib/tableStyles";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
 import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
 import {
@@ -1347,73 +1348,74 @@ export default function ScreenerPage() {
                 </div>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="dark:bg-slate-800/50 bg-gray-50">
-                  <tr>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+              <div className={tableStyles.wrapper}>
+                <div className="overflow-x-auto">
+                  <table className={tableStyles.table}>
+                <thead className={tableStyles.thead}>
+                  <tr className={tableStyles.headerRow}>
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("symbol")}
                     >
                       Symbol
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("price")}
                     >
                       Price
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("changePercent")}
                     >
                       Change
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("volume")}
                     >
                       Volume
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("marketCap")}
                     >
                       Market Cap
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("pe")}
                     >
                       P/E
                     </th>
-                    <th 
-                      className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider cursor-pointer hover:dark:text-white hover:text-gray-900"
+                    <th
+                      className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("rsi")}
                     >
                       RSI
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-600 uppercase tracking-wider">
+                    <th className={tableStyles.th}>
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y dark:divide-slate-800 divide-gray-200">
+                <tbody className={tableStyles.tbody}>
                   {filteredStocks.map((stock) => (
                     <tr 
                       key={stock.symbol}
-                      className="hover:dark:bg-slate-800/50 hover:bg-gray-50 transition-colors"
+                      className={tableStyles.tr}
                     >
-                      <td className="px-4 py-3">
+                      <td className={tableStyles.td}>
                         <div>
                           <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
                           <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 dark:text-white text-gray-900">
+                      <td className={tableStyles.tdBold}>
                         ${stock.price.toFixed(2)}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={tableStyles.td}>
                         <div className={stock.changePercent >= 0 ? "text-success" : "text-danger"}>
                           <div>{stock.changePercent >= 0 ? "+" : ""}{stock.changePercent.toFixed(2)}%</div>
                           <div className="text-xs">{stock.change >= 0 ? "+" : ""}${stock.change.toFixed(2)}</div>
@@ -1428,7 +1430,7 @@ export default function ScreenerPage() {
                       <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
                         {stock.pe.toFixed(1)}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={tableStyles.td}>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
                           stock.rsi > 70 ? "bg-danger/20 text-danger" :
                           stock.rsi < 30 ? "bg-success/20 text-success" :
@@ -1437,7 +1439,7 @@ export default function ScreenerPage() {
                           {stock.rsi.toFixed(0)}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={tableStyles.td}>
                         <div className="flex gap-2">
                           <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
                             Chart
@@ -1450,8 +1452,9 @@ export default function ScreenerPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+                  </table>
+                </div>
+              </div>
             )}
         </div>
 

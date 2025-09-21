@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChevronLeft, TrendingUp, TrendingDown, DollarSign, Activity, Calendar, Target, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { tableStyles } from "@/lib/tableStyles";
 
 // Mock data for a single position
 const mockPosition = {
@@ -195,31 +196,32 @@ export default function PositionDetailPage() {
           <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
             Activity History
           </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b dark:border-slate-700 border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+          <div className={tableStyles.wrapper}>
+            <div className="overflow-x-auto">
+              <table className={tableStyles.table}>
+              <thead className={tableStyles.thead}>
+                <tr className={tableStyles.headerRow}>
+                  <th className={tableStyles.th}>
                     Date
                   </th>
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.th}>
                     Type
                   </th>
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.th}>
                     Details
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Quantity
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Price
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Total
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={tableStyles.tbody}>
                 {/* Combine executions and notes and sort by date */}
                 {[
                   ...position.executions.map(exec => ({
@@ -239,11 +241,11 @@ export default function PositionDetailPage() {
                 ]
                   .sort((a, b) => b.date.getTime() - a.date.getTime())
                   .map((item, idx) => (
-                    <tr key={idx} className="border-b dark:border-slate-800 border-gray-100">
-                      <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
+                    <tr key={idx} className={tableStyles.tr}>
+                      <td className={tableStyles.td}>
                         {item.date.toLocaleDateString()}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className={tableStyles.td}>
                         {item.type === 'execution' ? (
                           <span className={cn(
                             "px-2 py-1 rounded text-xs font-medium",
@@ -259,13 +261,13 @@ export default function PositionDetailPage() {
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
+                      <td className={tableStyles.td}>
                         {item.type === 'note' ? ('content' in item ? item.content : '') : ('fees' in item && item.fees ? `Fees: $${item.fees.toFixed(2)}` : '—')}
                       </td>
-                      <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                      <td className={tableStyles.tdRight}>
                         {item.type === 'execution' ? ('quantity' in item ? item.quantity : '') : '—'}
                       </td>
-                      <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                      <td className={tableStyles.tdRight}>
                         {item.type === 'execution' ? ('price' in item && item.price ? `$${item.price.toFixed(2)}` : '') : '—'}
                       </td>
                       <td className="py-3 px-4 text-right font-medium dark:text-white text-gray-900">
@@ -274,7 +276,8 @@ export default function PositionDetailPage() {
                     </tr>
                   ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
           <div className="mt-4">
             <Button variant="secondary" size="sm">

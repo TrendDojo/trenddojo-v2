@@ -8,8 +8,10 @@ import { Card, Alert, Panel } from "@/components/ui/Panel";
 import { Modal, ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
-import { tableStyles, filterStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
+import { tableStyles, filterStyles, tabStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
 import { ChevronDown, Check } from "lucide-react";
+import { Icon, Icons } from "@/lib/icons";
+import { Tabs } from "@/components/ui/Tabs";
 
 export default function ThemePage() {
   const [showModal, setShowModal] = useState(false);
@@ -17,6 +19,9 @@ export default function ThemePage() {
   const [activeFilter, setActiveFilter] = useState("active");
   const [showStrategyDropdown, setShowStrategyDropdown] = useState(false);
   const [selectedStrategies, setSelectedStrategies] = useState<string[]>(["strategy1", "strategy2"]);
+  const [activeModernTab, setActiveModernTab] = useState("active");
+  const [activeClassicTab, setActiveClassicTab] = useState("overview");
+  const [activePillTab, setActivePillTab] = useState("active");
 
   const showToastMessage = () => {
     setShowToast(true);
@@ -459,13 +464,186 @@ export default function ThemePage() {
             </div>
           </Card>
 
+          {/* Icons Section */}
+          <Card>
+            <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Icons</h2>
+            <p className="text-sm dark:text-gray-400 text-gray-600 mb-4">
+              Centralized icon system with consistent sizing. All icons are from lucide-react.
+            </p>
+
+            {/* Icon Sizes */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Preset Icon Sizes</h3>
+              <div className="flex items-center gap-6">
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.alert.info} size="xs" className="text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">xs (1rem)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.alert.info} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">sm (1.25rem)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.alert.info} size="md" className="text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">md (1.75rem)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.alert.info} size="lg" className="text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">lg (2.25rem)</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.alert.info} size="xl" className="text-gray-600 dark:text-gray-400" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">xl (3rem)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Custom Icon Sizes */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Custom Icon Sizes</h3>
+              <div className="flex items-center gap-6">
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.trading.trendingUp} size={12} className="text-success" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">12px</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.trading.trendingUp} size={18} className="text-success" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">18px</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.trading.trendingUp} size={32} className="text-success" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">32px</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Icon icon={Icons.trading.trendingUp} size={40} className="text-success" />
+                  <span className="text-xs dark:text-gray-500 text-gray-500">40px</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Common Icons by Category */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Alert Icons</h3>
+                <div className="flex items-center gap-4">
+                  <Icon icon={Icons.alert.info} size="sm" className="text-blue-600 dark:text-blue-400" />
+                  <Icon icon={Icons.alert.warning} size="sm" className="text-warning" />
+                  <Icon icon={Icons.alert.error} size="sm" className="text-danger" />
+                  <Icon icon={Icons.alert.success} size="sm" className="text-success" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Navigation Icons</h3>
+                <div className="flex items-center gap-4">
+                  <Icon icon={Icons.navigation.gauge} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.navigation.arrowUpWideNarrow} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.navigation.mapPin} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.navigation.atom} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.navigation.arrowRightLeft} size="sm" className="text-gray-600 dark:text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Trading Icons</h3>
+                <div className="flex items-center gap-4">
+                  <Icon icon={Icons.trading.trendingUp} size="sm" className="text-success" />
+                  <Icon icon={Icons.trading.trendingDown} size="sm" className="text-danger" />
+                  <Icon icon={Icons.trading.dollarSign} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.trading.creditCard} size="sm" className="text-gray-600 dark:text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Action Icons</h3>
+                <div className="flex items-center gap-4">
+                  <Icon icon={Icons.action.plus} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.action.edit} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.action.trash} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.action.download} size="sm" className="text-gray-600 dark:text-gray-400" />
+                  <Icon icon={Icons.action.save} size="sm" className="text-gray-600 dark:text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 p-3 bg-gray-100 dark:bg-slate-800 rounded">
+              <div className="text-xs dark:text-gray-400 text-gray-600 space-y-2">
+                <p>
+                  <strong>Import:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">import {"{ Icon, Icons }"} from "@/lib/icons"</code>
+                </p>
+                <p>
+                  <strong>Preset sizes:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">size="xs" | "sm" | "md" | "lg" | "xl"</code>
+                </p>
+                <p>
+                  <strong>Custom size:</strong> <code className="text-xs bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">size={"{"}24{"}"}</code> (in pixels)
+                </p>
+              </div>
+            </div>
+          </Card>
+
           {/* Tables Section */}
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Tables</h2>
 
+            {/* Modern Tabs Example */}
+            <div className="mb-6">
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Modern Fixed-Width Tabs (Thick Border)</p>
+              <Tabs
+                tabs={[
+                  { id: 'active', label: 'Active' },
+                  { id: 'pending', label: 'Pending' },
+                  { id: 'closed', label: 'Closed' },
+                  { id: 'archived', label: 'Archived', disabled: true }
+                ]}
+                activeTab={activeModernTab}
+                onTabChange={setActiveModernTab}
+                variant="modern"
+              />
+              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
+                Selected: {activeModernTab}
+              </div>
+            </div>
+
+            {/* Classic Tabs Example */}
+            <div className="mb-6">
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Classic Variable-Width Tabs</p>
+              <Tabs
+                tabs={[
+                  { id: 'overview', label: 'Overview' },
+                  { id: 'analytics', label: 'Analytics' },
+                  { id: 'reports', label: 'Reports' },
+                  { id: 'settings', label: 'Settings' }
+                ]}
+                activeTab={activeClassicTab}
+                onTabChange={setActiveClassicTab}
+                variant="classic"
+              />
+              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
+                Selected: {activeClassicTab}
+              </div>
+            </div>
+
+            {/* Pill Tabs Example */}
+            <div className="mb-6">
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Pill Tabs</p>
+              <Tabs
+                tabs={[
+                  { id: 'active', label: 'Active' },
+                  { id: 'inactive', label: 'Inactive' },
+                  { id: 'disabled', label: 'Disabled', disabled: true }
+                ]}
+                activeTab={activePillTab}
+                onTabChange={setActivePillTab}
+                variant="pills"
+              />
+              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
+                Selected: {activePillTab}
+              </div>
+            </div>
+
             {/* Filter Tabs Example (from positions page) */}
             <div className="mb-6">
-              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Filter Tabs (Toggle Button Group)</p>
+              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Filter Pills (Toggle Button Group)</p>
               <div className="flex items-center gap-4">
                 {/* Filter buttons */}
                 <div className={filterStyles.container}>

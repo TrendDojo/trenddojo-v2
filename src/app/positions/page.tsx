@@ -8,10 +8,9 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { tableStyles, filterStyles, getFilterButton } from "@/lib/tableStyles";
+import { tableStyles, filterStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
-import { AccountStatusBar } from "@/components/portfolio/AccountStatusBar";
 import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
 import { cn } from "@/lib/utils";
 
@@ -466,12 +465,6 @@ export default function PositionsPage() {
             />
           </div>
 
-          {/* Account Status Bar */}
-          <AccountStatusBar
-            accountStatus={portfolioStatus.accountStatus}
-            currentDrawdown={portfolioStatus.currentDrawdown}
-            portfolioName="Main Portfolio"
-          />
 
           {/* Header */}
           <div className="flex items-start justify-between">
@@ -792,27 +785,28 @@ export default function PositionsPage() {
           )}
 
           {/* Positions Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-                <thead className="border-b dark:border-slate-700 border-gray-200">
-                  <tr>
+          <div className={tableStyles.wrapper}>
+            <div className="overflow-x-auto">
+            <table className={tableStyles.table}>
+                <thead className={tableStyles.thead}>
+                  <tr className={tableStyles.headerRow}>
                     {effectiveVisibleColumns.symbol && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Symbol
                       </th>
                     )}
                     {effectiveVisibleColumns.strategy && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Strategy
                       </th>
                     )}
                     {effectiveVisibleColumns.entry && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Entry / Change
                       </th>
                     )}
                     {effectiveVisibleColumns.status && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         <div className="flex items-center gap-1">
                           Status
                           <button
@@ -828,40 +822,39 @@ export default function PositionsPage() {
                       </th>
                     )}
                     {effectiveVisibleColumns.risk && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Risk
                       </th>
                     )}
                     {effectiveVisibleColumns.value && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Value
                       </th>
                     )}
                     {effectiveVisibleColumns.age && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
                         Age
                       </th>
                     )}
                     {effectiveVisibleColumns.actions && (
-                      <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600">
+                      <th className={tableStyles.th}>
 
                       </th>
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y dark:divide-slate-700 divide-gray-200">
+                <tbody className={tableStyles.tbody}>
                   {paginatedPositions.map((position, index) => (
                     <tr
                       key={position.id}
                       className={cn(
-                        "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors",
-                        selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20",
-                        index === 0 && "cursor-pointer"
+                        index === 0 ? tableStyles.trClickable : tableStyles.tr,
+                        selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20"
                       )}
                       onClick={index === 0 ? () => router.push(`/positions/${position.id}`) : undefined}
                     >
                       {effectiveVisibleColumns.symbol && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                           <div>
                             <div className="flex items-center gap-2">
                               {index === 0 ? (
@@ -895,14 +888,14 @@ export default function PositionsPage() {
                         </td>
                       )}
                       {effectiveVisibleColumns.strategy && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                           <span className="text-sm font-semibold dark:text-gray-300 text-gray-700" title={position.strategy}>
                             {STRATEGIES[position.strategy as keyof typeof STRATEGIES]?.id || position.strategy.substring(0, 2).toUpperCase()}
                           </span>
                         </td>
                       )}
                       {effectiveVisibleColumns.entry && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                           <div>
                             <div className="dark:text-gray-300 text-gray-700 font-medium">
                               ${position.entryPrice.toFixed(2)}
@@ -918,7 +911,7 @@ export default function PositionsPage() {
                         </td>
                       )}
                       {effectiveVisibleColumns.status && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                           {position.status === "closed" ? (
                             <ClosedPositionStatusBar
                               side={position.side}
@@ -949,7 +942,7 @@ export default function PositionsPage() {
                         </td>
                       )}
                       {effectiveVisibleColumns.risk && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                         {position.status === "closed" ? (
                           <span className="text-sm text-gray-400 dark:text-gray-500">–</span>
                         ) : (() => {
@@ -1011,7 +1004,7 @@ export default function PositionsPage() {
                         </td>
                       )}
                       {effectiveVisibleColumns.actions && (
-                        <td className="px-4 py-3">
+                        <td className={tableStyles.td}>
                           <div className="relative">
                             <button
                               onClick={(e) => {
@@ -1061,6 +1054,7 @@ export default function PositionsPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
           </div>
 
           {/* Pagination Controls */}

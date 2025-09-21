@@ -7,6 +7,7 @@ import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { ChevronLeft, TrendingUp, DollarSign, Activity, Target, Pause, Play, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { tableStyles, getTableCell } from "@/lib/tableStyles";
 
 // Mock data for a single strategy
 const mockStrategy = {
@@ -274,49 +275,47 @@ export default function StrategyDetailPage() {
         )}
 
         {activeTab === "positions" && (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b dark:border-slate-700 border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+          <div className={tableStyles.wrapper}>
+            <div className="overflow-x-auto">
+              <table className={tableStyles.table}>
+              <thead className={tableStyles.thead}>
+                <tr className={tableStyles.headerRow}>
+                  <th className={tableStyles.th}>
                     Symbol
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Quantity
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Entry Price
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     Current Price
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     P&L
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     P&L %
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={tableStyles.tbody}>
                 {strategy.positions.map((position, idx) => (
-                  <tr key={idx} className="border-b dark:border-slate-800 border-gray-100 hover:bg-gray-50 dark:hover:bg-slate-800/30 cursor-pointer">
-                    <td className="py-3 px-4 font-medium dark:text-white text-gray-900">
+                  <tr key={idx} className={tableStyles.trClickable}>
+                    <td className={tableStyles.tdBold}>
                       {position.symbol}
                     </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                    <td className={tableStyles.tdRight}>
                       {position.quantity}
                     </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                    <td className={tableStyles.tdRight}>
                       ${position.entryPrice.toFixed(2)}
                     </td>
-                    <td className="py-3 px-4 text-right dark:text-gray-300 text-gray-700">
+                    <td className={tableStyles.tdRight}>
                       ${position.currentPrice.toFixed(2)}
                     </td>
-                    <td className={cn(
-                      "py-3 px-4 text-right font-medium",
-                      position.pnl >= 0 ? "text-success" : "text-danger"
-                    )}>
+                    <td className={position.pnl >= 0 ? tableStyles.tdSuccess : tableStyles.tdDanger}>
                       ${position.pnl >= 0 ? "+" : ""}{position.pnl.toFixed(2)}
                     </td>
                     <td className={cn(
@@ -328,39 +327,41 @@ export default function StrategyDetailPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         )}
 
         {activeTab === "history" && (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b dark:border-slate-700 border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+          <div className={tableStyles.wrapper}>
+            <div className="overflow-x-auto">
+              <table className={tableStyles.table}>
+              <thead className={tableStyles.thead}>
+                <tr className={tableStyles.headerRow}>
+                  <th className={tableStyles.th}>
                     Date
                   </th>
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.th}>
                     Symbol
                   </th>
-                  <th className="text-left py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.th}>
                     Side
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     P&L
                   </th>
-                  <th className="text-right py-3 px-4 font-medium dark:text-gray-300 text-gray-700">
+                  <th className={tableStyles.thRight}>
                     P&L %
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={tableStyles.tbody}>
                 {strategy.recentTrades.map((trade, idx) => (
                   <tr key={idx} className="border-b dark:border-slate-800 border-gray-100">
                     <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
                       {trade.date.toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4 font-medium dark:text-white text-gray-900">
+                    <td className={tableStyles.tdBold}>
                       {trade.symbol}
                     </td>
                     <td className="py-3 px-4">
@@ -386,7 +387,8 @@ export default function StrategyDetailPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         )}
 

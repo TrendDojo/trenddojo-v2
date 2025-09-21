@@ -103,6 +103,12 @@ export const tabStyles = {
   pillButton: "px-4 py-2 text-sm font-medium rounded-full transition-colors",
   pillActive: "bg-indigo-600 text-white",
   pillInactive: "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600",
+
+  // Modern fixed-width tabs with thick border
+  modernContainer: "flex items-center gap-0 border-b-2 dark:border-slate-700 border-gray-200",
+  modernButton: "w-24 py-2 text-center text-sm font-semibold transition-all relative",
+  modernButtonActive: "text-gray-900 dark:text-white after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[3px] after:bg-indigo-600 dark:after:bg-indigo-500",
+  modernButtonInactive: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200",
 } as const;
 
 // ============================================

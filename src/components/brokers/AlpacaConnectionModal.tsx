@@ -73,12 +73,12 @@ export function AlpacaConnectionModal({
     >
       <div className="space-y-6">
         {/* Paper Trading Toggle */}
-        <div className="flex items-center justify-between p-4 dark:bg-amber-900/20 bg-amber-50 rounded-lg border dark:border-amber-800 border-amber-200">
+        <div className="flex items-center justify-between p-4 bg-warning/10 rounded-lg border border-warning/30">
           <div className="flex-1">
-            <h3 className="font-medium dark:text-amber-300 text-amber-900 mb-1">
+            <h3 className="font-medium text-warning mb-1">
               Paper Trading Mode
             </h3>
-            <p className="text-sm dark:text-amber-300/80 text-amber-700">
+            <p className="text-sm text-warning/80">
               {credentials.paperTrading
                 ? "Using simulated trading environment (recommended for testing)"
                 : "Using LIVE trading environment (real money at risk!)"}
@@ -93,7 +93,7 @@ export function AlpacaConnectionModal({
                 setCredentials({ ...credentials, paperTrading: e.target.checked })
               }
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-600"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-warning"></div>
           </label>
         </div>
 
