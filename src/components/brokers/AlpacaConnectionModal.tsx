@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BrokerConnectionForm } from "./BrokerConnectionForm";
 import { FormField, Input } from "@/components/ui/FormField";
 import { Alert } from "@/components/ui/Panel";
-import { ExternalLink, FileText, AlertTriangle } from "lucide-react";
+import { ExternalLink, AlertTriangle } from "lucide-react";
 
 export interface AlpacaCredentials {
   apiKeyId: string;
@@ -76,12 +76,12 @@ export function AlpacaConnectionModal({
       submitText={isPaperTrading ? "Connect Paper Account" : "Connect LIVE Account"}
       submitVariant={isPaperTrading ? "primary" : "danger"}
       tradingModeAlert={{
-        intent: isPaperTrading ? "info" : "warning",
+        intent: "warning",
         title: isPaperTrading ? "Paper Trading Mode" : "LIVE Trading Mode",
         message: isPaperTrading
           ? "Using simulated trading environment - perfect for testing strategies"
           : "Using LIVE trading environment - real money at risk!",
-        icon: isPaperTrading ? FileText : AlertTriangle,
+        icon: AlertTriangle,
       }}
       securityNotice={{
         message: "Your API credentials will be encrypted before storage. We never store plain text credentials.",

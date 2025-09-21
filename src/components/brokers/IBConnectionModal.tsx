@@ -5,7 +5,7 @@ import { BrokerConnectionForm } from "./BrokerConnectionForm";
 import { FormField, Input } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Panel";
-import { AlertTriangle, FileText } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 export interface IBCredentials {
   host: string;
@@ -64,12 +64,12 @@ export function IBConnectionModal({ isOpen, onClose, onConnect }: IBConnectionMo
       submitText={credentials.paperTrading ? "Connect Paper Account" : "Connect LIVE Account"}
       submitVariant={credentials.paperTrading ? "primary" : "danger"}
       tradingModeAlert={{
-        intent: credentials.paperTrading ? "info" : "warning",
+        intent: "warning",
         title: credentials.paperTrading ? "Paper Trading Mode" : "LIVE Trading Mode",
         message: credentials.paperTrading
           ? "Trade with virtual money for practice"
           : "Trade with real money - use caution",
-        icon: credentials.paperTrading ? FileText : AlertTriangle,
+        icon: AlertTriangle,
       }}
       liveWarning={!credentials.paperTrading}
     >
