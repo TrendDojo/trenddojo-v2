@@ -150,7 +150,7 @@ export default function SignupPage() {
             {error && (
               <Alert intent="error" className="mb-6">
                 <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
-                <Link href="/login" className="text-danger hover:opacity-80 underline text-sm mt-2 inline-block">
+                <Link href="/login" className="text-danger hover:opacity-80 text-sm mt-2 inline-block">
                   Sign in to existing account
                 </Link>
               </Alert>

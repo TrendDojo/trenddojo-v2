@@ -233,3 +233,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Links should be underlined by default for better accessibility */
+a {
+  text-decoration: underline;
+}
+
+/* Buttons and nav items shouldn't be underlined */
+button a,
+nav a,
+.no-underline {
+  text-decoration: none;
+}
