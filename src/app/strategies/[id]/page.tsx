@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Tabs } from "@/components/ui/Tabs";
 import { ChevronLeft, TrendingUp, DollarSign, Activity, Target, Pause, Play, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { tableStyles, getTableCell } from "@/lib/tableStyles";
@@ -58,9 +59,16 @@ const mockStrategy = {
 export default function StrategyDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"overview" | "positions" | "history" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState("overview");
 
   const strategy = mockStrategy; // In real app, fetch based on params.id
+
+  const tabItems = [
+    { id: "overview", label: "Overview" },
+    { id: "positions", label: "Current Positions" },
+    { id: "history", label: "Trade History" },
+    { id: "settings", label: "Settings" }
+  ];
 
   return (
     <AppLayout>
@@ -150,52 +158,12 @@ export default function StrategyDetailPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b dark:border-slate-700 border-gray-200">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "overview"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab("positions")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "positions"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Current Positions
-          </button>
-          <button
-            onClick={() => setActiveTab("history")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "history"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Trade History
-          </button>
-          <button
-            onClick={() => setActiveTab("settings")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "settings"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Settings
-          </button>
-        </div>
+        <Tabs
+          tabs={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          className="mb-6"
+        />
 
         {/* Tab Content */}
         {activeTab === "overview" && (
@@ -393,7 +361,7 @@ export default function StrategyDetailPage() {
         )}
 
         {activeTab === "settings" && (
-          <div className="max-w-2xl">
+          <div>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">

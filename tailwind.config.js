@@ -8,18 +8,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontSize: {
-        // Custom font sizes to work well with 15px base
-        'xs': '0.8rem',    // 12px
-        'sm': '0.867rem',  // 13px
-        'base': '1rem',    // 15px (default)
-        'lg': '1.133rem',  // 17px
-        'xl': '1.333rem',  // 20px
-        '2xl': '1.6rem',   // 24px
-        '3xl': '2rem',     // 30px
-        '4xl': '2.4rem',   // 36px
-        '5xl': '3.2rem',   // 48px
-      },
       colors: {
         // Keep existing
         background: "var(--background)",

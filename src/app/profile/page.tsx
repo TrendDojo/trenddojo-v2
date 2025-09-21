@@ -4,6 +4,8 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Tabs } from "@/components/ui/Tabs";
+import { FormSection, FormGroup, FormField } from "@/components/layout/FormSection";
 import { User, Mail, Phone, Globe, Shield, Bell, Smartphone, AlertTriangle, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,10 +41,17 @@ const userData = {
 };
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"general" | "notifications" | "security" | "trading">("general");
+  const [activeTab, setActiveTab] = useState("general");
   const [formData, setFormData] = useState(userData);
   const [isSaving, setIsSaving] = useState(false);
   const [changesSaved, setChangesSaved] = useState(false);
+
+  const tabItems = [
+    { id: "general", label: "General" },
+    { id: "notifications", label: "Notifications" },
+    { id: "security", label: "Security" },
+    { id: "trading", label: "Trading" }
+  ];
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -92,81 +101,36 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b dark:border-slate-700 border-gray-200">
-          <button
-            onClick={() => setActiveTab("general")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "general"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            General
-          </button>
-          <button
-            onClick={() => setActiveTab("notifications")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "notifications"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Notifications
-          </button>
-          <button
-            onClick={() => setActiveTab("security")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "security"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Security
-          </button>
-          <button
-            onClick={() => setActiveTab("trading")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "trading"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Trading
-          </button>
-        </div>
+        <Tabs
+          tabs={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          className="mb-6"
+        />
 
         {/* Tab Content */}
         {activeTab === "general" && (
-          <div className="max-w-2xl space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                  <User className="w-4 h-4 inline mr-2" />
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  className="w-full px-3 py-2 border dark:border-slate-700 border-gray-300 rounded-lg dark:bg-slate-800 bg-white dark:text-white text-gray-900"
-                />
+          <FormSection>
+            <FormGroup>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="First Name">
+                  <input
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                    className="w-full px-3 py-2 border dark:border-slate-700 border-gray-300 rounded-lg dark:bg-slate-800 bg-white dark:text-white text-gray-900"
+                  />
+                </FormField>
+                <FormField label="Last Name">
+                  <input
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                    className="w-full px-3 py-2 border dark:border-slate-700 border-gray-300 rounded-lg dark:bg-slate-800 bg-white dark:text-white text-gray-900"
+                  />
+                </FormField>
               </div>
-              <div>
-                <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  className="w-full px-3 py-2 border dark:border-slate-700 border-gray-300 rounded-lg dark:bg-slate-800 bg-white dark:text-white text-gray-900"
-                />
-              </div>
-            </div>
+            </FormGroup>
 
             <div>
               <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
@@ -233,11 +197,11 @@ export default function ProfilePage() {
                 </select>
               </div>
             </div>
-          </div>
+          </FormSection>
         )}
 
         {activeTab === "notifications" && (
-          <div className="max-w-2xl space-y-6">
+          <div className="space-y-6">
             <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
               <Bell className="w-5 h-5 inline mr-2" />
               Email Notifications
@@ -328,7 +292,7 @@ export default function ProfilePage() {
         )}
 
         {activeTab === "security" && (
-          <div className="max-w-2xl space-y-6">
+          <div className="space-y-6">
             <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
               <Shield className="w-5 h-5 inline mr-2" />
               Security Settings
@@ -418,7 +382,7 @@ export default function ProfilePage() {
         )}
 
         {activeTab === "trading" && (
-          <div className="max-w-2xl space-y-6">
+          <div className="space-y-6">
             <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">
               Trading Preferences
             </h3>

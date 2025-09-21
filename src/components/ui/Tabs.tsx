@@ -49,23 +49,24 @@ export function Tabs({
   tabs,
   activeTab,
   onTabChange,
-  variant = 'modern',
+  variant = 'modern', // Default to modern style with narrow underline
   className
 }: TabsProps) {
 
   if (variant === 'modern') {
     return (
-      <div className={cn('flex items-center gap-0 border-b-2 dark:border-slate-700 border-gray-200', className)}>
+      <div className={cn('flex items-center gap-6', className)}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => !tab.disabled && onTabChange(tab.id)}
             disabled={tab.disabled}
             className={cn(
-              'w-24 py-2 text-center text-sm font-semibold transition-all relative',
+              'py-2 px-1 text-center transition-all relative whitespace-nowrap',
               activeTab === tab.id
-                ? 'text-gray-900 dark:text-white after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[3px] after:bg-indigo-600 dark:after:bg-indigo-500'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200',
+                ? 'text-gray-900 dark:text-white font-bold after:opacity-100'
+                : 'text-gray-500 dark:text-gray-400 font-semibold hover:text-gray-700 dark:hover:text-gray-200 after:opacity-0',
+              'after:absolute after:bottom-[-2px] after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-1 after:bg-indigo-600 dark:after:bg-indigo-500 after:transition-opacity after:duration-150',
               tab.disabled && 'opacity-50 cursor-not-allowed hover:text-gray-500 dark:hover:text-gray-400'
             )}
           >
@@ -86,7 +87,7 @@ export function Tabs({
               onClick={() => !tab.disabled && onTabChange(tab.id)}
               disabled={tab.disabled}
               className={cn(
-                'py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+                'py-2 px-1 border-b-2 font-medium transition-colors',
                 activeTab === tab.id
                   ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
@@ -110,7 +111,7 @@ export function Tabs({
           onClick={() => !tab.disabled && onTabChange(tab.id)}
           disabled={tab.disabled}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+            'px-4 py-2 font-medium rounded-full transition-colors',
             activeTab === tab.id
               ? 'bg-indigo-600 text-white'
               : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600',

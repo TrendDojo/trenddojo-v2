@@ -14,6 +14,7 @@ interface TooltipProps {
   delay?: number;
   position?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
+  wrapperClassName?: string;
 }
 
 export function Tooltip({
@@ -21,7 +22,8 @@ export function Tooltip({
   content,
   delay = 500,
   position = 'top',
-  className
+  className,
+  wrapperClassName = 'inline-block'
 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -116,7 +118,7 @@ export function Tooltip({
         onMouseLeave={hideTooltip}
         onFocus={showTooltip}
         onBlur={hideTooltip}
-        className="inline-block"
+        className={wrapperClassName}
       >
         {children}
       </div>

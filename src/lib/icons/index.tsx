@@ -101,11 +101,11 @@ import {
  * Change these values to update icon sizes globally
  */
 export const iconSizes = {
-  xs: 'w-4 h-4',      // 1rem - inline text, small buttons
-  sm: 'w-5 h-5',      // 1.25rem - standard buttons
-  md: 'w-7 h-7',      // 1.75rem - navigation/standard icons
-  lg: 'w-9 h-9',      // 2.25rem - alerts/featured sections
-  xl: 'w-12 h-12'     // 3rem - hero/display
+  xs: 'w-4 h-4',      // 1rem/16px - inline text, small buttons
+  sm: 'w-5 h-5',      // 1.25rem/20px - standard buttons
+  md: 'w-6 h-6',      // 1.5rem/24px - navigation/standard icons
+  lg: 'w-8 h-8',      // 2rem/32px - alerts/featured sections
+  xl: 'w-12 h-12'     // 3rem/48px - hero/display
 } as const;
 
 export type IconSize = keyof typeof iconSizes;

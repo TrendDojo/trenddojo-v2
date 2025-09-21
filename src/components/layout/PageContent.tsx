@@ -14,7 +14,7 @@ export function PageContent({ children, className, noPadding = false }: PageCont
       !noPadding && "px-8 pb-6 lg:pb-8"
     )}>
       <div className={cn(
-        "w-full max-w-[1400px] mx-auto",
+        "w-full max-w-[1300px] mx-auto",
         className
       )}>
         {children}

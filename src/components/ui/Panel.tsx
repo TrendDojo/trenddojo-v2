@@ -181,7 +181,7 @@ export function Alert({
       {icon && (
         <Icon
           icon={alertIconMap[intent]}
-          size="lg"
+          size="md"
           className={alertColors[intent]}
         />
       )}

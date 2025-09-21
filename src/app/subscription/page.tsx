@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Tabs } from "@/components/ui/Tabs";
 import { Icon, Icons } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { tableStyles } from "@/lib/tableStyles";
@@ -103,7 +104,12 @@ const billingHistory = [
 ];
 
 export default function SubscriptionPage() {
-  const [activeTab, setActiveTab] = useState<"plans" | "billing">("plans");
+  const [activeTab, setActiveTab] = useState("plans");
+
+  const tabItems = [
+    { id: "plans", label: "Subscription Plans" },
+    { id: "billing", label: "Billing History" }
+  ];
 
   return (
     <AppLayout>
@@ -149,30 +155,12 @@ export default function SubscriptionPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b dark:border-slate-700 border-gray-200">
-          <button
-            onClick={() => setActiveTab("plans")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "plans"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Subscription Plans
-          </button>
-          <button
-            onClick={() => setActiveTab("billing")}
-            className={cn(
-              "pb-3 px-1 font-medium transition-colors",
-              activeTab === "billing"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
-                : "dark:text-gray-400 text-gray-600 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            Billing History
-          </button>
-        </div>
+        <Tabs
+          tabs={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          className="mb-6"
+        />
 
         {/* Tab Content */}
         {activeTab === "plans" && (

@@ -86,7 +86,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <header className="lg:col-span-2 dark:bg-slate-950 bg-white py-6">
           <div className={cn(
             "lg:grid lg:gap-0",
-            sidebarCollapsed ? "lg:grid-cols-[80px_1fr]" : "lg:grid-cols-[256px_1fr]"
+            sidebarCollapsed ? "lg:grid-cols-[64px_1fr]" : "lg:grid-cols-[256px_1fr]"
           )}>
             {/* Logo Section - Desktop only */}
             <div className={cn(
@@ -105,7 +105,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
             {/* Header Content - Aligned with main content */}
             <div className="w-full">
               <div className="px-8">
-                <div className="max-w-[1400px] mx-auto flex items-center gap-4">
+                <div className="max-w-[1300px] mx-auto flex items-center gap-4">
                   {/* Search Bar */}
                   <div className="flex-1 flex items-center">
                     <div className="w-full lg:max-w-md">

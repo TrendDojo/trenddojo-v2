@@ -4,8 +4,20 @@
 
 @layer base {
   html {
-    font-size: 15px; /* Base font size - 15px as requested */
+    font-size: 16px; /* Standard base for Tailwind utilities */
   }
+
+  /* Standard Text Sizes Reference (16px base):
+   * text-xs: 0.75rem = 12px  - USE SPARINGLY (admin/meta only)
+   * text-sm: 0.875rem = 14px - Minimum for secondary text
+   * text-base: 1rem = 16px   - Default body text
+   * text-lg: 1.125rem = 18px - Slightly emphasized
+   * text-xl: 1.25rem = 20px  - Small headings
+   * text-2xl: 1.5rem = 24px  - Section headings
+   * text-3xl: 1.875rem = 30px - H2 headings
+   * text-4xl: 2.25rem = 36px - H1 headings
+   * text-5xl: 3rem = 48px    - Display headings
+   */
 }
 
 @layer utilities {
@@ -59,7 +71,7 @@
     background-color: rgb(250, 204, 21);
   }
   .dark .bg-danger {
-    background-color: rgb(251, 113, 133);
+    background-color: rgb(244, 63, 94); /* Rose-500 - same as light mode */
   }
   .dark .bg-info {
     background-color: rgb(96, 165, 250);

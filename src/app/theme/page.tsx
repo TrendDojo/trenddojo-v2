@@ -585,63 +585,7 @@ export default function ThemePage() {
           <Card>
             <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Tables</h2>
 
-            {/* Modern Tabs Example */}
-            <div className="mb-6">
-              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Modern Fixed-Width Tabs (Thick Border)</p>
-              <Tabs
-                tabs={[
-                  { id: 'active', label: 'Active' },
-                  { id: 'pending', label: 'Pending' },
-                  { id: 'closed', label: 'Closed' },
-                  { id: 'archived', label: 'Archived', disabled: true }
-                ]}
-                activeTab={activeModernTab}
-                onTabChange={setActiveModernTab}
-                variant="modern"
-              />
-              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
-                Selected: {activeModernTab}
-              </div>
-            </div>
-
-            {/* Classic Tabs Example */}
-            <div className="mb-6">
-              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Classic Variable-Width Tabs</p>
-              <Tabs
-                tabs={[
-                  { id: 'overview', label: 'Overview' },
-                  { id: 'analytics', label: 'Analytics' },
-                  { id: 'reports', label: 'Reports' },
-                  { id: 'settings', label: 'Settings' }
-                ]}
-                activeTab={activeClassicTab}
-                onTabChange={setActiveClassicTab}
-                variant="classic"
-              />
-              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
-                Selected: {activeClassicTab}
-              </div>
-            </div>
-
-            {/* Pill Tabs Example */}
-            <div className="mb-6">
-              <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Pill Tabs</p>
-              <Tabs
-                tabs={[
-                  { id: 'active', label: 'Active' },
-                  { id: 'inactive', label: 'Inactive' },
-                  { id: 'disabled', label: 'Disabled', disabled: true }
-                ]}
-                activeTab={activePillTab}
-                onTabChange={setActivePillTab}
-                variant="pills"
-              />
-              <div className="mt-2 text-xs dark:text-gray-500 text-gray-500">
-                Selected: {activePillTab}
-              </div>
-            </div>
-
-            {/* Filter Tabs Example (from positions page) */}
+            {/* Filter Pills Example (from positions page) - The icecream toggle buttons */}
             <div className="mb-6">
               <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Filter Pills (Toggle Button Group)</p>
               <div className="flex items-center gap-4">
