@@ -66,6 +66,92 @@ Implement the hierarchical risk management system with Account → Strategy → 
 **Success** - Full hierarchical risk system implemented with minimal database changes. UI updated to reflect new features. Framework updated with three-file context system.
 
 
+## WB-2025-01-21-001: Living Theme System Implementation
+**State**: considering
+**Timeframe**: NOW
+**Created**: 2025-01-21 09:00
+**Dependencies**: None
+**Tags**: #ui #design-system #infrastructure #group-wide
+
+### Goal
+Implement a truly living theme system where the theme page and application components are tightly coupled, sharing the exact same style definitions. This will be expanded into a robust group-wide monitoring system to ensure all projects maintain this standard.
+
+### Scope
+1. **TrendDojo Implementation**
+   - Complete adoption of centralized styling system across ALL components
+   - Theme page must import actual components, not recreate them
+   - Nuclear test must pass (delete theme page = app works, restore = perfect match)
+   - Theme page organized with tabs:
+     - **"Core Design System"**: Universal elements used across all projects (buttons, forms, alerts, tables, typography, colors)
+     - **"Domain Components"**: Project-specific elements (trading indicators, position bars, strategy panels, broker cards, P&L displays)
+
+2. **Development vs Production Modes**
+   - **Development Mode**: Theme page visible at `/theme` for active development
+     - Shows all components and variations
+     - Includes experimental/beta components
+     - Has interactive controls for testing states
+     - Shows design tokens and CSS variables
+   - **Production Mode**: Theme page hidden or requires auth
+     - Prevents external access to design system
+     - Only accessible to authenticated developers
+     - Lightweight version without dev tools
+     - Can be completely removed from production bundle
+
+3. **Group-Wide System**
+   - Create monitoring scripts to verify theme/app coupling
+   - Automated checks for style duplication
+   - CI/CD integration to prevent regression
+   - Documentation of the pattern for other projects
+
+4. **Ongoing Monitoring**
+   - Weekly automated reports on style consistency
+   - Alert system for divergence between theme and app
+   - Metrics dashboard for tracking adoption
+
+### Tasks
+- [ ] Add tab navigation to theme page (Core Design System | Domain Components)
+- [ ] Organize Core Design System tab with universal elements
+- [ ] Create Domain Components tab for trading-specific UI
+- [ ] Audit all components for inline styles
+- [ ] Create buttonStyles.ts, panelStyles.ts, formStyles.ts
+- [ ] Refactor ALL tables to use tableStyles.ts
+- [ ] Update theme page to import real components
+- [ ] Move universal components to Core tab
+- [ ] Move trading components to Domain tab
+- [ ] Implement nuclear test verification
+- [ ] Add environment-based theme page access control
+- [ ] Create development mode with interactive controls
+- [ ] Build production mode with auth gate
+- [ ] Add build-time flag to exclude theme page from production bundle
+- [ ] Create style consistency monitoring script
+- [ ] Document the living theme pattern in proven-solutions
+- [ ] Create CI/CD checks for style consistency
+- [ ] Build group-wide adoption tracking system
+- [ ] Create template for other projects to adopt
+
+### Success Criteria
+- Zero inline Tailwind classes in components (all use centralized styles)
+- Theme page uses actual components from the app
+- Theme page has clear separation between core and domain-specific components
+- Core Design System tab is portable to other projects
+- Domain Components tab showcases TrendDojo-specific patterns
+- Changing one style variable updates everywhere
+- Theme page is protected in production (auth-gated or removed)
+- Development mode provides full design system access
+- Production mode prevents design system exposure
+- Monitoring system catches any divergence
+- Other projects can adopt the pattern easily
+
+### Notes
+- Emerged from WB-2025-01-21 color system work where we discovered systematic issues
+- Addresses the "almost the same" trap that creates UI inconsistency
+- Will prevent future AI claims of "fixed" when visual changes aren't verifiable
+- Group-wide impact: all projects will benefit from this infrastructure
+- Tab structure enables clear separation of concerns:
+  - Core tab can be copied to any project (Controlla, Three, etc.)
+  - Domain tab demonstrates project-specific patterns (trading UI)
+  - Makes it easier to maintain consistency while allowing specialization
+
 ## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
 **State**: doing
 **Timeframe**: NOW
