@@ -4,7 +4,6 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { IBConnectionModal, IBCredentials } from "@/components/brokers/IBConnectionModal";
 import { AlpacaConnectionModal, AlpacaCredentials } from "@/components/brokers/AlpacaConnectionModal";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -28,7 +27,6 @@ interface BrokerCard {
 }
 
 export default function BrokersPage() {
-  const [showIBModal, setShowIBModal] = useState(false);
   const [showAlpacaModal, setShowAlpacaModal] = useState(false);
   const [selectedAlpacaBroker, setSelectedAlpacaBroker] = useState<string | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
@@ -49,20 +47,6 @@ export default function BrokersPage() {
       description: 'Real money trading with commission-free stock and crypto execution',
       status: 'disconnected',
       isSupported: true,
-    },
-    {
-      id: 'td_ameritrade',
-      name: 'TD Ameritrade',
-      description: 'Full-service broker with comprehensive research tools',
-      status: 'disconnected',
-      isSupported: false,
-    },
-    {
-      id: 'interactive_brokers',
-      name: 'Interactive Brokers',
-      description: 'Connect your Interactive Brokers account to execute trades directly through TrendDojo',
-      status: 'disconnected',
-      isSupported: false,
     },
   ]);
 
@@ -89,54 +73,6 @@ export default function BrokersPage() {
         return 'Error';
       default:
         return '';
-    }
-  };
-
-  const handleIBConnect = async (credentials: IBCredentials) => {
-    // Update status to connecting
-    setBrokers(prev => prev.map(broker => 
-      broker.id === 'interactive_brokers' 
-        ? { ...broker, status: 'connecting' as ConnectionStatus }
-        : broker
-    ));
-
-    try {
-      // Call the API to connect to IB
-      const response = await fetch('/api/brokers/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          broker: 'interactive_brokers',
-          config: credentials,
-          setPrimary: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to connect');
-      }
-
-      const data = await response.json();
-
-      // Update broker status with account info
-      setBrokers(prev => prev.map(broker => 
-        broker.id === 'interactive_brokers' 
-          ? { 
-              ...broker, 
-              status: 'connected' as ConnectionStatus,
-              accountId: data.accountInfo?.accountId,
-              balance: data.accountInfo?.balance,
-            }
-          : broker
-      ));
-    } catch (error) {
-      // Update status to error
-      setBrokers(prev => prev.map(broker => 
-        broker.id === 'interactive_brokers' 
-          ? { ...broker, status: 'error' as ConnectionStatus }
-          : broker
-      ));
-      throw error;
     }
   };
 
@@ -216,9 +152,7 @@ export default function BrokersPage() {
 
       // Open the appropriate broker modal after agreement
       if (pendingBrokerId) {
-        if (pendingBrokerId === 'interactive_brokers') {
-          setShowIBModal(true);
-        } else if (pendingBrokerId === 'alpaca_paper' || pendingBrokerId === 'alpaca_live') {
+        if (pendingBrokerId === 'alpaca_paper' || pendingBrokerId === 'alpaca_live') {
           setSelectedAlpacaBroker(pendingBrokerId);
           setShowAlpacaModal(true);
         }
@@ -251,7 +185,7 @@ export default function BrokersPage() {
 
         {/* Information Grid Container */}
         <div className="w-full mb-12">
-          <div className="flex flex-col lg:flex-row lg:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row lg:justify-start gap-8">
             {/* Getting Started Section */}
             <Card className="w-full lg:w-1/2">
               <h2 className="text-lg font-semibold dark:text-white text-gray-900 mb-3">
@@ -301,12 +235,12 @@ export default function BrokersPage() {
             </Card>
 
             {/* Security Information */}
-            <div className="w-full lg:w-1/3 self-start rounded-lg p-4 pb-6 flex gap-3 dark:bg-blue-900/20 bg-blue-50">
+            <div className="w-full lg:w-1/3 self-start rounded-lg p-6 flex gap-4 dark:bg-blue-900/20 bg-blue-50">
               <span className="text-blue-600 dark:text-blue-400">
-                <Shield className="w-5 h-5 flex-shrink-0" />
+                <Shield className="w-8 h-8 flex-shrink-0" />
               </span>
               <div className="flex-1">
-                <h3 className="font-semibold mb-1 text-blue-600 dark:text-blue-400">
+                <h3 className="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">
                   Security & Technology
                 </h3>
                 <div className="text-sm dark:text-gray-300 text-gray-700">
@@ -396,13 +330,10 @@ export default function BrokersPage() {
                         setShowLegalModal(true);
                         return;
                       }
-                      if (broker.id === 'interactive_brokers') {
-                        setShowIBModal(true);
-                      } else if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
+                      if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
                         setSelectedAlpacaBroker(broker.id);
                         setShowAlpacaModal(true);
                       }
-                      // Add handlers for other brokers here
                     }}
                     variant="primary"
                     fullWidth
@@ -442,9 +373,7 @@ export default function BrokersPage() {
                         setShowLegalModal(true);
                         return;
                       }
-                      if (broker.id === 'interactive_brokers') {
-                        setShowIBModal(true);
-                      } else if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
+                      if (broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') {
                         setSelectedAlpacaBroker(broker.id);
                         setShowAlpacaModal(true);
                       }
@@ -469,13 +398,6 @@ export default function BrokersPage() {
             </div>
           ))}
         </div>
-
-        {/* IB Connection Modal */}
-        <IBConnectionModal
-          isOpen={showIBModal}
-          onClose={() => setShowIBModal(false)}
-          onConnect={handleIBConnect}
-        />
 
         {/* Alpaca Connection Modal */}
         <AlpacaConnectionModal
