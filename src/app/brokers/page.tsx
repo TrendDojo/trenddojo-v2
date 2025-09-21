@@ -516,10 +516,10 @@ export default function BrokersPage() {
                 <Button
                   type="button"
                   onClick={() => setShowLegalModal(false)}
-                  variant="ghost"
+                  variant="secondary"
                   fullWidth
                 >
-                  Browse Only (No Connections)
+                  Cancel
                 </Button>
                 <Button
                   type="submit"
@@ -527,7 +527,7 @@ export default function BrokersPage() {
                   variant="primary"
                   fullWidth
                 >
-                  I Agree - Enable Connections
+                  I Agree
                 </Button>
               </div>
             </form>
