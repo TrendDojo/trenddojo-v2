@@ -67,9 +67,10 @@ Implement the hierarchical risk management system with Account → Strategy → 
 
 
 ## WB-2025-01-21-001: Living Theme System Implementation
-**State**: considering
-**Timeframe**: NOW
+**State**: confirmed
+**Timeframe**: NEXT
 **Created**: 2025-01-21 09:00
+**Updated**: 2025-01-22 14:30
 **Dependencies**: None
 **Tags**: #ui #design-system #infrastructure #group-wide
 
@@ -109,12 +110,14 @@ Implement a truly living theme system where the theme page and application compo
    - Metrics dashboard for tracking adoption
 
 ### Tasks
+- [x] Document the living theme pattern in proven-solutions (COMPLETED 2025-01-22)
+- [x] Create group-wide implementation guide in _shared-framework
+- [ ] Audit all TrendDojo components for inline styles
+- [ ] Create buttonStyles.ts, panelStyles.ts, formStyles.ts
+- [ ] Refactor ALL tables to use tableStyles.ts (partially done)
 - [ ] Add tab navigation to theme page (Core Design System | Domain Components)
 - [ ] Organize Core Design System tab with universal elements
 - [ ] Create Domain Components tab for trading-specific UI
-- [ ] Audit all components for inline styles
-- [ ] Create buttonStyles.ts, panelStyles.ts, formStyles.ts
-- [ ] Refactor ALL tables to use tableStyles.ts
 - [ ] Update theme page to import real components
 - [ ] Move universal components to Core tab
 - [ ] Move trading components to Domain tab
@@ -124,10 +127,8 @@ Implement a truly living theme system where the theme page and application compo
 - [ ] Build production mode with auth gate
 - [ ] Add build-time flag to exclude theme page from production bundle
 - [ ] Create style consistency monitoring script
-- [ ] Document the living theme pattern in proven-solutions
 - [ ] Create CI/CD checks for style consistency
 - [ ] Build group-wide adoption tracking system
-- [ ] Create template for other projects to adopt
 
 ### Success Criteria
 - Zero inline Tailwind classes in components (all use centralized styles)
@@ -151,6 +152,34 @@ Implement a truly living theme system where the theme page and application compo
   - Core tab can be copied to any project (Controlla, Three, etc.)
   - Domain tab demonstrates project-specific patterns (trading UI)
   - Makes it easier to maintain consistency while allowing specialization
+
+## WB-2025-01-23-001: Positions Page Enhancement
+**State**: completed
+**Timeframe**: NOW
+**Created**: 2025-01-23 09:00
+**Completed**: 2025-01-23 11:00
+**Dependencies**: None
+**Tags**: #ui #positions #navigation #broker-integration
+
+### Goal
+Enhance positions page with improved navigation, broker connection handling, and UI consistency.
+
+### Tasks Completed
+- [x] Investigated and restored lost functionality (position status filters)
+- [x] Added top-level account type tabs (Live Positions, Paper Positions, Dev, Rules)
+- [x] Added second-level status filters (Active, Pending, Closed)
+- [x] Moved position rules from strategies page to dedicated Rules tab
+- [x] Implemented broker connection checks with helpful messages
+- [x] Added "Connect Broker" link when no broker connected
+- [x] Maintained mock data for Dev mode
+- [x] Removed breadcrumbs from positions, screener, and brokers pages
+- [x] Renamed tabs for clarity (Live Trading → Live Positions, etc.)
+- [x] Fixed tab spacing and layout issues
+- [x] Moved "New Position" button to same row as status filters
+- [x] Created starto command documentation in shared framework
+
+### Outcome
+**Success** - Positions page now has proper two-level navigation with broker connection handling and improved UI consistency.
 
 ## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
 **State**: doing
