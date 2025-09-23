@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
 import { tableStyles, getTableCell } from "@/lib/tableStyles";
@@ -242,13 +242,41 @@ export default function ScreenerPage() {
     try {
       setLoading(true);
       setError(null);
-      
-      // For now, use mock data from Yahoo Finance service
-      // In production, this would fetch real data from Yahoo Finance API
-      const mockQuotes = YahooFinanceService.getMockQuotes();
-      
+
+      // Define the stocks we want to fetch
+      // Popular stocks across different sectors for a diverse screener
+      const popularSymbols = [
+        // Technology
+        'AAPL', 'MSFT', 'GOOGL', 'META', 'NVDA', 'AMD', 'INTC', 'ORCL', 'CRM', 'ADBE',
+        // Consumer
+        'AMZN', 'TSLA', 'NKE', 'SBUX', 'MCD', 'DIS', 'NFLX',
+        // Finance
+        'JPM', 'BAC', 'WFC', 'GS', 'MS', 'V', 'MA', 'PYPL',
+        // Healthcare
+        'JNJ', 'PFE', 'UNH', 'CVS', 'ABBV', 'MRK',
+        // Energy & Industrials
+        'XOM', 'CVX', 'BA', 'CAT', 'GE',
+        // Retail & Consumer Staples
+        'WMT', 'TGT', 'HD', 'LOW', 'PG', 'KO', 'PEP'
+      ];
+
+      // Try to fetch real data from Yahoo Finance
+      let quotes: StockQuote[] = [];
+      try {
+        quotes = await YahooFinanceService.getQuotes(popularSymbols);
+
+        // If we got no data or very little data, use mock as fallback
+        if (quotes.length < 5) {
+          console.warn('Insufficient real data, falling back to mock data');
+          quotes = YahooFinanceService.getMockQuotes();
+        }
+      } catch (apiError) {
+        console.warn('Yahoo Finance API failed, using mock data:', apiError);
+        quotes = YahooFinanceService.getMockQuotes();
+      }
+
       // Convert StockQuote to Stock interface
-      const stockData: Stock[] = mockQuotes.map(quote => ({
+      const stockData: Stock[] = quotes.map(quote => ({
         symbol: quote.symbol,
         name: quote.name,
         sector: quote.sector || 'Unknown',
@@ -261,12 +289,12 @@ export default function ScreenerPage() {
         weekHigh52: quote.fiftyTwoWeekHigh || quote.price * 1.2,
         weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
         avgVolume: quote.volume || 0,
-        rsi: Math.floor(Math.random() * 70) + 15, // Random RSI between 15-85
-        movingAvg50: quote.price * (0.95 + Math.random() * 0.1), // Random MA50 near price
-        movingAvg200: quote.price * (0.9 + Math.random() * 0.2), // Random MA200 near price
+        rsi: Math.floor(Math.random() * 70) + 15, // Random RSI between 15-85 (would need technical data API)
+        movingAvg50: quote.price * (0.95 + Math.random() * 0.1), // Random MA50 (would need technical data API)
+        movingAvg200: quote.price * (0.9 + Math.random() * 0.2), // Random MA200 (would need technical data API)
         signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
       }));
-      
+
       setStocks(stockData);
       setLastUpdate(new Date());
     } catch (err) {
@@ -277,7 +305,7 @@ export default function ScreenerPage() {
       // Ensure minimum loading time of 350ms for better UX
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, 350 - elapsed);
-      
+
       setTimeout(() => {
         setLoading(false);
       }, remaining);
@@ -403,14 +431,6 @@ export default function ScreenerPage() {
     <AppLayout>
       <PageContent>
         <div className="space-y-6 relative">
-          {/* Breadcrumb */}
-          <div className="mb-8">
-            <Breadcrumb
-              items={[
-                { label: "Screener" }
-              ]}
-            />
-          </div>
 
           {/* Header */}
           <div className="flex justify-between items-start">
@@ -1407,10 +1427,12 @@ export default function ScreenerPage() {
                       className={tableStyles.tr}
                     >
                       <td className={tableStyles.td}>
-                        <div>
-                          <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
-                          <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
-                        </div>
+                        <Link href={`/stocks/${stock.symbol}`}>
+                          <div className="cursor-pointer hover:text-indigo-500 transition-colors">
+                            <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
+                            <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
+                          </div>
+                        </Link>
                       </td>
                       <td className={tableStyles.tdBold}>
                         ${stock.price.toFixed(2)}
@@ -1441,9 +1463,11 @@ export default function ScreenerPage() {
                       </td>
                       <td className={tableStyles.td}>
                         <div className="flex gap-2">
-                          <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
-                            Chart
-                          </button>
+                          <Link href={`/stocks/${stock.symbol}`}>
+                            <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
+                              View
+                            </button>
+                          </Link>
                           <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
                             Trade
                           </button>

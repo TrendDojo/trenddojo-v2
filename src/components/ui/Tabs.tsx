@@ -111,7 +111,7 @@ export function Tabs({
           onClick={() => !tab.disabled && onTabChange(tab.id)}
           disabled={tab.disabled}
           className={cn(
-            'px-4 py-2 font-medium rounded-full transition-colors',
+            'px-3 py-1 text-sm font-medium rounded-full transition-colors',
             activeTab === tab.id
               ? 'bg-indigo-600 text-white'
               : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600',
