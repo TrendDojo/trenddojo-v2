@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { AlpacaConnectionModal, AlpacaCredentials } from "@/components/brokers/AlpacaConnectionModal";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Panel";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/FormField";
-import { Shield, Layers, Zap, Unplug } from "lucide-react";
+import { Shield, Layers, Zap, CheckCircle } from "lucide-react";
 
 // Broker status enum
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
@@ -36,6 +35,7 @@ export default function BrokersPage() {
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const [disconnectBrokerId, setDisconnectBrokerId] = useState<string | null>(null);
   const [disconnectConfirmText, setDisconnectConfirmText] = useState("");
+  const [isLoadingConnections, setIsLoadingConnections] = useState(true);
   const [brokers, setBrokers] = useState<BrokerCard[]>([
     {
       id: 'alpaca_paper',
@@ -205,6 +205,8 @@ export default function BrokersPage() {
         }
       } catch (error) {
         console.error('Failed to load broker connections:', error);
+      } finally {
+        setIsLoadingConnections(false);
       }
     };
 
@@ -214,14 +216,6 @@ export default function BrokersPage() {
   return (
     <AppLayout>
       <PageContent>
-        {/* Breadcrumb */}
-        <div className="mb-8">
-          <Breadcrumb
-            items={[
-              { label: "Brokers" }
-            ]}
-          />
-        </div>
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">
@@ -308,35 +302,44 @@ export default function BrokersPage() {
         </div>
 
         {/* Broker Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,320px))] gap-6">
           {brokers.map((broker) => (
             <div
               key={broker.id}
-              className="bg-gray-100 dark:bg-slate-800 rounded-lg p-6 hover:shadow-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-slate-700"
+              className="bg-gray-100 dark:bg-slate-800 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-slate-700 flex flex-col"
             >
-              <Card
-                className="bg-transparent"
-              >
-              {/* Broker Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  {/* Paper/Live Trading Label */}
-                  <div className="flex items-center gap-1.5 mb-2">
-                    {broker.id === 'alpaca_paper' ? (
-                      <>
-                        <Layers className="w-4 h-4 text-success" />
-                        <span className="text-sm font-bold text-success">Paper Trading</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4 text-danger" />
-                        <span className="text-sm font-bold text-danger">Live Trading</span>
-                      </>
-                    )}
+              {/* Status Bar - Full width at top */}
+              {!isLoadingConnections && (
+                broker.status === 'connected' ? (
+                  <div className="bg-success/20 dark:bg-success/10 px-4 py-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm font-semibold text-success">
+                        Connected
+                      </span>
+                    </div>
                   </div>
+                ) : broker.status === 'disconnected' ? (
+                  <div className="bg-gray-200 dark:bg-gray-700 px-4 py-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                        Ready to connect!
+                      </span>
+                    </div>
+                  </div>
+                ) : null
+              )}
 
-                  {/* Logo and Name Row */}
-                  <div className="flex items-start gap-3">
+              <Card
+                className="bg-transparent flex flex-col flex-1 rounded-none p-6"
+              >
+              {/* Content wrapper that grows */}
+              <div className="flex-1 flex flex-col">
+                {/* Broker Header */}
+                <div className="mb-4">
+                <div>
+                  {/* Logo and Name */}
+                  <div className="flex items-center gap-3 mb-3">
                     {/* Alpaca Logo */}
                     <div className="w-10 h-10 flex items-center justify-center">
                       <svg viewBox="0 0 44 44" className="w-full h-full">
@@ -360,7 +363,24 @@ export default function BrokersPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Paper/Live Trading Label - Below Logo */}
+                  <div className="flex items-center gap-1.5">
+                    {broker.id === 'alpaca_paper' ? (
+                      <>
+                        <Layers className="w-4 h-4 text-success" />
+                        <span className="text-sm font-bold text-success">Paper Trading</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 text-danger" />
+                        <span className="text-sm font-bold text-danger">Live Trading</span>
+                      </>
+                    )}
+                  </div>
                 </div>
+
+                {/* Status indicators for connecting/error states */}
                 {broker.status !== 'disconnected' && broker.status !== 'connected' && (
                   <div className={`flex items-center gap-2 ${getStatusColor(broker.status)}`}>
                     <div className={`w-2 h-2 rounded-full ${
@@ -374,20 +394,33 @@ export default function BrokersPage() {
               </div>
 
               {/* Broker Description */}
-              <p className="dark:text-gray-400 text-gray-600 text-sm mb-4">
-                {broker.description}
-              </p>
+              <div className="mb-4">
+                <p className="dark:text-gray-400 text-gray-600 text-sm">
+                  {broker.description}
+                </p>
+                {(broker.id === 'alpaca_paper' || broker.id === 'alpaca_live') && (
+                  <a
+                    href="https://alpaca.markets"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 underline mt-2 inline-block transition-colors"
+                  >
+                    Visit Alpaca →
+                  </a>
+                )}
+              </div>
+
+              {/* Loading Skeleton for Connection Status */}
+              {isLoadingConnections && broker.isSupported && (
+                <div className="mb-4 animate-pulse">
+                  <div className="h-20 dark:bg-slate-900/50 bg-gray-100 rounded"></div>
+                </div>
+              )}
 
               {/* Account Info (if connected) */}
-              {broker.status === 'connected' && broker.accountId && (
+              {!isLoadingConnections && broker.status === 'connected' && broker.accountId && (
                 <div className="mb-4 p-3 dark:bg-slate-900/50 bg-gray-50 rounded">
                   <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Unplug className="w-4 h-4 text-success" />
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success/20 text-success">
-                        Connected
-                      </span>
-                    </div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm dark:text-gray-400 text-gray-600">Account</span>
                       <span className="text-sm font-mono dark:text-gray-300 text-gray-700">
@@ -405,10 +438,19 @@ export default function BrokersPage() {
                   </div>
                 </div>
               )}
+              </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                {broker.status === 'disconnected' && broker.isSupported && (
+              {/* Action Buttons - Outside flex-1 wrapper to stick to bottom */}
+              <div className="flex gap-2 mt-auto">
+                {/* Loading Skeleton for Button */}
+                {isLoadingConnections && broker.isSupported && (
+                  <div className="animate-pulse w-full">
+                    <div className="h-10 dark:bg-slate-800 bg-gray-200 rounded-lg"></div>
+                  </div>
+                )}
+
+                {/* Connect Button */}
+                {!isLoadingConnections && broker.status === 'disconnected' && broker.isSupported && (
                   <Button
                     onClick={() => {
                       if (!hasAgreed) {
@@ -427,7 +469,9 @@ export default function BrokersPage() {
                     Connect
                   </Button>
                 )}
-                {broker.status === 'connected' && (
+
+                {/* Disconnect Button */}
+                {!isLoadingConnections && broker.status === 'connected' && (
                   <Button
                     onClick={() => handleDisconnect(broker.id)}
                     variant="secondary"
@@ -437,7 +481,9 @@ export default function BrokersPage() {
                     Disconnect
                   </Button>
                 )}
-                {broker.status === 'connecting' && (
+
+                {/* Connecting State */}
+                {!isLoadingConnections && broker.status === 'connecting' && (
                   <Button 
                     variant="primary"
                     loading
@@ -447,7 +493,9 @@ export default function BrokersPage() {
                     Connecting...
                   </Button>
                 )}
-                {broker.status === 'error' && (
+
+                {/* Error State */}
+                {!isLoadingConnections && broker.status === 'error' && (
                   <Button
                     onClick={() => {
                       if (!hasAgreed) {
@@ -466,7 +514,9 @@ export default function BrokersPage() {
                     Retry Connection
                   </Button>
                 )}
-                {!broker.isSupported && (
+
+                {/* Not Supported */}
+                {!isLoadingConnections && !broker.isSupported && (
                   <Button 
                     variant="secondary"
                     fullWidth
@@ -564,16 +614,16 @@ export default function BrokersPage() {
           size="md"
         >
           <div className="space-y-4">
-            <Alert intent="warning" title="Warning">
+            <Alert intent="error" title="Danger">
               You are about to disconnect your broker account. This will:
               <ul className="mt-2 list-disc list-inside text-sm">
                 <li>Stop all automated trading for this account</li>
-                <li>Remove stored credentials (you'll need to reconnect later)</li>
+                <li>Permanently delete your stored API key for this broker</li>
                 <li>Cancel any pending orders from this connection</li>
               </ul>
             </Alert>
 
-            <p className="text-sm dark:text-gray-300 text-gray-700">
+            <p className="text-sm dark:text-gray-300 text-gray-700 text-center">
               Type <strong>"disconnect"</strong> to confirm this action:
             </p>
 
