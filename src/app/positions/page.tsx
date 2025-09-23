@@ -9,10 +9,12 @@ import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { tableStyles, filterStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
+import { PositionRulesTab } from "@/components/positions/PositionRulesTab";
 import { cn } from "@/lib/utils";
+import { Tabs } from "@/components/ui/Tabs";
+import { TradingModeIndicator } from "@/components/TradingModeIndicator";
 
 interface ScalingLevel {
   quantity: number;
@@ -44,6 +46,8 @@ interface Position {
   strategy: string;
   status: "active" | "pending" | "closed";
   exitReason?: "stop_loss" | "take_profit" | "manual" | "partial";
+  broker?: string; // e.g., "alpaca_paper", "ibkr_live"
+  tradingMode?: "live" | "paper" | "dev";
 }
 
 // Strategy mapping with IDs and colors
@@ -103,6 +107,7 @@ const STRATEGIES = {
 
 export default function PositionsPage() {
   const router = useRouter();
+  const [activeAccountType, setActiveAccountType] = useState<"live" | "paper" | "dev" | "rules">("paper");
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [filterView, setFilterView] = useState<"active" | "pending" | "closed">("active");
   const [filterStrategy, setFilterStrategy] = useState<string>("all");
@@ -158,8 +163,31 @@ export default function PositionsPage() {
     return remainingRisk - profitsTaken;
   };
   
-  // Fake positions data
-  const positions: Position[] = [
+  // Mock broker connection status (in real app, would come from API/context)
+  const [hasBrokerConnection, setHasBrokerConnection] = useState({
+    live: false,
+    paper: false,
+    dev: true // Dev always has mock data
+  });
+
+  // Get positions based on account type
+  const getPositionsForAccount = (): Position[] => {
+    if (activeAccountType === "dev") {
+      // Dev mode always returns mock data
+      return mockPositions;
+    } else if (activeAccountType === "live" && !hasBrokerConnection.live) {
+      // No live broker connected
+      return [];
+    } else if (activeAccountType === "paper" && !hasBrokerConnection.paper) {
+      // No paper broker connected
+      return [];
+    }
+    // Would fetch real positions from API here
+    return [];
+  };
+
+  // Mock positions data for dev mode
+  const mockPositions: Position[] = [
     {
       id: "1",
       symbol: "AAPL",
@@ -177,7 +205,9 @@ export default function PositionsPage() {
       value: 18230.00,
       openDate: "2024-01-15",
       strategy: "Momentum",
-      status: "active"
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     },
     {
       id: "2",
@@ -201,7 +231,9 @@ export default function PositionsPage() {
       value: 11925.00,
       openDate: "2024-01-18",
       strategy: "Mean Reversion",
-      status: "active"
+      status: "active",
+      broker: "alpaca_live",
+      tradingMode: "live"
     },
     {
       id: "3",
@@ -220,7 +252,9 @@ export default function PositionsPage() {
       value: 17387.50,
       openDate: "2024-01-20",
       strategy: "Breakout",
-      status: "active"
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
     },
     {
       id: "4",
@@ -243,7 +277,9 @@ export default function PositionsPage() {
       value: 28368.75,
       openDate: "2024-01-22",
       strategy: "Value",
-      status: "active"
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     },
     {
       id: "5",
@@ -261,7 +297,9 @@ export default function PositionsPage() {
       value: 23812.50,
       openDate: "2024-01-23",
       strategy: "Swing Trade",
-      status: "pending"
+      status: "pending",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     },
     {
       id: "6",
@@ -283,7 +321,9 @@ export default function PositionsPage() {
       value: 11140.00,
       openDate: "2024-01-24",
       strategy: "Momentum",
-      status: "active"
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
     },
     {
       id: "7",
@@ -301,7 +341,9 @@ export default function PositionsPage() {
       value: 96450.00,
       openDate: "2024-01-25",
       strategy: "Core Holding",
-      status: "active"
+      status: "active",
+      broker: "alpaca_live",
+      tradingMode: "live"
     },
     {
       id: "8",
@@ -320,7 +362,9 @@ export default function PositionsPage() {
       value: 24330.00,
       openDate: "2024-01-26",
       strategy: "Growth",
-      status: "active"
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     },
     {
       id: "9",
@@ -341,7 +385,9 @@ export default function PositionsPage() {
       closedDate: "2024-01-28",
       strategy: "Breakout",
       status: "closed",
-      exitReason: "stop_loss"
+      exitReason: "stop_loss",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     },
     {
       id: "10",
@@ -411,8 +457,228 @@ export default function PositionsPage() {
       strategy: "Swing Trade",
       status: "closed",
       exitReason: "partial"
+    },
+    // Additional paper trading positions for better dev testing
+    {
+      id: "13",
+      symbol: "QQQ",
+      name: "Invesco QQQ Trust",
+      side: "long",
+      quantity: 75,
+      originalQuantity: 75,
+      entryPrice: 425.50,
+      currentPrice: 431.25,
+      stopLoss: 420.00,
+      takeProfit: 445.00,
+      targetPrice: 450.00,
+      pnl: 431.25,
+      pnlPercent: 1.35,
+      value: 32343.75,
+      openDate: "2024-01-27",
+      strategy: "Momentum",
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "14",
+      symbol: "COIN",
+      name: "Coinbase Global",
+      side: "short",
+      quantity: 100,
+      originalQuantity: 100,
+      entryPrice: 125.00,
+      currentPrice: 122.50,
+      stopLoss: 130.00,
+      takeProfit: 110.00,
+      targetPrice: 105.00,
+      pnl: 250.00,
+      pnlPercent: 2.00,
+      value: 12250.00,
+      openDate: "2024-01-28",
+      strategy: "Mean Reversion",
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "15",
+      symbol: "PLTR",
+      name: "Palantir Technologies",
+      side: "long",
+      quantity: 500,
+      originalQuantity: 500,
+      entryPrice: 16.20,
+      currentPrice: 17.85,
+      stopLoss: 15.50,
+      takeProfit: 20.00,
+      targetPrice: 22.00,
+      pnl: 825.00,
+      pnlPercent: 10.19,
+      value: 8925.00,
+      openDate: "2024-01-25",
+      strategy: "Breakout",
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "16",
+      symbol: "VZ",
+      name: "Verizon Communications",
+      side: "long",
+      quantity: 200,
+      originalQuantity: 200,
+      entryPrice: 38.50,
+      currentPrice: 39.25,
+      stopLoss: 37.00,
+      takeProfit: 42.00,
+      pnl: 150.00,
+      pnlPercent: 1.95,
+      value: 7850.00,
+      openDate: "2024-01-22",
+      strategy: "Value",
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "17",
+      symbol: "ROKU",
+      name: "Roku Inc.",
+      side: "short",
+      quantity: 80,
+      originalQuantity: 120,
+      entryPrice: 65.00,
+      currentPrice: 62.25,
+      stopLoss: 68.00,
+      takeProfit: 55.00,
+      targetPrice: 50.00,
+      scalingLevels: [
+        { quantity: 40, targetPrice: 62.50, executed: true, executedPrice: 62.40, executedDate: "2024-01-26" },
+        { quantity: 40, targetPrice: 60.00, executed: false },
+        { quantity: 40, targetPrice: 57.50, executed: false }
+      ],
+      pnl: 326.00,
+      pnlPercent: 4.23,
+      value: 6840.00,
+      openDate: "2024-01-24",
+      strategy: "Swing Trade",
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "18",
+      symbol: "DIS",
+      name: "Walt Disney Co",
+      side: "long",
+      quantity: 150,
+      originalQuantity: 150,
+      entryPrice: 95.00,
+      currentPrice: 98.50,
+      stopLoss: 92.00,
+      takeProfit: 105.00,
+      targetPrice: 110.00,
+      pnl: 525.00,
+      pnlPercent: 3.68,
+      value: 14775.00,
+      openDate: "2024-01-20",
+      strategy: "Growth",
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "19",
+      symbol: "IWM",
+      name: "iShares Russell 2000 ETF",
+      side: "long",
+      quantity: 100,
+      originalQuantity: 100,
+      entryPrice: 195.00,
+      currentPrice: 192.75,
+      stopLoss: 190.00,
+      takeProfit: 205.00,
+      pnl: -225.00,
+      pnlPercent: -1.15,
+      value: 19275.00,
+      openDate: "2024-01-26",
+      strategy: "Core Holding",
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "20",
+      symbol: "SNAP",
+      name: "Snap Inc.",
+      side: "short",
+      quantity: 300,
+      originalQuantity: 300,
+      entryPrice: 11.50,
+      currentPrice: 11.25,
+      stopLoss: 12.00,
+      takeProfit: 10.00,
+      targetPrice: 9.50,
+      pnl: 75.00,
+      pnlPercent: 2.17,
+      value: 3375.00,
+      openDate: "2024-01-27",
+      strategy: "Scalping",
+      status: "pending",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "21",
+      symbol: "XOM",
+      name: "Exxon Mobil Corp",
+      side: "long",
+      quantity: 120,
+      originalQuantity: 120,
+      entryPrice: 102.00,
+      currentPrice: 104.25,
+      stopLoss: 98.00,
+      takeProfit: 110.00,
+      pnl: 270.00,
+      pnlPercent: 2.21,
+      value: 12510.00,
+      openDate: "2024-01-23",
+      strategy: "Position Trade",
+      status: "active",
+      broker: "ibkr_paper",
+      tradingMode: "paper"
+    },
+    {
+      id: "22",
+      symbol: "SQ",
+      name: "Block Inc.",
+      side: "long",
+      quantity: 150,
+      originalQuantity: 200,
+      entryPrice: 75.00,
+      currentPrice: 72.50,
+      stopLoss: 70.00,
+      takeProfit: 85.00,
+      targetPrice: 90.00,
+      scalingLevels: [
+        { quantity: 50, targetPrice: 78.00, executed: true, executedPrice: 78.25, executedDate: "2024-01-25" },
+        { quantity: 75, targetPrice: 82.00, executed: false },
+        { quantity: 75, targetPrice: 86.00, executed: false }
+      ],
+      pnl: -262.50,
+      pnlPercent: -3.33,
+      value: 10875.00,
+      openDate: "2024-01-21",
+      strategy: "Day Trade",
+      status: "active",
+      broker: "alpaca_paper",
+      tradingMode: "paper"
     }
   ];
+
+  const positions = getPositionsForAccount();
 
   const filteredPositions = positions.filter(p => {
     const statusMatch = p.status === filterView;
@@ -456,33 +722,38 @@ export default function PositionsPage() {
     <AppLayout>
       <PageContent>
         <div className="space-y-4">
-          {/* Breadcrumb */}
-          <div className="mb-8">
-            <Breadcrumb
-              items={[
-                { label: "Positions" }
+
+          {/* Account Type Tabs (Top Level) */}
+          <Tabs
+            tabs={[
+              { id: "live", label: "Live Positions" },
+              { id: "paper", label: "Paper Positions" },
+              { id: "dev", label: "Dev" },
+              { id: "rules", label: "Rules" }
+            ]}
+            activeTab={activeAccountType}
+            onTabChange={(tabId) => setActiveAccountType(tabId as "live" | "paper" | "dev" | "rules")}
+            variant="modern"
+            className="pb-4"
+          />
+
+          {/* Show Rules Tab Content or Positions Content */}
+          {activeAccountType === "rules" ? (
+            <PositionRulesTab />
+          ) : (
+            <>
+          {/* Status Filters and New Position Button */}
+          <div className="flex justify-between items-center mb-6">
+            <Tabs
+              tabs={[
+                { id: "active", label: "Active" },
+                { id: "pending", label: "Pending" },
+                { id: "closed", label: "Closed" }
               ]}
+              activeTab={filterView}
+              onTabChange={(tabId) => setFilterView(tabId as "active" | "pending" | "closed")}
+              variant="pills"
             />
-          </div>
-
-
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold dark:text-white text-gray-900">
-                {(() => {
-                  const statusPrefix = filterView.charAt(0).toUpperCase() + filterView.slice(1);
-                  if (filterStrategy === "all") {
-                    return `${statusPrefix} Positions`;
-                  } else {
-                    return `${statusPrefix} Positions – ${filterStrategy}`;
-                  }
-                })()}
-              </h1>
-              <p className="text-sm dark:text-gray-400 text-gray-600 mt-1">
-                Manage your active trading positions
-              </p>
-            </div>
             <Button variant="primary" size="sm" className="flex items-center">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -628,45 +899,6 @@ export default function PositionsPage() {
                 )}
               </div>
 
-              {/* Vertical Divider */}
-              <div className="h-8 w-px bg-gray-500 dark:bg-gray-400 self-end" />
-
-              {/* Status Filters */}
-              <div className="flex gap-2 self-end">
-                <button
-                  className={cn(
-                    "px-3 py-2 text-sm font-semibold rounded-lg transition-all",
-                    filterView === "active"
-                      ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
-                      : "bg-transparent border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800"
-                  )}
-                  onClick={() => setFilterView("active")}
-                >
-                  Active
-                </button>
-                <button
-                  className={cn(
-                    "px-3 py-2 text-sm font-semibold rounded-lg transition-all",
-                    filterView === "pending"
-                      ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
-                      : "bg-transparent border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800"
-                  )}
-                  onClick={() => setFilterView("pending")}
-                >
-                  Pending
-                </button>
-                <button
-                  className={cn(
-                    "px-3 py-2 text-sm font-semibold rounded-lg transition-all",
-                    filterView === "closed"
-                      ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
-                      : "bg-transparent border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800"
-                  )}
-                  onClick={() => setFilterView("closed")}
-                >
-                  Closed
-                </button>
-              </div>
             </div>
 
             {/* Right side controls - separate flex container */}
@@ -784,7 +1016,34 @@ export default function PositionsPage() {
             </div>
           )}
 
-          {/* Positions Table */}
+          {/* No Broker Connected Message */}
+          {((activeAccountType === "live" && !hasBrokerConnection.live) ||
+            (activeAccountType === "paper" && !hasBrokerConnection.paper)) && (
+            <Card className="py-12 text-center">
+              <div className="max-w-md mx-auto">
+                <svg className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-2">
+                  No {activeAccountType === "live" ? "Live" : "Paper"} Broker Connected
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Connect your {activeAccountType === "live" ? "brokerage account" : "paper trading account"} to view and manage positions.
+                </p>
+                <Link href="/brokers">
+                  <Button variant="primary" size="sm">
+                    Connect Broker
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          )}
+
+          {/* Positions Table - Only show if broker connected or in dev mode */}
+          {((activeAccountType === "live" && hasBrokerConnection.live) ||
+            (activeAccountType === "paper" && hasBrokerConnection.paper) ||
+            activeAccountType === "dev") && (
+          <>
           <div className={tableStyles.wrapper}>
             <div className="overflow-x-auto">
             <table className={tableStyles.table}>
@@ -872,6 +1131,15 @@ export default function PositionsPage() {
                                 <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-danger">
                                   SHORT
                                 </span>
+                              )}
+                              {position.tradingMode === "paper" && (
+                                <TradingModeIndicator
+                                  mode="paper"
+                                  variant="badge"
+                                  size="sm"
+                                  showIcon={true}
+                                  showBroker={false}
+                                />
                               )}
                               <span className="text-gray-400 dark:text-gray-600">|</span>
                               <span className="dark:text-gray-300 text-gray-700 font-medium">
@@ -1114,7 +1382,10 @@ export default function PositionsPage() {
                   </button>
                 </div>
             </div>
-        </div>
+          </>
+          )}
+          </>
+          )}
 
         {/* Indicator Key Modal */}
         {showIndicatorKey && (
@@ -1132,147 +1403,15 @@ export default function PositionsPage() {
                 </button>
               </div>
 
-              <div className="space-y-6">
-                {/* Demo Visualization */}
-                <div className="p-4 bg-gray-50 dark:bg-slate-900 rounded-lg">
-                  <div className="relative inline-block" style={{ width: '180px', height: '60px', marginLeft: '20px' }}>
-                    {/* Current Price Indicator - A */}
-                    <div className="absolute -top-1 flex flex-col items-center"
-                      style={{ left: '86px' }}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-white border border-black dark:border-white" />
-                      <div className="w-0.5 h-1.5 bg-black dark:bg-white" />
-                      <span className="text-xs font-bold mt-1 dark:text-white">A</span>
-                    </div>
-
-                    {/* Stop Loss Indicator - B */}
-                    <div className="absolute -bottom-1 flex flex-col-reverse items-center"
-                      style={{ left: '-4px' }}
-                    >
-                      <span className="text-xs font-bold mb-1 dark:text-white">B</span>
-                      <div className="w-2 h-2 bg-red-500 dark:bg-red-400" />
-                      <div className="w-0.5 h-1.5 bg-red-500 dark:bg-red-400" />
-                    </div>
-                    <span className="absolute text-[10px] dark:text-gray-400 text-gray-600"
-                      style={{ bottom: '-2px', left: '8px' }}>
-                      240
-                    </span>
-
-                    {/* Target Indicator - E */}
-                    <div className="absolute -bottom-1 flex flex-col-reverse items-center"
-                      style={{ right: '-4px' }}
-                    >
-                      <span className="text-xs font-bold mb-1 dark:text-white">E</span>
-                      <div className="w-2 h-2 rounded-full bg-green-500 dark:bg-green-400" />
-                      <div className="w-0.5 h-1.5 bg-green-500 dark:bg-green-400" />
-                    </div>
-                    <span className="absolute text-[10px] dark:text-gray-400 text-gray-600"
-                      style={{ bottom: '-2px', right: '8px' }}>
-                      280
-                    </span>
-
-                    {/* Middle row: segments */}
-                    <div className="absolute top-3 flex items-center" style={{ gap: '3px' }}>
-                      {/* Stop loss segment - C */}
-                      <div className="relative">
-                        <div className="h-2 rounded-full border border-red-500 dark:border-red-400" style={{ width: '50px' }} />
-                        <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs font-bold dark:text-white">C</span>
-                      </div>
-                      {/* Active position segment - D */}
-                      <div className="relative">
-                        <div className="h-2 rounded-full border border-green-500 dark:border-green-400" style={{ width: '80px' }} />
-                        <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs font-bold dark:text-white">D</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Legend */}
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-sm dark:text-white">A:</span>
-                    <span className="text-sm dark:text-gray-400 text-gray-600">Current Price</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-sm dark:text-white">B:</span>
-                    <span className="text-sm dark:text-gray-400 text-gray-600">Stop Loss (green for shorts)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-sm dark:text-white">C:</span>
-                    <span className="text-sm dark:text-gray-400 text-gray-600">Risk Segment (green for shorts)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-sm dark:text-white">D:</span>
-                    <span className="text-sm dark:text-gray-400 text-gray-600">Active Position (red for shorts)</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-sm dark:text-white">E:</span>
-                    <span className="text-sm dark:text-gray-400 text-gray-600">Target Price (red for shorts)</span>
-                  </div>
-                </div>
-
-                {/* Segment Types */}
-                <div className="border-t dark:border-slate-700 border-gray-200 pt-6">
-                  <h3 className="font-semibold dark:text-white text-gray-900 mb-4">Segment Types</h3>
-
-                  <div className="space-y-4">
-                    {/* Stop Loss Segment */}
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-16 flex justify-center">
-                        <div className="h-2 w-12 rounded-full border border-red-500 dark:border-red-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium dark:text-white text-gray-900 mb-1">Stop Loss Segment</h4>
-                        <p className="text-sm dark:text-gray-400 text-gray-600">
-                          Amount at risk (green for shorts).
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Active Position Segment */}
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-16 flex justify-center">
-                        <div className="h-2 w-12 rounded-full border border-green-500 dark:border-green-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium dark:text-white text-gray-900 mb-1">Active Position</h4>
-                        <p className="text-sm dark:text-gray-400 text-gray-600">
-                          Open position size (red for shorts).
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Executed Profit Segment */}
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-16 flex justify-center">
-                        <div className="h-2 w-12 rounded-full bg-success" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium dark:text-white text-gray-900 mb-1">Executed Profit</h4>
-                        <p className="text-sm dark:text-gray-400 text-gray-600">
-                          Profits already taken.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* No Target Indicator */}
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-16 flex justify-center">
-                        <div className="h-2 w-12 rounded-l-full border-t border-b border-l border-green-500 dark:border-green-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium dark:text-white text-gray-900 mb-1">No Target Price</h4>
-                        <p className="text-sm dark:text-gray-400 text-gray-600">
-                          Open-ended profit potential.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="p-8 text-center">
+                <p className="text-gray-600 dark:text-gray-400">
+                  Position indicator documentation coming soon...
+                </p>
               </div>
             </div>
           </div>
         )}
+      </div>
 
       </PageContent>
     </AppLayout>
