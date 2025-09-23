@@ -51,7 +51,20 @@ export async function GET() {
           );
 
           const brokerClient = brokerManager.getBroker(conn.broker as SupportedBroker);
-          const accountInfo = brokerClient ? await brokerClient.getAccountInfo() : null;
+
+          let accountInfo = null;
+          if (brokerClient) {
+            try {
+              accountInfo = await brokerClient.getAccountInfo();
+              console.log(`Successfully fetched account info for ${conn.broker}:`, {
+                accountId: accountInfo?.accountId,
+                balance: accountInfo?.balance
+              });
+            } catch (error) {
+              console.error(`Failed to get account info for ${conn.broker}:`, error);
+              // Still connected, but couldn't fetch account details
+            }
+          }
 
           return {
             broker: conn.broker,
