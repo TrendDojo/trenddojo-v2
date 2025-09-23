@@ -2,15 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./Sidebar";
 import { Button } from "@/components/ui/Button";
 import { UserDropdown } from "./UserDropdown";
-import { PaperTradingIndicator } from "@/components/PaperTradingIndicator";
+import { DevDropdown } from "./DevDropdown";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Palette } from "lucide-react";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -30,6 +29,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const router = useRouter();
   
   // Determine page title based on route if not provided
   const pageTitle = title || (() => {
@@ -134,19 +134,10 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 
                 {/* Right side actions */}
                 <div className="flex items-center gap-2">
-                  {/* Dev Theme Link - development only, desktop only */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <Link
-                      href="/theme"
-                      className="hidden lg:flex items-center gap-2 p-2 rounded dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
-                      aria-label="Theme showcase"
-                    >
-                      <Palette className="w-6 h-6 dark:text-gray-400 text-gray-600" />
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 font-normal">
-                        DEV
-                      </span>
-                    </Link>
-                  )}
+                  {/* Dev Dropdown - development only, desktop only */}
+                  <div className="hidden lg:block">
+                    <DevDropdown />
+                  </div>
 
                   {/* Theme toggle button - desktop only */}
                   <button
@@ -228,9 +219,6 @@ export function AppLayout({ children, title }: AppLayoutProps) {
           </div>
         </main>
       </div>
-      
-      {/* Paper Trading Indicator */}
-      <PaperTradingIndicator />
     </div>
   );
 }

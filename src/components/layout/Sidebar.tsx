@@ -15,17 +15,43 @@ interface SidebarProps {
 }
 
 const navigationItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Gauge },
-  { href: "/screener", label: "Screener", icon: ArrowUpWideNarrow },
-  { href: "/positions", label: "Positions", icon: MapPin },
-  { href: "/strategies", label: "Strategies", icon: Atom },
-  { href: "/brokers", label: "Brokers", icon: ArrowRightLeft },
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+    icon: Gauge,
+    tooltip: "View portfolio performance and key metrics"
+  },
+  {
+    href: "/screener",
+    label: "Screener",
+    icon: ArrowUpWideNarrow,
+    tooltip: "Find trading opportunities with market screeners"
+  },
+  {
+    href: "/positions",
+    label: "Positions",
+    icon: MapPin,
+    tooltip: "Monitor and manage your open positions"
+  },
+  {
+    href: "/strategies",
+    label: "Strategies",
+    icon: Atom,
+    tooltip: "Create and manage automated trading strategies"
+  },
+  {
+    href: "/brokers",
+    label: "Brokers",
+    icon: ArrowRightLeft,
+    tooltip: "Connect and manage broker accounts"
+  },
 ];
 
 interface NavItemProps {
   href: string;
   label: string;
   icon: LucideIcon;
+  tooltip?: string;
   isActive?: boolean;
   isCollapsed?: boolean;
   onClick?: () => void;
@@ -35,6 +61,7 @@ function NavItem({
   href,
   label,
   icon: iconComponent,
+  tooltip,
   isActive = false,
   isCollapsed = false,
   onClick
@@ -59,7 +86,7 @@ function NavItem({
 
   if (isCollapsed) {
     return (
-      <Tooltip content={label} position="right" delay={300} wrapperClassName="">
+      <Tooltip content={tooltip || label} position="right" delay={300} wrapperClassName="">
         {linkContent}
       </Tooltip>
     );
@@ -195,6 +222,7 @@ export function Sidebar({
                 href={item.href}
                 label={item.label}
                 icon={item.icon}
+                tooltip={item.tooltip}
                 isActive={pathname === item.href}
                 isCollapsed={collapsed}
                 onClick={() => {
