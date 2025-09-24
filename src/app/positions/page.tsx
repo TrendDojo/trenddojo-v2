@@ -9,7 +9,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { tableStyles, filterStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
+import { tableStyles, filterStyles, getFilterButton, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
 import { PositionRulesTab } from "@/components/positions/PositionRulesTab";
@@ -1184,7 +1184,7 @@ export default function PositionsPage() {
                     <tr
                       key={position.id}
                       className={cn(
-                        index === 0 ? tableStyles.trClickable : tableStyles.tr,
+                        getTableRow(index, index === 0),
                         selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20"
                       )}
                       onClick={index === 0 ? () => router.push(`/positions/${position.id}`) : undefined}

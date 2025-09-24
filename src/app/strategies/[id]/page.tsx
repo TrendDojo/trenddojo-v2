@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { ChevronLeft, TrendingUp, DollarSign, Activity, Target, Pause, Play, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { tableStyles, getTableCell } from "@/lib/tableStyles";
+import { tableStyles, getTableCell, getTableRow } from "@/lib/tableStyles";
 
 // Mock data for a single strategy
 const mockStrategy = {
@@ -325,7 +325,7 @@ export default function StrategyDetailPage() {
               </thead>
               <tbody className={tableStyles.tbody}>
                 {strategy.recentTrades.map((trade, idx) => (
-                  <tr key={idx} className="border-b dark:border-slate-800 border-gray-100">
+                  <tr key={idx} className={getTableRow(idx)}>
                     <td className="py-3 px-4 dark:text-gray-300 text-gray-700">
                       {trade.date.toLocaleDateString()}
                     </td>

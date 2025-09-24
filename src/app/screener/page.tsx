@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
-import { tableStyles, getTableCell } from "@/lib/tableStyles";
+import { tableStyles, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
 import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
 import {
@@ -1421,10 +1421,10 @@ export default function ScreenerPage() {
                   </tr>
                 </thead>
                 <tbody className={tableStyles.tbody}>
-                  {filteredStocks.map((stock) => (
-                    <tr 
+                  {filteredStocks.map((stock, index) => (
+                    <tr
                       key={stock.symbol}
-                      className={tableStyles.tr}
+                      className={getTableRow(index)}
                     >
                       <td className={tableStyles.td}>
                         <Link href={`/stocks/${stock.symbol}`}>

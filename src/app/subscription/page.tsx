@@ -8,7 +8,7 @@ import { Tabs } from "@/components/ui/Tabs";
 // import { Icon, Icons } from "@/lib/icons"; // Removed - using Lucide icons directly
 import { Check, X, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { tableStyles } from "@/lib/tableStyles";
+import { tableStyles, getTableRow } from "@/lib/tableStyles";
 
 // Mock subscription data
 const currentSubscription = {
@@ -263,7 +263,7 @@ export default function SubscriptionPage() {
                 </thead>
                 <tbody className={tableStyles.tbody}>
                   {billingHistory.map((item, idx) => (
-                    <tr key={idx} className={tableStyles.tr}>
+                    <tr key={idx} className={getTableRow(idx)}>
                       <td className={tableStyles.td}>
                         {item.date.toLocaleDateString()}
                       </td>

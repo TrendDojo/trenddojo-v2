@@ -5,7 +5,7 @@ import { Play, Pause, Plus, ChevronDown, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { NewStrategyModal } from './NewStrategyModal'
 import { cn } from '@/lib/utils'
-import { tableStyles, getTableCell } from '@/lib/tableStyles'
+import { tableStyles, getTableCell, getTableRow } from '@/lib/tableStyles'
 
 // Mock data for MVP
 const mockStrategies = [
@@ -127,9 +127,9 @@ export function StrategiesTab() {
             </tr>
           </thead>
           <tbody className={tableStyles.tbody}>
-            {strategies.map(strategy => (
+            {strategies.map((strategy, index) => (
               <React.Fragment key={strategy.id}>
-                <tr className={tableStyles.tr}>
+                <tr className={getTableRow(index)}>
                   <td className={tableStyles.td}>
                     {strategy.positions.length > 0 && (
                       <button

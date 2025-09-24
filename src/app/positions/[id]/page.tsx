@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChevronLeft, TrendingUp, TrendingDown, DollarSign, Activity, Calendar, Target, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { tableStyles } from "@/lib/tableStyles";
+import { tableStyles, getTableRow } from "@/lib/tableStyles";
 
 // Mock data for a single position
 const mockPosition = {
@@ -241,7 +241,7 @@ export default function PositionDetailPage() {
                 ]
                   .sort((a, b) => b.date.getTime() - a.date.getTime())
                   .map((item, idx) => (
-                    <tr key={idx} className={tableStyles.tr}>
+                    <tr key={idx} className={getTableRow(idx)}>
                       <td className={tableStyles.td}>
                         {item.date.toLocaleDateString()}
                       </td>
