@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Atom } from "lucide-react";
+import { Atom, Edit3, Building2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
@@ -44,10 +44,15 @@ interface Position {
   openDate: string;
   closedDate?: string;
   strategy: string;
+  strategyId?: string;
   status: "active" | "pending" | "closed";
   exitReason?: "stop_loss" | "take_profit" | "manual" | "partial";
   broker?: string; // e.g., "alpaca_paper", "ibkr_live"
   tradingMode?: "live" | "paper" | "dev";
+  source?: "broker_api" | "manual" | "external";
+  externalBroker?: string; // e.g., "TD Ameritrade", "E*TRADE"
+  totalFees?: number;
+  totalCommissions?: number;
 }
 
 // Strategy mapping with IDs and colors
@@ -205,9 +210,11 @@ export default function PositionsPage() {
       value: 18230.00,
       openDate: "2024-01-15",
       strategy: "Momentum",
+      strategyId: "1",
       status: "active",
       broker: "alpaca_paper",
-      tradingMode: "paper"
+      tradingMode: "paper",
+      source: "broker_api"
     },
     {
       id: "2",
@@ -231,9 +238,11 @@ export default function PositionsPage() {
       value: 11925.00,
       openDate: "2024-01-18",
       strategy: "Mean Reversion",
+      strategyId: "2",
       status: "active",
       broker: "alpaca_live",
-      tradingMode: "live"
+      tradingMode: "live",
+      source: "broker_api"
     },
     {
       id: "3",
@@ -252,9 +261,13 @@ export default function PositionsPage() {
       value: 17387.50,
       openDate: "2024-01-20",
       strategy: "Breakout",
+      strategyId: "3",
       status: "active",
-      broker: "ibkr_paper",
-      tradingMode: "paper"
+      broker: "manual",
+      tradingMode: "paper",
+      source: "manual",
+      totalFees: 4.95,
+      totalCommissions: 0.01
     },
     {
       id: "4",
@@ -341,9 +354,14 @@ export default function PositionsPage() {
       value: 96450.00,
       openDate: "2024-01-25",
       strategy: "Core Holding",
+      strategyId: "1",
       status: "active",
-      broker: "alpaca_live",
-      tradingMode: "live"
+      broker: "external",
+      tradingMode: "live",
+      source: "external",
+      externalBroker: "TD Ameritrade",
+      totalFees: 0,
+      totalCommissions: 0
     },
     {
       id: "8",
@@ -497,9 +515,14 @@ export default function PositionsPage() {
       value: 12250.00,
       openDate: "2024-01-28",
       strategy: "Mean Reversion",
+      strategyId: "2",
       status: "active",
-      broker: "ibkr_paper",
-      tradingMode: "paper"
+      broker: "external",
+      tradingMode: "paper",
+      source: "external",
+      externalBroker: "Robinhood",
+      totalFees: 0,
+      totalCommissions: 0
     },
     {
       id: "15",
@@ -1140,6 +1163,18 @@ export default function PositionsPage() {
                                   showIcon={true}
                                   showBroker={false}
                                 />
+                              )}
+                              {position.source === "manual" && (
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400" title="Manual position">
+                                  <Edit3 className="w-3 h-3" />
+                                  Manual
+                                </span>
+                              )}
+                              {position.source === "external" && (
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400" title={`External position from ${position.externalBroker || 'other broker'}`}>
+                                  <Building2 className="w-3 h-3" />
+                                  {position.externalBroker || "External"}
+                                </span>
                               )}
                               <span className="text-gray-400 dark:text-gray-600">|</span>
                               <span className="dark:text-gray-300 text-gray-700 font-medium">
