@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Atom, Edit3, Building2 } from "lucide-react";
+import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
@@ -132,6 +133,7 @@ export default function PositionsPage() {
     actions: true
   });
   const [showIndicatorKey, setShowIndicatorKey] = useState(false);
+  const [showNewPositionModal, setShowNewPositionModal] = useState(false);
 
   // Hide risk and value columns when viewing closed positions
   const effectiveVisibleColumns = {
@@ -777,7 +779,12 @@ export default function PositionsPage() {
               onTabChange={(tabId) => setFilterView(tabId as "active" | "pending" | "closed")}
               variant="pills"
             />
-            <Button variant="primary" size="sm" className="flex items-center">
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex items-center"
+              onClick={() => setShowNewPositionModal(true)}
+            >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -1421,6 +1428,20 @@ export default function PositionsPage() {
           )}
           </>
           )}
+
+        {/* New Position Modal */}
+        <NewPositionModal
+          isOpen={showNewPositionModal}
+          onClose={() => setShowNewPositionModal(false)}
+          accountType={activeAccountType === "live" ? "live" : activeAccountType === "paper" ? "paper" : "dev"}
+          onSubmit={async (positionData: NewPositionData) => {
+            // In production, this would submit to API
+            console.log("Creating position:", positionData);
+            // Mock success
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Refresh positions or add optimistically
+          }}
+        />
 
         {/* Indicator Key Modal */}
         {showIndicatorKey && (

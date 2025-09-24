@@ -9,6 +9,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
 
 // Mock data - would come from API in production
 const mockStockData: Record<string, any> = {
@@ -138,6 +139,7 @@ export default function StockPage() {
 
   const [stockData, setStockData] = useState<any>(initialData);
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
+  const [showNewPositionModal, setShowNewPositionModal] = useState(false);
 
   useEffect(() => {
     // In production, this would fetch real data from API
@@ -194,7 +196,11 @@ export default function StockPage() {
                   {stockData.change >= 0 ? '+' : ''}{stockData.change.toFixed(2)} ({stockData.changePercent >= 0 ? '+' : ''}{stockData.changePercent.toFixed(2)}%)
                 </div>
               </div>
-              <Button variant="primary" size="lg">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => setShowNewPositionModal(true)}
+              >
                 Create Position
               </Button>
             </div>
@@ -351,6 +357,21 @@ export default function StockPage() {
             </Card>
           </div>
         </div>
+
+        {/* New Position Modal */}
+        <NewPositionModal
+          isOpen={showNewPositionModal}
+          onClose={() => setShowNewPositionModal(false)}
+          accountType="paper" // Default to paper, in production would check user's settings
+          prefilledSymbol={stockData.symbol}
+          onSubmit={async (positionData: NewPositionData) => {
+            // In production, this would submit to API
+            console.log("Creating position:", positionData);
+            // Mock success
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Could navigate to positions page or show success toast
+          }}
+        />
       </PageContent>
     </AppLayout>
   );
