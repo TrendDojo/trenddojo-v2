@@ -10,27 +10,31 @@
 // ============================================
 
 export const tableStyles = {
-  // Container wrapper for tables
-  wrapper: "border dark:border-slate-700 border-gray-200 rounded-lg overflow-hidden",
+  // Container wrapper for tables - no border by default
+  wrapper: "rounded-lg overflow-hidden",
 
   // Table element
   table: "w-full",
 
-  // Table sections
-  thead: "bg-gray-50 dark:bg-slate-800",
-  tbody: "divide-y dark:divide-slate-700 divide-gray-200",
+  // Table sections - subtle header background
+  thead: "bg-gray-50/50 dark:bg-slate-800/50",
+  tbody: "",  // No dividers between rows
 
-  // Header row
-  headerRow: "border-b dark:border-slate-700 border-gray-200",
+  // Header row - no border
+  headerRow: "",
 
   // Header cells
   th: "text-left px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
   thCenter: "text-center px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
   thRight: "text-right px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
 
-  // Body rows
-  tr: "hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors",
-  trClickable: "hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+  // Body rows - with alternating backgrounds
+  tr: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
+  trClickable: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors cursor-pointer",
+
+  // Alternating row backgrounds (even rows get subtle bg)
+  trOdd: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
+  trEven: "bg-gray-50/30 dark:bg-slate-800/30 hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
 
   // Body cells
   td: "px-6 py-4 dark:text-gray-300 text-gray-700",
@@ -140,6 +144,17 @@ export function getTabButton(isActive: boolean, style: 'default' | 'pill' = 'def
     return `${tabStyles.pillButton} ${isActive ? tabStyles.pillActive : tabStyles.pillInactive}`;
   }
   return `${tabStyles.button} ${isActive ? tabStyles.buttonActive : tabStyles.buttonInactive}`;
+}
+
+/**
+ * Get table row classes with alternating backgrounds
+ */
+export function getTableRow(index: number, clickable: boolean = false) {
+  const isEven = index % 2 === 0;
+  if (clickable) {
+    return isEven ? `${tableStyles.trEven} cursor-pointer` : `${tableStyles.trOdd} cursor-pointer`;
+  }
+  return isEven ? tableStyles.trEven : tableStyles.trOdd;
 }
 
 /**

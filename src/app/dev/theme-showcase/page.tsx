@@ -8,7 +8,7 @@ import { Card, Alert, Panel } from "@/components/ui/Panel";
 import { Modal, ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
-import { tableStyles, filterStyles, tabStyles, getFilterButton, getTableCell } from "@/lib/tableStyles";
+import { tableStyles, filterStyles, tabStyles, getFilterButton, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { buttonStyles } from "@/lib/buttonStyles";
 import { panelStyles, alertStyles } from "@/lib/panelStyles";
 import { checkboxStyles, radioStyles } from "@/lib/formStyles";
@@ -76,19 +76,19 @@ function TablesSection() {
                 </tr>
               </thead>
               <tbody className={tableStyles.tbody}>
-                <tr className={tableStyles.tr}>
+                <tr className={getTableRow(0)}>
                   <td className={tableStyles.tdBold}>BTC/USD</td>
                   <td className={tableStyles.tdBold}>$45,234.56</td>
                   <td className={tableStyles.tdSuccess}>+2.34%</td>
                   <td className={tableStyles.tdRight}>$2.4B</td>
                 </tr>
-                <tr className={tableStyles.tr}>
+                <tr className={getTableRow(1)}>
                   <td className={tableStyles.tdBold}>ETH/USD</td>
                   <td className={tableStyles.tdBold}>$3,123.45</td>
                   <td className={tableStyles.tdDanger}>-1.23%</td>
                   <td className={tableStyles.tdRight}>$1.2B</td>
                 </tr>
-                <tr className={tableStyles.tr}>
+                <tr className={getTableRow(2)}>
                   <td className={tableStyles.tdBold}>SOL/USD</td>
                   <td className={tableStyles.tdBold}>$98.76</td>
                   <td className={tableStyles.tdSuccess}>+5.67%</td>
@@ -304,8 +304,8 @@ function TablesSection() {
                   { id: 1, symbol: 'AAPL', price: '$182.52', change: '+1.25%', volume: '$112M', marketCap: '$2.98T' },
                   { id: 2, symbol: 'GOOGL', price: '$142.65', change: '-0.48%', volume: '$89M', marketCap: '$1.82T' },
                   { id: 3, symbol: 'MSFT', price: '$378.91', change: '+2.15%', volume: '$156M', marketCap: '$2.81T' }
-                ].map(row => (
-                  <tr key={row.id} className={cn(tableStyles.tr, selectedRows.includes(row.id) && "bg-indigo-50 dark:bg-indigo-900/20")}>
+                ].map((row, index) => (
+                  <tr key={row.id} className={cn(getTableRow(index), selectedRows.includes(row.id) && "bg-indigo-50 dark:bg-indigo-900/20")}>
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
