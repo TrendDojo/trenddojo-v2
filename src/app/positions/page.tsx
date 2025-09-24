@@ -769,16 +769,42 @@ export default function PositionsPage() {
             <>
           {/* Status Filters and New Position Button */}
           <div className="flex justify-between items-center mb-6">
-            <Tabs
-              tabs={[
-                { id: "active", label: "Active" },
-                { id: "pending", label: "Pending" },
-                { id: "closed", label: "Closed" }
-              ]}
-              activeTab={filterView}
-              onTabChange={(tabId) => setFilterView(tabId as "active" | "pending" | "closed")}
-              variant="pills"
-            />
+            <div className="flex items-center gap-4">
+              <Tabs
+                tabs={[
+                  { id: "active", label: "Active" },
+                  { id: "pending", label: "Pending" },
+                  { id: "closed", label: "Closed" }
+                ]}
+                activeTab={filterView}
+                onTabChange={(tabId) => setFilterView(tabId as "active" | "pending" | "closed")}
+                variant="pills"
+              />
+              {/* Inline broker connection message */}
+              {activeAccountType === "live" && !hasBrokerConnection.live && (
+                <div className="flex items-center gap-1 text-xs">
+                  <svg className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    <Link href="/brokers" className="font-bold hover:underline">Connect broker</Link> for live trades. Manual trades only.
+                  </span>
+                </div>
+              )}
+              {activeAccountType === "paper" && !hasBrokerConnection.paper && (
+                <div className="flex items-center gap-1 text-xs">
+                  <svg className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    No paper broker connected.
+                  </span>
+                  <Link href="/brokers" className="font-bold hover:underline text-xs">
+                    Connect
+                  </Link>
+                </div>
+              )}
+            </div>
             <Button
               variant="primary"
               size="sm"
@@ -1046,33 +1072,8 @@ export default function PositionsPage() {
             </div>
           )}
 
-          {/* No Broker Connected Message */}
-          {((activeAccountType === "live" && !hasBrokerConnection.live) ||
-            (activeAccountType === "paper" && !hasBrokerConnection.paper)) && (
-            <Card className="py-12 text-center">
-              <div className="max-w-md mx-auto">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-2">
-                  No {activeAccountType === "live" ? "Live" : "Paper"} Broker Connected
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Connect your {activeAccountType === "live" ? "brokerage account" : "paper trading account"} to view and manage positions.
-                </p>
-                <Link href="/brokers">
-                  <Button variant="primary" size="sm">
-                    Connect Broker
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          )}
 
-          {/* Positions Table - Only show if broker connected or in dev mode */}
-          {((activeAccountType === "live" && hasBrokerConnection.live) ||
-            (activeAccountType === "paper" && hasBrokerConnection.paper) ||
-            activeAccountType === "dev") && (
+          {/* Positions Table - Always show structure */}
           <>
           <div className={tableStyles.wrapper}>
             <div className="overflow-x-auto">
@@ -1133,7 +1134,53 @@ export default function PositionsPage() {
                   </tr>
                 </thead>
                 <tbody className={tableStyles.tbody}>
-                  {paginatedPositions.map((position, index) => (
+                  {paginatedPositions.length === 0 ? (
+                    <tr>
+                      <td colSpan={Object.values(effectiveVisibleColumns).filter(v => v).length} className="px-4 py-12 text-center">
+                        <div className="max-w-md mx-auto">
+                          {((activeAccountType === "live" && !hasBrokerConnection.live) ||
+                            (activeAccountType === "paper" && !hasBrokerConnection.paper)) ? (
+                            <>
+                              <svg className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <h3 className="text-base font-semibold dark:text-white text-gray-900 mb-2">
+                                No {activeAccountType === "live" ? "Live" : "Paper"} Broker Connected
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                Connect your {activeAccountType === "live" ? "brokerage account" : "paper trading account"} to view positions.
+                              </p>
+                              <Link href="/brokers">
+                                <Button variant="primary" size="sm">
+                                  Connect Broker
+                                </Button>
+                              </Link>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <h3 className="text-base font-semibold dark:text-white text-gray-900 mb-2">
+                                No {filterView === "active" ? "Active" : filterView === "pending" ? "Pending" : "Closed"} Positions
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                {filterView === "active" ? "Your active positions will appear here." : filterView === "pending" ? "Your pending orders will appear here." : "Your closed positions will appear here."}
+                              </p>
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => setShowNewPositionModal(true)}
+                              >
+                                Create Position
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedPositions.map((position, index) => (
                     <tr
                       key={position.id}
                       className={cn(
@@ -1361,7 +1408,8 @@ export default function PositionsPage() {
                         </td>
                       )}
                     </tr>
-                  ))}
+                  ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1425,9 +1473,6 @@ export default function PositionsPage() {
                 </div>
             </div>
           </>
-          )}
-          </>
-          )}
 
         {/* New Position Modal */}
         <NewPositionModal
@@ -1442,6 +1487,8 @@ export default function PositionsPage() {
             // Refresh positions or add optimistically
           }}
         />
+        </>
+        )}
 
         {/* Indicator Key Modal */}
         {showIndicatorKey && (

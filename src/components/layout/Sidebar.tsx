@@ -85,8 +85,24 @@ function NavItem({
   );
 
   if (isCollapsed) {
+    const tooltipContent = tooltip ? (
+      <div>
+        <div className="text-sm font-semibold mb-1">{label}</div>
+        <div className="text-sm font-normal text-gray-400 dark:text-gray-500">{tooltip}</div>
+      </div>
+    ) : (
+      label
+    );
+
     return (
-      <Tooltip content={tooltip || label} position="right" delay={300} wrapperClassName="">
+      <Tooltip
+        content={tooltipContent}
+        position="right"
+        delay={300}
+        arrow
+        maxWidth={280}
+        wrapperClassName=""
+      >
         {linkContent}
       </Tooltip>
     );

@@ -36,7 +36,7 @@ export function UserDropdown({ className }: UserDropdownProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 p-2 rounded-lg dark:hover:bg-slate-800 hover:bg-gray-100 transition-colors"
       >
-        <CircleUser className="w-8 h-8 dark:text-gray-400 text-gray-600" />
+        <CircleUser className="w-7 h-7 dark:text-gray-400 text-gray-600" />
         <svg
           className={cn(
             "w-5 h-5 dark:text-gray-400 text-gray-600 transition-transform duration-200",
@@ -54,9 +54,9 @@ export function UserDropdown({ className }: UserDropdownProps) {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 dark:bg-slate-800 bg-white rounded-lg shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] border dark:border-slate-600 border-gray-200 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden z-[9999]">
           {/* User Info */}
-          <div className="px-4 py-4 border-b dark:border-slate-700 border-gray-200">
-            <div className="flex flex-col items-center text-center">
-              <CircleUser className="w-12 h-12 dark:text-gray-400 text-gray-600 mb-2" />
+          <div className="px-4 py-5 border-b dark:border-slate-700 border-gray-200">
+            <div className="flex flex-col items-start">
+              <CircleUser className="w-10 h-10 dark:text-gray-400 text-gray-600 mb-2" />
               <p className="font-semibold text-base dark:text-white text-gray-900">
                 {session?.user?.name || 'John Doe'}
               </p>
@@ -70,21 +70,21 @@ export function UserDropdown({ className }: UserDropdownProps) {
           <div className="py-2">
             <a
               href="/profile"
-              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3"
+              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <User className="w-5 h-5" />
               <span>Profile Settings</span>
             </a>
             <a
               href="/settings"
-              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3"
+              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <Settings className="w-5 h-5" />
               <span>Account Settings</span>
             </a>
             <a
               href="/subscription"
-              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3"
+              className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <CreditCard className="w-5 h-5" />
               <span>Subscription</span>
