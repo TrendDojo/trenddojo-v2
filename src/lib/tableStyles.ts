@@ -17,7 +17,7 @@ export const tableStyles = {
   table: "w-full",
 
   // Table sections - subtle header background
-  thead: "bg-gray-50/50 dark:bg-slate-800/50",
+  thead: "bg-gray-100/70 dark:bg-slate-800/70",
   tbody: "",  // No dividers between rows
 
   // Header row - no border
@@ -29,12 +29,12 @@ export const tableStyles = {
   thRight: "text-right px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
 
   // Body rows - with alternating backgrounds
-  tr: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
-  trClickable: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors cursor-pointer",
+  tr: "hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors",
+  trClickable: "hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer",
 
-  // Alternating row backgrounds (even rows get subtle bg)
-  trOdd: "hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
-  trEven: "bg-gray-50/30 dark:bg-slate-800/30 hover:bg-gray-100/60 dark:hover:bg-slate-700/60 transition-colors",
+  // Alternating row backgrounds (even rows get visible bg)
+  trOdd: "hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors",
+  trEven: "bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors",
 
   // Body cells
   td: "px-6 py-4 dark:text-gray-300 text-gray-700",
