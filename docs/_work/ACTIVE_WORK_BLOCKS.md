@@ -212,9 +212,46 @@ Enhance positions page with improved navigation, broker connection handling, and
 ### Outcome
 **Success** - Positions page now has proper two-level navigation with broker connection handling and improved UI consistency.
 
+## WB-2025-01-24-002: Manual Position Management
+**State**: confirmed
+**Timeframe**: NOW
+**Created**: 2025-01-24 11:45
+**Dependencies**: None
+**Tags**: #positions #manual-entry #ui #data-management
+
+### Goal
+Implement manual position creation and editing capabilities to allow users to track positions that aren't connected through broker APIs, including legacy positions, positions from unsupported brokers, or for testing purposes.
+
+### Tasks
+- [ ] Create NewPositionModal component with comprehensive form
+- [ ] Add position entry fields: symbol, quantity, entry price, stop loss, take profit
+- [ ] Implement position type selection (long/short)
+- [ ] Add strategy assignment dropdown
+- [ ] Create date/time picker for entry date
+- [ ] Implement EditPositionModal for existing positions
+- [ ] Add manual position indicator/badge to distinguish from broker positions
+- [ ] Create position validation logic
+- [ ] Add manual position storage in database
+- [ ] Implement P&L calculations for manual positions
+- [ ] Add bulk import capability (CSV/JSON)
+- [ ] Create manual position sync/reconciliation workflow
+
+### Success Criteria
+- Users can manually add positions with all relevant details
+- Manual positions are clearly distinguished from broker-connected positions
+- P&L and risk calculations work correctly for manual positions
+- Manual positions can be edited and deleted
+- Data validation prevents invalid position entries
+
+### Notes
+- Manual positions crucial for users transitioning to platform
+- Consider adding "paper" flag for testing strategies
+- Need clear UI distinction between manual and automated positions
+- Important for users with positions at unsupported brokers
+
 ## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
 **State**: doing
-**Timeframe**: NOW
+**Timeframe**: NEXT
 **Created**: 2025-01-20 09:00
 **Dependencies**: None
 **Tags**: #brokers #integration #paper-trading #business-critical
