@@ -10,73 +10,132 @@ const YAHOO_API_BASE = 'https://query1.finance.yahoo.com/v8/finance';
 const YAHOO_QUERY_BASE = 'https://query2.finance.yahoo.com/v7/finance';
 
 export async function GET(request: NextRequest) {
-  const { searchParams, pathname } = new URL(request.url);
-  const endpoint = pathname.split('/yahoo/')[1] || '';
+  const { searchParams } = new URL(request.url);
 
   try {
-    switch (endpoint) {
-      case 'quote': {
-        const symbol = searchParams.get('symbol');
-        if (!symbol) {
-          return NextResponse.json({ error: 'Symbol required' }, { status: 400 });
-        }
-        
-        // For now, return mock data
-        // In production, you'd make actual Yahoo Finance API calls
-        const mockData = getMockQuote(symbol);
-        return NextResponse.json(mockData);
+    // Handle different operations based on query parameters
+    if (searchParams.has('symbols')) {
+      // Multiple quotes request
+      const symbols = searchParams.get('symbols')?.split(',') || [];
+      if (symbols.length === 0) {
+        return NextResponse.json({ error: 'Symbols required' }, { status: 400 });
       }
 
-      case 'quotes': {
-        const symbols = searchParams.get('symbols')?.split(',') || [];
-        if (symbols.length === 0) {
-          return NextResponse.json({ error: 'Symbols required' }, { status: 400 });
+      try {
+        // Fetch real data for multiple symbols
+        const symbolsString = symbols.join(',');
+        const url = `${YAHOO_QUERY_BASE}/quote?symbols=${symbolsString}`;
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Yahoo Finance API error: ${response.status}`);
         }
-        
+
+        const data = await response.json();
+        const quotes = data.quoteResponse.result;
+
+        return NextResponse.json(quotes.map((quote: any) => ({
+          symbol: quote.symbol,
+          shortName: quote.longName || quote.shortName || quote.symbol,
+          regularMarketPrice: quote.regularMarketPrice,
+          regularMarketChange: quote.regularMarketChange,
+          regularMarketChangePercent: quote.regularMarketChangePercent,
+          regularMarketVolume: quote.regularMarketVolume,
+          marketCap: quote.marketCap,
+          sector: quote.sector || 'Unknown',
+          previousClose: quote.regularMarketPreviousClose,
+          fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+          pe: quote.trailingPE,
+          eps: quote.epsTrailingTwelveMonths,
+        })));
+      } catch (error) {
+        console.warn('Failed to fetch real data, using mock:', error);
         const mockData = symbols.map(symbol => getMockQuote(symbol));
         return NextResponse.json(mockData);
       }
-
-      case 'market-summary': {
-        const mockSummary = {
-          indices: [
-            { symbol: '^DJI', name: 'Dow Jones', value: 38654.42, change: 125.08, changePercent: 0.32 },
-            { symbol: '^GSPC', name: 'S&P 500', value: 5104.76, change: 26.41, changePercent: 0.52 },
-            { symbol: '^IXIC', name: 'NASDAQ', value: 16164.85, change: 68.22, changePercent: 0.42 },
-            { symbol: '^RUT', name: 'Russell 2000', value: 2124.55, change: -8.44, changePercent: -0.40 },
-          ],
-          trending: getMockTrendingStocks(),
-          gainers: getMockGainers(),
-          losers: getMockLosers(),
-          mostActive: getMockMostActive(),
-        };
-        return NextResponse.json(mockSummary);
+    } else if (searchParams.has('symbol')) {
+      // Single quote request
+      const symbol = searchParams.get('symbol');
+      if (!symbol) {
+        return NextResponse.json({ error: 'Symbol required' }, { status: 400 });
       }
 
-      case 'historical': {
-        const symbol = searchParams.get('symbol');
-        const period = searchParams.get('period') || '1mo';
-        
-        if (!symbol) {
-          return NextResponse.json({ error: 'Symbol required' }, { status: 400 });
+      try {
+        // Fetch real data from Yahoo Finance
+        const url = `${YAHOO_API_BASE}/chart/${symbol}`;
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Yahoo Finance API error: ${response.status}`);
         }
-        
-        const mockData = getMockHistoricalData(symbol, period);
+
+        const data = await response.json();
+        const quote = data.chart.result[0];
+        const meta = quote.meta;
+
+        return NextResponse.json({
+          symbol: meta.symbol,
+          shortName: meta.longName || meta.shortName || symbol,
+          regularMarketPrice: meta.regularMarketPrice,
+          regularMarketChange: meta.regularMarketPrice - meta.previousClose,
+          regularMarketChangePercent: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose) * 100,
+          regularMarketVolume: meta.regularMarketVolume,
+          marketCap: meta.marketCap,
+          sector: meta.sector || 'Unknown',
+          previousClose: meta.previousClose,
+          fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+        });
+      } catch (error) {
+        console.warn('Failed to fetch real data, using mock:', error);
+        const mockData = getMockQuote(symbol);
         return NextResponse.json(mockData);
       }
-
-      case 'search': {
-        const query = searchParams.get('q');
-        if (!query) {
-          return NextResponse.json({ error: 'Query required' }, { status: 400 });
-        }
-        
-        const mockResults = getMockSearchResults(query);
-        return NextResponse.json({ quotes: mockResults });
+    } else if (searchParams.has('type') && searchParams.get('type') === 'market-summary') {
+      const mockSummary = {
+        indices: [
+          { symbol: '^DJI', name: 'Dow Jones', value: 38654.42, change: 125.08, changePercent: 0.32 },
+          { symbol: '^GSPC', name: 'S&P 500', value: 5104.76, change: 26.41, changePercent: 0.52 },
+          { symbol: '^IXIC', name: 'NASDAQ', value: 16164.85, change: 68.22, changePercent: 0.42 },
+          { symbol: '^RUT', name: 'Russell 2000', value: 2124.55, change: -8.44, changePercent: -0.40 },
+        ],
+        trending: getMockTrendingStocks(),
+        gainers: getMockGainers(),
+        losers: getMockLosers(),
+        mostActive: getMockMostActive(),
+      };
+      return NextResponse.json(mockSummary);
+    } else if (searchParams.has('q')) {
+      // Search request
+      const query = searchParams.get('q');
+      if (!query) {
+        return NextResponse.json({ error: 'Query required' }, { status: 400 });
       }
 
-      default:
-        return NextResponse.json({ error: 'Invalid endpoint' }, { status: 404 });
+      const mockResults = getMockSearchResults(query);
+      return NextResponse.json({ quotes: mockResults });
+    } else if (searchParams.has('type') && searchParams.get('type') === 'historical') {
+      // Historical data request
+      const symbol = searchParams.get('symbol');
+      const period = searchParams.get('period') || '1mo';
+
+      if (!symbol) {
+        return NextResponse.json({ error: 'Symbol required for historical data' }, { status: 400 });
+      }
+
+      const mockData = getMockHistoricalData(symbol, period);
+      return NextResponse.json(mockData);
+    } else {
+      return NextResponse.json({ error: 'Invalid request parameters' }, { status: 400 });
     }
   } catch (error) {
     console.error('Yahoo Finance API error:', error);
@@ -88,17 +147,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { pathname } = new URL(request.url);
-  const endpoint = pathname.split('/yahoo/')[1] || '';
-
   try {
-    if (endpoint === 'screener') {
-      const criteria = await request.json();
-      const mockResults = getMockScreenerResults(criteria);
-      return NextResponse.json(mockResults);
-    }
-
-    return NextResponse.json({ error: 'Invalid endpoint' }, { status: 404 });
+    const criteria = await request.json();
+    const mockResults = getMockScreenerResults(criteria);
+    return NextResponse.json(mockResults);
   } catch (error) {
     console.error('Yahoo Finance API error:', error);
     return NextResponse.json(

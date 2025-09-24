@@ -43,17 +43,17 @@ export default function MarketingNav() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
-            
-            <div className="flex items-center space-x-4 ml-8">
+
+            <div className="flex items-center space-x-4 ml-12">
               <Link
                 href="/login"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-colors no-underline"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 no-underline inline-block"
               >
                 Get Started
               </Link>

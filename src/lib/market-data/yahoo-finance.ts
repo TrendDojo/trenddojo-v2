@@ -78,7 +78,7 @@ export class YahooFinanceService {
     try {
       const response = await fetch(`${this.proxyUrl}/quote?symbol=${symbol}`);
       if (!response.ok) throw new Error('Failed to fetch quote');
-      
+
       const data = await response.json();
       return this.parseQuoteData(data);
     } catch (error) {
@@ -95,7 +95,7 @@ export class YahooFinanceService {
       const symbolsParam = symbols.join(',');
       const response = await fetch(`${this.proxyUrl}/quotes?symbols=${symbolsParam}`);
       if (!response.ok) throw new Error('Failed to fetch quotes');
-      
+
       const data = await response.json();
       return data.map((item: any) => this.parseQuoteData(item)).filter(Boolean);
     } catch (error) {

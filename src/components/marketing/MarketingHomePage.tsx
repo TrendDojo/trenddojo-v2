@@ -120,13 +120,13 @@ export default function MarketingHomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link
                 href="/signup"
-                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
+                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg no-underline inline-block"
               >
                 Start Free Trial
               </Link>
               <Link
                 href="/demo"
-                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
+                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5 no-underline inline-block"
               >
                 View Demo
               </Link>

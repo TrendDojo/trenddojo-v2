@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { EnvironmentIndicator } from "@/components/EnvironmentIndicator";
 import { Providers } from "@/components/Providers";
 
 const inter = Inter({
@@ -44,7 +43,6 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
           {children}
-          <EnvironmentIndicator />
         </Providers>
       </body>
     </html>
