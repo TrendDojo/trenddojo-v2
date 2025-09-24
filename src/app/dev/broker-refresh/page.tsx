@@ -188,7 +188,7 @@ export default function TestRefreshPage() {
           {eventLog.length > 0 && (
             <Button
               variant="secondary"
-              size="small"
+              size="sm"
               className="mt-4"
               onClick={() => setEventLog([])}
             >

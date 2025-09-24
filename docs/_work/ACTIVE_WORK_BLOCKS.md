@@ -98,7 +98,7 @@ Reorganize development tools, implement flexible trading mode indicators, enhanc
 **Success** - Complete UI reorganization with dev tools centralized, flexible trading mode system supporting multiple brokers, enhanced positions page with paper trading indicators, and improved broker connection experience. Established /temp/ directory convention for temporary files.
 
 ## WB-2025-01-21-001: Living Theme System Implementation
-**State**: confirmed
+**State**: doing
 **Timeframe**: NEXT
 **Created**: 2025-01-21 09:00
 **Updated**: 2025-01-22 14:30
@@ -213,7 +213,7 @@ Enhance positions page with improved navigation, broker connection handling, and
 **Success** - Positions page now has proper two-level navigation with broker connection handling and improved UI consistency.
 
 ## WB-2025-01-24-002: Manual Position Management
-**State**: confirmed
+**State**: paused
 **Timeframe**: NOW
 **Created**: 2025-01-24 11:45
 **Updated**: 2025-01-24 12:30
@@ -290,7 +290,7 @@ Implement manual position creation and editing capabilities to allow users to tr
 - Enables tracking of complex positions (options, futures) before full support
 
 ## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
-**State**: doing
+**State**: paused
 **Timeframe**: NEXT
 **Created**: 2025-01-20 09:00
 **Dependencies**: None

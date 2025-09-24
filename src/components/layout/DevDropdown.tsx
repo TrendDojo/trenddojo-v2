@@ -87,15 +87,6 @@ export function DevDropdown() {
         )}>
           <div className="py-1">
             {menuItems.map((item, index) => {
-              if (item.divider) {
-                return (
-                  <hr
-                    key={index}
-                    className="my-1 dark:border-slate-700 border-gray-200"
-                  />
-                );
-              }
-
               const Icon = item.icon;
               return (
                 <button

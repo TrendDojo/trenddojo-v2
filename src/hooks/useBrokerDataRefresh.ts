@@ -96,7 +96,7 @@ export function useBrokerDataRefresh(options: RefreshOptions = {}) {
 
     // Apply client-side filter as fallback if API doesn't support filtering
     if (opts.brokerIds && opts.brokerIds.length > 0) {
-      brokerData = brokerData.filter(b => opts.brokerIds!.includes(b.brokerId));
+      brokerData = brokerData.filter((b: BrokerData) => opts.brokerIds!.includes(b.brokerId));
     }
 
     return brokerData;
