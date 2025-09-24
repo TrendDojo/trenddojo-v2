@@ -231,8 +231,19 @@ Implement manual position creation and editing capabilities to allow users to tr
 - [ ] Create comprehensive NewPositionModal with two modes:
   - [ ] "Quick Entry" - Just symbol, qty, price for fast tracking
   - [ ] "Detailed Entry" - Full form with all trade details
+- [ ] Implement symbol lookup/search functionality:
+  - [ ] Autocomplete search field when symbol not pre-filled
+  - [ ] Search as user types (debounced API calls)
+  - [ ] Show symbol, company name, and exchange in results
+  - [ ] Recent symbols quick-select list
+  - [ ] Popular/trending symbols suggestion
+  - [ ] Handle invalid symbols with helpful error messages
 - [ ] Add position entry fields:
   - [ ] Basic: symbol, quantity, entry price, entry date/time
+  - [ ] Strategy selection:
+    - [ ] Dropdown of user's active strategies
+    - [ ] Quick-create new strategy option
+    - [ ] Optional: no strategy (unassigned)
   - [ ] Trade details: execution price, fees, commissions, slippage
   - [ ] Risk management: stop loss, take profit, trailing stop
   - [ ] Position type: long/short, live/paper indicator
@@ -262,11 +273,13 @@ Implement manual position creation and editing capabilities to allow users to tr
 
 ### Success Criteria
 - Users can track ANY position regardless of where it was executed
+- Every position can be linked to a strategy for performance tracking
 - Manual entry supports full trade lifecycle (entry, scaling, exit)
 - Fees and commissions properly tracked and included in P&L
 - Clear distinction between manual, API, and external positions
 - Can import historical trades from CSV exports
 - Position journal/notes for tracking reasoning
+- Strategy-level P&L and metrics aggregation works correctly
 
 ### Notes
 - **Critical for real traders** who execute across multiple platforms
