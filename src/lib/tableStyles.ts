@@ -23,10 +23,10 @@ export const tableStyles = {
   // Header row - no border
   headerRow: "",
 
-  // Header cells
-  th: "text-left px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
-  thCenter: "text-center px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
-  thRight: "text-right px-6 py-3 text-xs font-medium uppercase tracking-wider dark:text-gray-400 text-gray-600",
+  // Header cells - black and bold
+  th: "text-left px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
+  thCenter: "text-center px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
+  thRight: "text-right px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
 
   // Body rows - with alternating backgrounds
   tr: "hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors",
