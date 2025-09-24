@@ -216,38 +216,65 @@ Enhance positions page with improved navigation, broker connection handling, and
 **State**: confirmed
 **Timeframe**: NOW
 **Created**: 2025-01-24 11:45
+**Updated**: 2025-01-24 12:30
 **Dependencies**: None
-**Tags**: #positions #manual-entry #ui #data-management
+**Tags**: #positions #manual-entry #ui #data-management #live-tracking
 
 ### Goal
-Implement manual position creation and editing capabilities to allow users to track positions that aren't connected through broker APIs, including legacy positions, positions from unsupported brokers, or for testing purposes.
+Implement manual position creation and editing capabilities to allow users to track ALL positions including:
+1. **External Live Trades** - Real money positions executed elsewhere (other brokers, crypto exchanges, forex platforms)
+2. **Legacy Positions** - Existing holdings from before using TrendDojo
+3. **Unsupported Brokers** - Positions at brokers we don't integrate with yet
+4. **Manual Testing** - Paper positions for strategy development
 
 ### Tasks
-- [ ] Create NewPositionModal component with comprehensive form
-- [ ] Add position entry fields: symbol, quantity, entry price, stop loss, take profit
-- [ ] Implement position type selection (long/short)
-- [ ] Add strategy assignment dropdown
-- [ ] Create date/time picker for entry date
-- [ ] Implement EditPositionModal for existing positions
-- [ ] Add manual position indicator/badge to distinguish from broker positions
+- [ ] Create comprehensive NewPositionModal with two modes:
+  - [ ] "Quick Entry" - Just symbol, qty, price for fast tracking
+  - [ ] "Detailed Entry" - Full form with all trade details
+- [ ] Add position entry fields:
+  - [ ] Basic: symbol, quantity, entry price, entry date/time
+  - [ ] Trade details: execution price, fees, commissions, slippage
+  - [ ] Risk management: stop loss, take profit, trailing stop
+  - [ ] Position type: long/short, live/paper indicator
+  - [ ] Source: manual, broker name (if external), exchange
+- [ ] Implement manual trade execution tracking:
+  - [ ] Add trades to existing position (averaging up/down)
+  - [ ] Partial exits with fee tracking
+  - [ ] Record actual execution prices vs intended prices
+- [ ] Create EditPositionModal for updates:
+  - [ ] Edit stops and targets
+  - [ ] Add execution notes
+  - [ ] Adjust for splits/dividends
+  - [ ] Mark as closed with exit details
+- [ ] Add manual position indicators:
+  - [ ] "Manual" badge to distinguish from API positions
+  - [ ] "External" tag for trades made elsewhere
+  - [ ] Broker/exchange name display
+- [ ] Implement fee and commission tracking:
+  - [ ] Per-trade fees
+  - [ ] Running total fees per position
+  - [ ] Impact on P&L calculations
 - [ ] Create position validation logic
-- [ ] Add manual position storage in database
-- [ ] Implement P&L calculations for manual positions
-- [ ] Add bulk import capability (CSV/JSON)
-- [ ] Create manual position sync/reconciliation workflow
+- [ ] Add manual position storage in database with audit trail
+- [ ] Implement accurate P&L calculations including fees
+- [ ] Add bulk import capability (CSV/JSON) for trade history
+- [ ] Create reconciliation workflow for manual vs broker positions
 
 ### Success Criteria
-- Users can manually add positions with all relevant details
-- Manual positions are clearly distinguished from broker-connected positions
-- P&L and risk calculations work correctly for manual positions
-- Manual positions can be edited and deleted
-- Data validation prevents invalid position entries
+- Users can track ANY position regardless of where it was executed
+- Manual entry supports full trade lifecycle (entry, scaling, exit)
+- Fees and commissions properly tracked and included in P&L
+- Clear distinction between manual, API, and external positions
+- Can import historical trades from CSV exports
+- Position journal/notes for tracking reasoning
 
 ### Notes
-- Manual positions crucial for users transitioning to platform
-- Consider adding "paper" flag for testing strategies
-- Need clear UI distinction between manual and automated positions
-- Important for users with positions at unsupported brokers
+- **Critical for real traders** who execute across multiple platforms
+- Many users trade on platforms we'll never integrate with (local brokers, crypto DEXs, forex)
+- Manual tracking allows immediate platform value without waiting for integrations
+- Consider template system for common fee structures (e.g., "$4.95 per trade")
+- Important for tax reporting and performance tracking
+- Enables tracking of complex positions (options, futures) before full support
 
 ## WB-2025-01-20-001: Broker Integration - Alpaca Paper Trading
 **State**: doing
