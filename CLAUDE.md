@@ -124,6 +124,18 @@ This separation ensures:
 **Work History**: `/docs/_work/COMPLETED_WORK_BLOCKS.md` - Completed work
 
 ## 🔧 Tool Usage Preferences
+
+### Server Management
+**Use `starto` to start the dev server** (see `_shared-framework/docs/STARTO-COMMAND.md` for details)
+
+### Temporary Files Convention
+**MANDATORY**: All temporary files, scripts, and short-term solutions must go in `/temp/` directory
+- Use `/temp/` for: debugging scripts, test data, temporary logs, one-off analysis files
+- This directory is periodically purged - do NOT store important work here
+- Already in `.gitignore` - contents won't be committed
+- Examples: `/temp/debug-script.js`, `/temp/test-data.json`, `/temp/analysis.txt`
+
+### File Search Preferences
 **IMPORTANT**: Use `Read` tool instead of `grep` for file searches
 - The `Read` tool doesn't require permission prompts, allowing faster workflow
 - When searching for patterns across files, use `Glob` to find files then `Read` to examine them

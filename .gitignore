@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# Temporary files and development artifacts
+/temp/
+server.log
+*.tmp
+*.temp
