@@ -66,6 +66,37 @@ Implement the hierarchical risk management system with Account → Strategy → 
 **Success** - Full hierarchical risk system implemented with minimal database changes. UI updated to reflect new features. Framework updated with three-file context system.
 
 
+## WB-2025-01-24-001: UI Enhancement and Trading Mode Implementation
+**State**: completed
+**Timeframe**: NOW
+**Created**: 2025-01-24 09:00
+**Completed**: 2025-01-24 11:30
+**Dependencies**: None
+**Tags**: #ui #trading-modes #dev-tools #broker-integration
+
+### Goal
+Reorganize development tools, implement flexible trading mode indicators, enhance stock and positions pages, and improve broker connection UI.
+
+### Tasks
+- [x] Remove PaperTradingIndicator from bottom left
+- [x] Create DevDropdown menu in header with amber warning color
+- [x] Move theme showcase and test-refresh to /dev/* routes
+- [x] Implement dev-only route protection
+- [x] Create flexible TradingModeIndicator system
+- [x] Support multiple brokers and parallel paper/live trading
+- [x] Add stock detail page with Create Position button
+- [x] Remove quick trade buttons from stock page
+- [x] Add trading mode indicators to positions table
+- [x] Add 10+ dummy paper trading positions
+- [x] Enhance broker cards with connection status
+- [x] Add "Ready to connect!" message for disconnected brokers
+- [x] Add "Visit Alpaca" link to broker cards
+- [x] Create /temp/ directory for temporary files
+- [x] Update .gitignore for temp files
+
+### Outcome
+**Success** - Complete UI reorganization with dev tools centralized, flexible trading mode system supporting multiple brokers, enhanced positions page with paper trading indicators, and improved broker connection experience. Established /temp/ directory convention for temporary files.
+
 ## WB-2025-01-21-001: Living Theme System Implementation
 **State**: confirmed
 **Timeframe**: NEXT
