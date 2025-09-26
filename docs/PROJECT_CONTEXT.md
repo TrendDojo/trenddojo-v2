@@ -24,10 +24,12 @@
 
 ### Deployment Pipeline
 ```
-GitHub → Staging (automatic) → Production (manual promotion)
-- Feature branches deploy to preview URLs
-- Main branch deploys to staging
-- Production requires manual promotion + approval
+WB-* → dev → PR to staging → PR to main
+- Work block branches (WB-*) for active development
+- dev branch accumulates completed features
+- PR from dev → staging deploys to staging environment
+- PR from staging → main deploys to production
+- Version tags on main for releases
 ```
 
 ## 💼 Core Business Workflows

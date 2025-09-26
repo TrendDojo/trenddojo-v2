@@ -131,10 +131,31 @@ This separation ensures:
 - Starting new work block → Verify PROJECT_CONTEXT.md is accurate
 
 **Branch Workflow:**
-- Start work → `git checkout -b WB-YYYY-MM-DD-NNN`
-- Complete work → Merge to develop & move to COMPLETED
+- Start work → From `dev`: `git checkout -b WB-YYYY-MM-DD-NNN`
+- Complete work → Merge to `dev` & move work block to COMPLETED
 - Abandon work → Delete branch & remove from ACTIVE
-- Release → Merge develop to main & tag
+- Release → PR from `dev` → `staging` (test) → PR to `main` (production) & tag
+
+## 🔄 Development Workflow
+
+**Branches:**
+- `main` → Production (protected, tagged releases only)
+- `staging` → Staging environment (PR from dev to deploy)
+- `dev` → Primary development (all completed work accumulates)
+- `WB-*` → Work block branches (active work)
+
+**Daily Flow:**
+1. Start: `git checkout dev && git pull`
+2. New work: `git checkout -b WB-YYYY-MM-DD-NNN-description`
+3. Complete: Merge to `dev`, move block to COMPLETED
+4. Abandon: Delete branch, remove from ACTIVE
+
+**Release Flow:**
+1. `dev` branch accumulates completed features
+2. Create PR: `dev` → `staging` (deploys to staging environment)
+3. Test thoroughly on staging
+4. Create PR: `staging` → `main` with version tag
+5. Production deploys from `main`
 
 ## 📚 Documentation Structure
 
