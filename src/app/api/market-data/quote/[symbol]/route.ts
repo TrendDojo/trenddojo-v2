@@ -42,7 +42,13 @@ export async function GET(
       previousClose: previousClose,
       dayRange: { low: latest.low, high: latest.high },
       volume: latest.volume,
-      open: latest.open
+      open: latest.open,
+      // Source tracking for multi-provider architecture
+      _meta: {
+        source: 'sqlite_cache', // TODO: Update when DataRouter is integrated
+        timestamp: new Date().toISOString(),
+        cached: true
+      }
     });
   } catch (error) {
     console.error('Error fetching quote:', error);

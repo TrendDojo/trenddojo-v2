@@ -57,7 +57,13 @@ export async function GET(
       data: chartData,
       count: chartData.length,
       from: prices[0]?.date,
-      to: prices[prices.length - 1]?.date
+      to: prices[prices.length - 1]?.date,
+      // Source tracking for multi-provider architecture
+      _meta: {
+        source: 'sqlite_cache', // TODO: Update when DataRouter is integrated
+        timestamp: new Date().toISOString(),
+        cached: true
+      }
     });
   } catch (error) {
     console.error('Error fetching price history:', error);

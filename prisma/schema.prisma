@@ -14,6 +14,8 @@ model broker_connections {
   credentials String
   isPaper     Boolean   @default(true)
   isActive    Boolean   @default(true)
+  isPrimary   Boolean   @default(false) // Primary broker for trading
+  dataTier    String?   // Data subscription level: free, basic, premium, enterprise
   lastSync    DateTime?
   createdAt   DateTime  @default(now())
   users       users     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -310,4 +312,36 @@ model users {
   portfolios               portfolios[]
   risk_settings            risk_settings[]
   trade_checklist_items    trade_checklist_items[]
+  user_data_preferences    user_data_preferences[]
+  user_data_sources        user_data_sources[]
+}
+
+model user_data_preferences {
+  id              String   @id @default(uuid())
+  userId          String
+  preferenceType  String   // quotes, charts, fundamentals
+  primarySource   String   // alpaca, polygon, yahoo, etc.
+  fallbackSources String[] // Array of fallback sources in order
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  users           users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, preferenceType])
+  @@index([userId])
+}
+
+model user_data_sources {
+  id         String   @id @default(uuid())
+  userId     String
+  source     String   // polygon, alpaca, yahoo, etc.
+  tier       String   // free, basic, premium, enterprise
+  apiKey     String?  // Encrypted API key if user brings their own
+  expiresAt  DateTime? // When the subscription expires
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  users      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, source])
+  @@index([userId])
 }
