@@ -1,5 +1,7 @@
 # TrendDojo Project Context
 
+<!-- Last verified: 2025-01-26 (commit: a53d260) -->
+
 ## 📋 Project Overview
 **Name:** TrendDojo
 **Purpose:** "Stripe for Trading Strategies" - sophisticated automation layer for systematic swing and trend following trading
@@ -41,6 +43,8 @@ GitHub → Staging (automatic) → Production (manual promotion)
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns
 - **Trading Patterns**: `/docs/patterns/TRADING-PATTERNS.md` - Risk management, position sizing, strategy implementation
+- **Broker Integration**: `/docs/patterns/BROKER-INTEGRATION-PATTERNS.md` - Alpaca, IBKR integration patterns
+- **Market Data Provider**: `/docs/patterns/MARKET-DATA-PROVIDER-IMPLEMENTATION.md` - Polygon implementation guide
 
 ### Technical Documentation
 - **Technical Setup**: `/docs/reference/trenddojo-setup-technical-spec.md` - Complete technical architecture
@@ -78,27 +82,36 @@ trenddojo-v2/
 - **Trading Safety:** Position limits, stop losses, risk validation
 
 ## ✅ Current Status
-**Stage:** Production setup phase
-**Priority:** Establish deployment pipeline + core patterns
-**Next:** Implement setup document specifications
+**Stage:** Core infrastructure complete, building trading features
+**Current Branch:** main
+**Priority:** Stop loss monitoring decision & manual position entry
+**Next:** Complete 1-minute data refresh deployment
 
 ## ⚠️ Tech Stack Reality Check
 The actual implementation uses:
-- **Database**: PostgreSQL (Supabase) - staging/production not yet connected
-- **Auth**: NextAuth.js v5
-- **Deployment**: Vercel (marketing site deployed successfully)
-- **Status**: Marketing brochure complete, core features pending
+- **Database**: PostgreSQL (Supabase) for main data, SQLite for market data cache
+- **Market Data**: Polygon.io API with 1-minute bulk update architecture (designed, not deployed)
+- **Auth**: NextAuth.js v4 with credentials + OAuth providers
+- **Deployment**: Vercel (marketing site live at trenddojo.com)
+- **Status**: Marketing complete, risk management system operational, market data infrastructure ready
 
 ## 🎯 Recent Architecture Decisions
+
+### 1-Minute Bulk Update Strategy (2025-01-26)
+- Fetch ALL market symbols every minute (8000+ tickers)
+- Single API call more efficient than individual fetches
+- Enables stop loss monitoring with 60-second precision
+- PostgreSQL cache with 2-minute TTL
+- SQLite for permanent historical storage
+
+### Market Data Infrastructure (2025-01-25)
+- CDNChart component with TradingView integration
+- 2-hour intraday bars for swing trading focus
+- 107,000+ historical records imported
+- Sub-10ms query performance achieved
 
 ### Hierarchical Risk Management (2025-09-16)
 - Account → Strategy → Position rule hierarchy
 - Strategy cloning for rule changes (immutable once positions exist)
 - Circuit breakers with progressive drawdown tiers
-- Asset-class specific risk limits
-
-### Database Schema Evolution
-- Added `parentStrategyId` for strategy versioning
-- Added `accountStatus` and `currentDrawdown` to portfolios
-- JSON fields for flexible risk rules instead of rigid tables
-- Minimal changes following "Marie Kondo" principle
+- JSON fields for flexible risk rules

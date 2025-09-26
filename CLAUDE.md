@@ -116,6 +116,26 @@ This separation ensures:
 - Context evolves freely (PROJECT_CONTEXT.md)
 - Work is tracked properly (ACTIVE_WORK_BLOCKS.md)
 
+## 📋 Verification & Release Protocols
+
+**Follow these shared framework protocols:**
+- **Verification**: `_shared-framework/VERIFICATION-PROTOCOL.md` - When and how to verify documentation
+- **Releases**: `_shared-framework/RELEASE-PROCESS.md` - Work block branching and release workflow
+
+**AI Auto-Triggers (do without being asked):**
+- User says "where are we at?" **(or similar)** → Run verification & update PROJECT_CONTEXT.md
+- User says "what's next?" **(or similar)** → Check ROADMAP & suggest from active work blocks
+- User says "done"/"ship it" **(or similar)** → Move work block to COMPLETED, update ROADMAP
+- AI runs `npm install` → Update tech stack in PROJECT_CONTEXT.md
+- AI creates pattern doc → Update pattern list in PROJECT_CONTEXT.md
+- Starting new work block → Verify PROJECT_CONTEXT.md is accurate
+
+**Branch Workflow:**
+- Start work → `git checkout -b WB-YYYY-MM-DD-NNN`
+- Complete work → Merge to develop & move to COMPLETED
+- Abandon work → Delete branch & remove from ACTIVE
+- Release → Merge develop to main & tag
+
 ## 📚 Documentation Structure
 
 **Project Context**: `/docs/PROJECT_CONTEXT.md` - Business model, tech stack, workflows
