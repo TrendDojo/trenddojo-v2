@@ -132,7 +132,7 @@ export function Alert({
         )}
         <div className={cn(
           alertStyles.content.body,
-          title ? alertStyles.content.bodyWithTitle : getAlertIconClasses(intent)
+          alertStyles.content.bodyWithTitle
         )}>
           {children}
         </div>
