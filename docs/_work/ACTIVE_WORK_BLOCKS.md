@@ -8,6 +8,13 @@
 
 **AT EACH TOUCHPOINT (session start, context switch, new task), RE-READ ALL THREE FILES**
 
+## 🧪 Testing Requirements for All Work Blocks
+**EVERY WORK BLOCK MUST INCLUDE TESTS:**
+- See `_shared-framework/VERIFICATION-PROTOCOL.md` → Testing Protocol section
+- Generate tests during implementation (AI does this automatically)
+- Critical tests MUST pass before marking complete
+- Include test results in Outcome section
+
 ## 🌿 Git Branching Strategy for Work Blocks
 
 ### Approach: Inline on Main
@@ -97,11 +104,186 @@ Reorganize development tools, implement flexible trading mode indicators, enhanc
 ### Outcome
 **Success** - Complete UI reorganization with dev tools centralized, flexible trading mode system supporting multiple brokers, enhanced positions page with paper trading indicators, and improved broker connection experience. Established /temp/ directory convention for temporary files.
 
-## WB-2025-01-21-001: Living Theme System Implementation
+## WB-2025-01-25-001: Market Data Infrastructure - Unified Architecture
 **State**: doing
+**Timeframe**: NOW
+**Created**: 2025-01-25 18:00
+**Updated**: 2025-01-26 14:30
+**Dependencies**: None
+**Tags**: #infrastructure #market-data #database #business-critical
+
+### ⚠️ MANDATORY: Living Theme System
+**ALL UI components MUST use styles from the living theme:**
+- Check `/src/lib/*Styles.ts` files (buttonStyles, tableStyles, panelStyles, formStyles)
+- Check `/src/app/dev/theme/page.tsx` for available components
+- If a style doesn't exist, ADD IT to the theme system first (confirm with user)
+- NEVER use hardcoded Tailwind classes for colors/spacing/borders
+- ALWAYS use semantic classes (text-success, bg-danger, etc.)
+
+### Goal
+Build a unified market data infrastructure where production PostgreSQL serves as the single source of truth for all environments (dev/staging/prod), eliminating data staleness issues, with built-in expansion capability from 100 to 8000+ symbols.
+
+### Architecture Decision (FINAL - Multi-Source Ready)
+- **Initial Implementation**: Alpaca (broker) + Polygon (historical) hybrid
+- **Data Consistency**: Both use SIP feed, data is 99.9% identical
+- **Multi-Source Architecture**: Built-in from day one
+  - Database schema supports multiple brokers per user
+  - Data router interface allows pluggable sources
+  - User preferences table for source selection
+- **Single PostgreSQL database** in production with `market.*` schema
+- **All environments read from production** market data (read-only access)
+- **User data remains isolated** per environment (`public.*` schema)
+- **Production Vercel Cron** fetches from primary source (Alpaca/Polygon)
+- **Fallback chain**: User's broker → Polygon → Yahoo → Cached data
+
+### Tasks
+- [x] Create SQLite schema for historical prices (local testing)
+- [x] Build bulk data import system (Polygon.io integration)
+- [x] Create data access layer with TypeScript types
+- [x] Build data validation and integrity checks
+- [x] Create MarketDatabase service with full CRUD operations
+- [x] Implement API routes for market data access
+- [x] Create CDNChart component with Lightweight Charts integration
+- [x] Build symbol detail page with chart display
+- [x] Import initial dataset (100 symbols, 107k+ records)
+- [x] Write comprehensive tests
+- [x] Design multi-source architecture
+- [ ] **MULTI-SOURCE**: Create IDataProvider interface
+- [ ] **MULTI-SOURCE**: Build DataRouter class
+- [ ] **MULTI-SOURCE**: Add source tracking to responses
+- [ ] **DATABASE**: Add data_tier, is_primary to broker_connections
+- [ ] **DATABASE**: Create user_data_preferences table
+- [ ] **DATABASE**: Create user_data_sources table
+- [ ] Set up production PostgreSQL market schema
+- [ ] Configure read-only access for dev/staging
+- [ ] Implement Vercel Cron for updates
+- [ ] Create sync state tracking per environment
+- [ ] Build catch-up mechanism for data gaps
+- [ ] **EXPANSION**: Implement symbol universe management
+- [ ] **EXPANSION**: Create tiered update strategy
+
+### Technical Implementation
+**Current State**: SQLite for local dev, transitioning to unified PostgreSQL
+**Target Architecture**:
+- Production PostgreSQL hosts `market.*` schema (single writer)
+- Dev/staging connect as read-only to production market data
+- User data (`public.*`) remains isolated per environment
+- Polygon API moves from dev localhost to production Vercel Cron
+
+### Expansion Strategy (100 → 8000+ symbols)
+
+**Symbol Universe Management**:
+```typescript
+// Symbol tiers for progressive expansion
+interface SymbolUniverse {
+  core: string[];        // S&P 500 (~500 symbols) - 1min updates
+  extended: string[];    // Russell 3000 (~3000) - 5min updates
+  full: string[];        // All US equities (~8000) - 15min updates
+  watchlist: string[];   // User-specific symbols - 1min updates
+}
+```
+
+**Database Scaling Strategy**:
+- **Partitioning**: By symbol range (A-C, D-G, etc.) or by date
+- **Indexes**: Composite on (symbol, timestamp) with BRIN for time-series
+- **Materialized Views**: Pre-computed latest prices, daily summaries
+- **Archival**: Move data >2 years to cold storage
+
+**API Cost Management**:
+- **Tier 1**: Start with top 100 most-traded symbols
+- **Tier 2**: Add S&P 500 when user base hits 100 users
+- **Tier 3**: Russell 3000 at 1000 users
+- **Tier 4**: Full universe at enterprise scale
+
+**Update Frequency Strategy**:
+```typescript
+function getUpdateFrequency(symbol: string): number {
+  if (userWatchlist.includes(symbol)) return 60;      // 1 min
+  if (coreSymbols.includes(symbol)) return 60;        // 1 min
+  if (extendedSymbols.includes(symbol)) return 300;   // 5 min
+  return 900;                                          // 15 min
+}
+```
+
+**Benefits**:
+- Zero data staleness between environments
+- Single API quota (no duplicate Polygon calls)
+- Dev uses real market data for better testing
+- Immutable historical data safe for read-only access
+- **Painless expansion** from 100 to 8000+ symbols
+
+### Progress Update (2025-09-25)
+- ✅ SQLite database created with optimized schema
+- ✅ MarketDatabase service fully implemented with performance optimizations
+- ✅ Polygon.io provider integrated for data fetching
+- ✅ API routes created for historical data access
+- ✅ CDNChart component working with real market data
+- ✅ Symbol detail pages displaying live charts
+- ✅ Initial data load complete: 100 symbols, 107,657 records
+- ✅ Chart performance: <10ms query times achieved
+- ✅ Multiple timeframes supported (1M, 3M, 6M, 1Y, 3Y, ALL)
+- ✅ Chart types: Candlestick and Line charts with volume
+
+### Tests Generated
+- [x] Critical tests (must pass for completion) - 9 tests passing
+  - Database connection and initialization
+  - Price data retrieval
+  - Data integrity validation
+  - Query performance (<100ms)
+- [x] Standard tests (should pass for quality) - 16 tests passing
+  - Feature completeness
+  - Data transformation
+  - Search functionality
+  - Error recovery
+- [x] Edge case tests (document known limits) - 15 tests passing
+  - Extreme value handling
+  - Date range extremes
+  - Special character symbols
+  - Concurrent operations
+
+### Test Results (2025-09-26)
+**Test Summary**: 40 tests passing (3 test files)
+- `src/__tests__/critical/market-data-database.test.ts` - ✅ All 9 critical tests pass
+- `src/__tests__/standard/market-data-features.test.ts` - ✅ All 16 standard tests pass
+- `src/__tests__/edge-cases/market-data-limits.test.ts` - ✅ All 15 edge case tests pass
+- Tests follow new AI-generated testing protocol from VERIFICATION-PROTOCOL.md
+- Test organization: critical/ vs standard/ vs edge-cases/ directories
+- Performance validated: queries complete in <10ms as required
+
+### Success Criteria
+- ✅ Import data for 100+ symbols in minutes
+- ✅ Chart queries return in <10ms
+- ✅ Zero API calls for historical data
+- ✅ Comprehensive test coverage implemented
+- ⏳ Automated nightly updates (pending)
+- ⏳ Handle corporate actions correctly (pending)
+
+### Notes
+- Successfully separated from positions work to maintain clear boundaries
+- Charts are fully functional with CDN-loaded Lightweight Charts library
+- Database performance excellent with WAL mode and proper indexing
+- **ARCHITECTURE SHIFT**: Moving from isolated databases to unified market data
+- **KEY INSIGHT**: Market data is universal truth - same across all environments
+- **DATA CONSISTENCY**: Alpaca and Polygon use same SIP feed - 99.9% identical data
+- **MULTI-SOURCE READY**: Architecture supports multiple brokers and data sources per user
+- **EXPANSION READY**: Architecture supports growth from 100 to 8000+ symbols
+- **COST CONSCIOUS**: Users can bring their own data subscriptions
+- **PERFORMANCE**: Partitioning and indexing strategy maintains <10ms queries at scale
+- See `/docs/patterns/MARKET-DATA-ARCHITECTURE.md` for detailed design
+
+### Implementation Strategy
+1. **Phase 1**: Polygon historical + Alpaca live when connected
+2. **Phase 2**: Add data source selection UI
+3. **Phase 3**: Add more brokers (IBKR, TD Ameritrade)
+4. **Phase 4**: Add crypto sources (Coinbase, Binance)
+5. **Phase 5**: Add forex sources
+
+## WB-2025-01-21-001: Living Theme System Implementation
+**State**: paused
 **Timeframe**: NEXT
 **Created**: 2025-01-21 09:00
-**Updated**: 2025-01-22 14:30
+**Updated**: 2025-01-25 16:00
+**Paused**: 2025-01-25 - Shifting to stock data integration
 **Dependencies**: None
 **Tags**: #ui #design-system #infrastructure #group-wide
 
@@ -143,15 +325,16 @@ Implement a truly living theme system where the theme page and application compo
 ### Tasks
 - [x] Document the living theme pattern in proven-solutions (COMPLETED 2025-01-22)
 - [x] Create group-wide implementation guide in _shared-framework
-- [ ] Audit all TrendDojo components for inline styles
-- [ ] Create buttonStyles.ts, panelStyles.ts, formStyles.ts
-- [ ] Refactor ALL tables to use tableStyles.ts (partially done)
-- [ ] Add tab navigation to theme page (Core Design System | Domain Components)
-- [ ] Organize Core Design System tab with universal elements
+- [x] Create buttonStyles.ts, panelStyles.ts, formStyles.ts (COMPLETED 2025-01-25)
+- [x] Refactor ALL tables to use tableStyles.ts (COMPLETED 2025-01-25)
+- [x] Add tab navigation to theme page (COMPLETED 2025-01-25 - Core, Tables, Badges, Alerts, Forms)
+- [x] Fix Alert component styling issues (COMPLETED 2025-01-25)
+- [x] Update home page to use theme buttons and colors (COMPLETED 2025-01-25)
+- [x] Apply theme pagination to positions table (COMPLETED 2025-01-25)
+- [x] Remove old pagination components (COMPLETED 2025-01-25)
+- [ ] Audit remaining components for inline styles
 - [ ] Create Domain Components tab for trading-specific UI
-- [ ] Update theme page to import real components
-- [ ] Move universal components to Core tab
-- [ ] Move trading components to Domain tab
+- [ ] Update theme page to import real components (partially done)
 - [ ] Implement nuclear test verification
 - [ ] Add environment-based theme page access control
 - [ ] Create development mode with interactive controls
@@ -183,6 +366,15 @@ Implement a truly living theme system where the theme page and application compo
   - Core tab can be copied to any project (Controlla, Three, etc.)
   - Domain tab demonstrates project-specific patterns (trading UI)
   - Makes it easier to maintain consistency while allowing specialization
+
+**Progress Update 2025-01-25:**
+- Successfully created centralized style files (buttonStyles, tableStyles, panelStyles)
+- Theme page reorganized with tabs (Core Components, Tables, Badges, Alerts, Forms)
+- Fixed major issues: Alert backgrounds, table header styling, dropdown menus
+- Applied theme system to production pages (home page, positions table)
+- Removed old pagination system in favor of new compact icon-based design
+- All tables now use centralized tableStyles.ts for consistency
+- Home page fully converted to use theme colors (indigo instead of custom purple)
 
 ## WB-2025-01-23-001: Positions Page Enhancement
 **State**: completed
@@ -216,8 +408,9 @@ Enhance positions page with improved navigation, broker connection handling, and
 **State**: paused
 **Timeframe**: NOW
 **Created**: 2025-01-24 11:45
-**Updated**: 2025-01-24 12:30
-**Dependencies**: None
+**Updated**: 2025-01-25 18:00
+**Paused**: 2025-01-25 - Shifting to market data infrastructure (dependency)
+**Dependencies**: WB-2025-01-25-001 (Market Data Infrastructure)
 **Tags**: #positions #manual-entry #ui #data-management #live-tracking
 
 ### Goal
@@ -332,6 +525,176 @@ Complete Alpaca broker integration for paper trading to enable actual trade exec
 - Alpaca provides free paper trading accounts
 - Simpler API than Interactive Brokers
 - No local gateway required
+
+## WB-2025-01-26-001: Stop Loss Architecture & Monitoring Strategy
+**State**: pending
+**Timeframe**: LATER
+**Created**: 2025-01-26
+**Dependencies**: Market data refresh framework
+**Tags**: #critical #risk-management #monitoring #compliance
+
+### Goal
+Determine and implement stop loss strategy leveraging the new 1-minute bulk update architecture.
+
+### Decision: 1-Minute Monitoring + Broker Delegation
+
+With our 1-minute bulk update architecture (fetching all 8000 symbols every minute), stop losses become viable:
+- Maximum delay: **60 seconds** (vs 15 minutes originally considered)
+- Acceptable for swing traders (our target market)
+- NOT suitable for day traders (need sub-second)
+
+### Implementation Strategy
+
+**Phase 1: Paper Trading with 1-Minute Checks (NOW)**
+- Paper positions only
+- Clear "60-second check interval" disclosure
+- No real money liability
+- Cost: 1 call/minute = 390 calls/day
+- Requires: Polygon Basic ($29/month)
+
+**Phase 2: Live Trading Options (NEXT)**
+```typescript
+if (user.hasBrokerConnection) {
+  // Broker-native stops (recommended)
+  await broker.placeStopOrder(params);
+} else {
+  // Our 1-minute monitoring (with disclaimers)
+  await createMonitoredStop(params);
+  await showDisclaimer("Checked every 60 seconds");
+}
+```
+
+**Phase 3: Enhanced Features (LATER)**
+- Adaptive frequency (30 seconds when near stop)
+- Push notifications
+- SMS alerts for critical events
+
+### Tasks
+- [ ] Implement stop loss checks in MarketDataCache
+- [ ] Create stop loss management UI
+- [ ] Add clear disclaimers and user education
+- [ ] Test with paper trading accounts
+- [ ] Legal review of terms and disclaimers
+- [ ] Broker integration for live stops
+
+### Notes
+- 1-minute updates solve the stop loss monitoring problem
+- Paper trading first eliminates initial liability
+- Broker delegation for live trading is safest approach
+- Clear communication about check intervals is critical
+
+**BLOCKED UNTIL**: Business decision on paper-only implementation
+
+## WB-2025-01-26-002: Living Theme System - Complete Migration
+**State**: pending
+**Timeframe**: NEXT
+**Created**: 2025-01-26 16:30
+**Dependencies**: None
+**Tags**: #ui #design-system #infrastructure #refactoring
+
+### Goal
+Migrate the entire codebase from hardcoded Tailwind classes to a proper Tailwind-first semantic theme system, achieving 90%+ semantic class usage.
+
+### Current State Analysis
+- **30% living theme**: buttonStyles, tableStyles, panelStyles, formStyles, dropdownStyles
+- **70% hardcoded**: Direct Tailwind classes like `bg-gray-100 text-blue-500`
+- **4,400+ violations** detected by theme compliance scanner
+- **Wrong approach**: Theming components instead of theming Tailwind itself
+
+### CRITICAL INSIGHT: Theme Tailwind, Not Components
+**Current (Wrong) Approach**: Wrapping Tailwind in component styles
+```typescript
+// ❌ Fighting Tailwind
+export const buttonStyles = {
+  primary: "bg-blue-500 text-white hover:bg-blue-600"
+}
+<Button className={buttonStyles.primary}>
+```
+
+**Better Approach**: Theme at Tailwind config level
+```typescript
+// ✅ Working WITH Tailwind
+// tailwind.config.js extends semantic colors
+<button className="bg-primary text-primary-foreground hover:bg-primary/90">
+```
+
+### New Target Architecture
+1. **Extend Tailwind Config** with semantic colors:
+   - `primary`, `secondary`, `muted`, `destructive`
+   - `background`, `foreground`, `border`
+   - `success`, `warning`, `danger`, `info`
+
+2. **Use CSS Variables** for theme switching:
+   ```css
+   :root { --primary: 221.2 83.2% 53.3%; }
+   .dark { --primary: 217.2 91.2% 59.8%; }
+   ```
+
+3. **Semantic Classes Everywhere**:
+   ```tsx
+   // Instead of: bg-gray-100 dark:bg-gray-800
+   // Use: bg-muted
+   ```
+
+### Tasks
+- [ ] Phase 1: Setup Tailwind Theme System
+  - [ ] Update `tailwind.config.js` with semantic color system
+  - [ ] Add CSS variables to `globals.css`
+  - [ ] Create color documentation in living theme
+
+- [ ] Phase 2: Update Living Theme Showcase
+  - [ ] Show semantic colors (bg-primary) not raw colors (bg-blue-500)
+  - [ ] Document the semantic system
+  - [ ] Create migration guide
+
+- [ ] Phase 3: Component Migration (use scanner to track)
+  - [ ] Start with new components - use semantic only
+  - [ ] Migrate high-impact components (Button, Card, Panel)
+  - [ ] Systematic refactor of 4,400 violations
+  - [ ] `chartStyles.ts` - Chart containers and controls
+  - [ ] `badgeStyles.ts` - Status badges, pills, tags
+
+- [ ] Migrate existing components (by priority):
+  - [ ] Marketing pages (homepage, footer, nav)
+  - [ ] Layout components (sidebar, header, user dropdown)
+  - [ ] Position components (NewPositionModal, status bars)
+  - [ ] Strategy components (tabs, rules, exits)
+  - [ ] Chart components (wrappers, controls)
+  - [ ] Broker components (cards, connection modals)
+
+- [ ] Establish enforcement rules:
+  - [ ] Create ESLint rule to flag hardcoded colors
+  - [ ] Add pre-commit hook to check for style violations
+  - [ ] Document migration patterns in LIVING-THEME-USAGE.md
+  - [ ] Create migration guide for developers
+
+- [ ] Quality assurance:
+  - [ ] Audit all components for remaining inline styles
+  - [ ] Verify dark mode consistency
+  - [ ] Test responsive behavior
+  - [ ] Performance impact assessment
+
+### Success Criteria
+- **90%+ living theme usage** (measured by component audit)
+- **Zero hardcoded colors** in business components
+- **Tailwind only for**: spacing, layout (flex/grid), positioning
+- **All new PRs** pass theme compliance checks
+- **Theme changes** propagate instantly across entire app
+- **Developer docs** make it easy to use theme correctly
+
+### Benefits
+1. **Consistency**: Every component looks cohesive
+2. **Maintainability**: Change once, update everywhere
+3. **Developer velocity**: No decision fatigue about colors
+4. **Dark mode**: Automatic support without extra work
+5. **Branding**: Easy to rebrand entire app
+
+### Notes
+- Start with most visible components first (marketing, layout)
+- Create migration checklist for each component type
+- Consider automated migration script for simple cases
+- Keep Tailwind for non-visual utilities (spacing, layout)
+- Document before/after examples for training
 
 ## WB-2025-01-18-001: Position Indicator Graphic Enhancement
 **State**: paused
