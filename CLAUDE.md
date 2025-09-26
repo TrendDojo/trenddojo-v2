@@ -76,11 +76,17 @@
 ### RULE #9: [UNIVERSAL] Cross-Project Infrastructure News System
 - **CENTRALIZED LOCATION**: All cross-project news managed in `_shared-framework/news/`
 - **MANDATORY WORK BLOCK WORKFLOW**:
-  - **START**: Check news files for existing solutions (covered in RULE #1)
-  - **END**: After solving infrastructure problems (auth, email, deployment, testing, error handling):
-    1. Document solution in `_shared-framework/proven-solutions/`
-    2. Update `_shared-framework/news/trenddojo-solutions.md` with brief summary
-- **SCOPE**: Infrastructure solutions only - skip business logic and domain-specific features
+  - **START**: Check news files for existing solutions (covered in RULE #3)
+  - **END**: After solving infrastructure problems OR modifying framework files:
+    1. Update `_shared-framework/CHANGELOG.md` with version and changes
+    2. Update `_shared-framework/news/trenddojo-solutions.md` with solution summary
+    3. Document detailed solution in `_shared-framework/proven-solutions/` (if complex)
+- **FRAMEWORK FILES INCLUDE**:
+  - Any file in `_shared-framework/` directory
+  - Specifically: VERIFICATION-PROTOCOL.md, RELEASE-PROCESS.md, templates/*, CLAUDE.md
+  - Framework modifications = infrastructure solutions by definition
+- **SCOPE**: Infrastructure solutions and framework improvements only
+- **GOLDEN RULE**: Framework Change → CHANGELOG.md → news/*.md → proven-solutions/*.md (if detailed)
 
 ### RULE #10: [UNIVERSAL] Visual Changes Are Unverified
 - **AI cannot see rendered output** - only report code changes made, not appearance
@@ -125,6 +131,7 @@ This separation ensures:
 **AI Auto-Triggers (do without being asked):**
 - User says "where are we at?" **(or similar)** → Run verification & update PROJECT_CONTEXT.md
 - User says "what's next?" **(or similar)** → Check ROADMAP & suggest from active work blocks
+- User says "tidy" or "audit" **(or cleanup)** → Execute `/docs/TIDY-PROTOCOL.md` (code + docs + theme compliance)
 - User says "done"/"ship it" **(or similar)** → Move work block to COMPLETED, update ROADMAP
 - AI runs `npm install` → Update tech stack in PROJECT_CONTEXT.md
 - AI creates pattern doc → Update pattern list in PROJECT_CONTEXT.md
@@ -178,18 +185,28 @@ This separation ensures:
 - When searching for patterns across files, use `Glob` to find files then `Read` to examine them
 - Only use `grep` if you need complex regex patterns that can't be done with Read/Glob combination
 
+## 🎨 Living Theme System (MANDATORY)
+**ALL UI components MUST use the living theme system:**
+- **FIRST**: Check `/src/lib/*Styles.ts` files (buttonStyles, tableStyles, panelStyles, alertStyles, formStyles)
+- **SECOND**: Check `/src/app/dev/theme/page.tsx` to see components in action
+- **IF STYLE DOESN'T EXIST**: ASK USER before creating - add to theme system, not inline
+- **NEVER**: Use hardcoded colors (bg-green-500) → Use semantic (bg-success)
+- **NEVER**: Use arbitrary spacing (p-[13px]) → Use theme spacing (p-3)
+- **NEVER**: Create one-off styles → Add to theme system for reuse
+
 ## 🚫 Forbidden Actions
 **DO NOT:**
+- **NEVER USE HARDCODED STYLES** → ALWAYS use living theme system
 - NEVER deploy financial calculations without unit tests → ALWAYS write tests first
 - NEVER use live trading APIs in development → ALWAYS use mocks and paper trading
-- NEVER skip staging deployment → ALWAYS test on staging before production  
+- NEVER skip staging deployment → ALWAYS test on staging before production
 - NEVER close work blocks without approval → ALWAYS ask user permission first
 - NEVER ignore risk management changes → ALWAYS get extra review for risk logic
 - NEVER create files outside `/docs/` → ALL documentation lives in `/docs/` directory
 - NEVER fragment features → ALWAYS complete current work block before starting new ones
 - **NEVER BUILD WITHOUT CHECKING PATTERNS** → ALWAYS read `/docs/patterns/` documentation first (RULE #2)
 - NEVER create components without design patterns → ALWAYS check DESIGN-PATTERNS.md
-- NEVER implement APIs without architecture patterns → ALWAYS check ARCHITECTURE-PATTERNS.md  
+- NEVER implement APIs without architecture patterns → ALWAYS check ARCHITECTURE-PATTERNS.md
 - NEVER build UX without UX patterns → ALWAYS check UX-PATTERNS.md
 - NEVER implement trading features without TRADING-PATTERNS.md → ALWAYS follow established risk management
 - **NEVER MODIFY FILES OUTSIDE THIS PROJECT** → ALWAYS stay within `/Users/duncanmcgill/coding/trenddojo-v2/`

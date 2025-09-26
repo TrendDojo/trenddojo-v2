@@ -16,17 +16,17 @@ export const tableStyles = {
   // Table element
   table: "w-full",
 
-  // Table sections - subtle header background
-  thead: "bg-gray-100/70 dark:bg-slate-800/70",
+  // Table sections - no background, with soft bottom border
+  thead: "border-b border-gray-200 dark:border-slate-700",
   tbody: "",  // No dividers between rows
 
   // Header row - no border
   headerRow: "",
 
-  // Header cells - black and bold
-  th: "text-left px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
-  thCenter: "text-center px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
-  thRight: "text-right px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-white text-black",
+  // Header cells - grey text and bold
+  th: "text-left px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-gray-300 text-gray-700",
+  thCenter: "text-center px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-gray-300 text-gray-700",
+  thRight: "text-right px-6 py-3 text-xs font-bold uppercase tracking-wider dark:text-gray-300 text-gray-700",
 
   // Body rows - with alternating backgrounds
   tr: "hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors",
