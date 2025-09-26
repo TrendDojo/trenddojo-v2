@@ -56,10 +56,10 @@ export async function GET() {
           if (brokerClient) {
             try {
               accountInfo = await brokerClient.getAccountInfo();
-    // DEBUG: console.log(`Successfully fetched account info for ${conn.broker}:`, {
-                accountId: accountInfo?.accountId,
-                balance: accountInfo?.balance
-              });
+              // DEBUG: console.log(`Successfully fetched account info for ${conn.broker}:`, {
+              //   accountId: accountInfo?.accountId,
+              //   balance: accountInfo?.balance
+              // });
             } catch (error) {
               console.error(`Failed to get account info for ${conn.broker}:`, error);
               // Still connected, but couldn't fetch account details

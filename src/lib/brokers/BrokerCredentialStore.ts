@@ -314,9 +314,9 @@ export class CredentialAuditLogger {
     if (process.env.NODE_ENV === 'production') {
       // Audit logging for production security events
     // DEBUG: console.log(JSON.stringify({
-        type: 'CREDENTIAL_AUDIT',
-        ...logEntry,
-      }));
+    //     type: 'CREDENTIAL_AUDIT',
+    //     ...logEntry,
+    //   }));
     } else {
     // DEBUG: console.log('[Credential Audit]', logEntry);
     }

@@ -269,14 +269,14 @@ export const authConfig = {
   events: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, account, profile: _profile, isNewUser }: { user: any; account: any; profile?: any; isNewUser?: boolean }) {
-    // DEBUG: console.log(`[AUTH] Sign in event:`, {
-        userId: user.id,
-        email: user.email,
-        provider: account?.provider,
-        isNewUser,
-        environment: process.env.NODE_ENV
-      })
-      
+      // DEBUG: console.log(`[AUTH] Sign in event:`, {
+      //   userId: user.id,
+      //   email: user.email,
+      //   provider: account?.provider,
+      //   isNewUser,
+      //   environment: process.env.NODE_ENV
+      // })
+
       // Send welcome email for new users (but not in development)
       if (isNewUser && process.env.NODE_ENV !== 'development') {
         try {
@@ -297,11 +297,11 @@ export const authConfig = {
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signOut({ token, session }: { token: any; session: any }) {
-    // DEBUG: console.log(`[AUTH] Sign out event:`, {
-        userId: token?.id || session?.user?.id,
-        email: token?.email || session?.user?.email,
-        environment: process.env.NODE_ENV
-      })
+      // DEBUG: console.log(`[AUTH] Sign out event:`, {
+      //   userId: token?.id || session?.user?.id,
+      //   email: token?.email || session?.user?.email,
+      //   environment: process.env.NODE_ENV
+      // })
     }
   },
   debug: process.env.NODE_ENV !== 'production', // Enable debug messages in non-production

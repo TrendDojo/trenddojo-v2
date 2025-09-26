@@ -60,11 +60,11 @@ export class BaseEmailService {
     // In development/testing, we might not have SendGrid configured
     if (this.environment.isDevelopment && !this.getApiKey()) {
     // DEBUG: console.log('📧 [DEVELOPMENT] Email would be sent:', {
-        to: options.to,
-        type: options.templateType,
-        data: options.data,
-        environment: this.environment.environment
-      })
+    //   to: options.to,
+    //   type: options.templateType,
+    //   data: options.data,
+    //   environment: this.environment.environment
+    // })
       return { success: true, messageId: 'dev-mock-' + Date.now() }
     }
 
@@ -77,12 +77,12 @@ export class BaseEmailService {
     // For now, return a mock response since we're setting up the infrastructure
     // Real SendGrid integration would be implemented here
     // DEBUG: console.log(`📧 [${this.environment.environment.toUpperCase()}] Trading email prepared:`, {
-      to: options.to,
-      type: options.templateType,
-      priority: options.priority || 'normal',
-      tradingAlert: options.tradingAlert || false,
-      environment: this.environment.environment
-    })
+    //   to: options.to,
+    //   type: options.templateType,
+    //   priority: options.priority || 'normal',
+    //   tradingAlert: options.tradingAlert || false,
+    //   environment: this.environment.environment
+    // })
 
     return { 
       success: true, 

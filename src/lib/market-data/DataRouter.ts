@@ -44,21 +44,23 @@ export class DataRouter {
    * Get user's data preferences
    */
   private async getUserPreferences(userId: string): Promise<UserDataPreferences> {
-    // Try to get from database
-    const prefs = await prisma.user_data_preferences.findMany({
-      where: { user_id: userId }
-    });
+    // TODO: Implement user_data_preferences table in schema
+    // For now, return default preferences
 
-    if (prefs.length > 0) {
-      // Convert DB records to preferences object
-      return {
-        userId,
-        quotes: prefs.find(p => p.preference_type === 'quotes')?.primary_source || 'alpaca',
-        charts: prefs.find(p => p.preference_type === 'charts')?.primary_source || 'polygon',
-        fundamentals: prefs.find(p => p.preference_type === 'fundamentals')?.primary_source || 'yahoo',
-        fallbackSources: ['yahoo', 'cached']
-      };
-    }
+    // const prefs = await prisma.user_data_preferences.findMany({
+    //   where: { user_id: userId }
+    // });
+
+    // if (prefs.length > 0) {
+    //   // Convert DB records to preferences object
+    //   return {
+    //     userId,
+    //     quotes: prefs.find(p => p.preference_type === 'quotes')?.primary_source || 'alpaca',
+    //     charts: prefs.find(p => p.preference_type === 'charts')?.primary_source || 'polygon',
+    //     fundamentals: prefs.find(p => p.preference_type === 'fundamentals')?.primary_source || 'yahoo',
+    //     fallbackSources: ['yahoo', 'cached']
+    //   };
+    // }
 
     // Default preferences
     return {
@@ -92,16 +94,17 @@ export class DataRouter {
       // Add more brokers as we support them
     }
 
+    // TODO: Implement user_data_sources table in schema
     // Check if user has premium data subscriptions
-    const dataSources = await prisma.user_data_sources?.findMany({
-      where: { user_id: userId }
-    });
+    // const dataSources = await prisma.user_data_sources?.findMany({
+    //   where: { user_id: userId }
+    // });
 
-    if (dataSources) {
-      for (const source of dataSources) {
-        available.add(source.source);
-      }
-    }
+    // if (dataSources) {
+    //   for (const source of dataSources) {
+    //     available.add(source.source);
+    //   }
+    // }
 
     return available;
   }

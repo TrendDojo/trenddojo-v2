@@ -280,13 +280,13 @@ export class TradingSafetyContext {
 
       // Log the trade attempt
     // DEBUG: console.log(`[TRADING] ${request.realMoney ? 'REAL' : 'PAPER'} trade attempt:`, {
-        symbol: request.symbol,
-        quantity: request.quantity,
-        side: request.side,
-        orderType: request.orderType,
-        environment: this.environment.environment,
-        userId: this.userId
-      })
+    //     symbol: request.symbol,
+    //     quantity: request.quantity,
+    //     side: request.side,
+    //     orderType: request.orderType,
+    //     environment: this.environment.environment,
+    //     userId: this.userId
+    //   })
 
       // In production, this would call the actual trading API
       // For now, return a mock result

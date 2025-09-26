@@ -32,7 +32,7 @@ export function CDNChart({ symbol }: { symbol: string }) {
 
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().catch(err => {
-    // DEBUG: console.log(`Error attempting to enable fullscreen: ${err.message}`);
+        // DEBUG: console.log(`Error attempting to enable fullscreen: ${err.message}`);
       });
     } else {
       document.exitFullscreen();
@@ -182,15 +182,15 @@ export function CDNChart({ symbol }: { symbol: string }) {
 
     const loadAndCreateChart = async () => {
     // DEBUG: console.log('loadAndCreateChart called', {
-        hasLightweightCharts: !!window.LightweightCharts,
-        hasContainer: !!chartContainerRef.current
-      });
+        // hasLightweightCharts: !!window.LightweightCharts,
+        // hasContainer: !!chartContainerRef.current
+      // });
 
       if (!window.LightweightCharts || !chartContainerRef.current) {
     // DEBUG: console.log('Missing requirements:', {
-          LightweightCharts: !!window.LightweightCharts,
-          container: !!chartContainerRef.current
-        });
+          // LightweightCharts: !!window.LightweightCharts,
+          // container: !!chartContainerRef.current
+        // });
         return;
       }
 

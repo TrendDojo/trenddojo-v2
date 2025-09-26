@@ -32,15 +32,15 @@ if (!process.env.DATABASE_URL) {
 
 async function startCacheUpdater() {
     // DEBUG: console.log(`
-╔═══════════════════════════════════════════════════╗
-║         TrendDojo Market Data Updater             ║
-║                                                    ║
-║  Mode: 1-minute bulk updates                      ║
-║  Symbols: ALL (8000+)                             ║
-║  Stop Loss Checks: Enabled                        ║
-║  Historical Queue: Enabled                        ║
-╚═══════════════════════════════════════════════════╝
-  `);
+// ╔═══════════════════════════════════════════════════╗
+// ║         TrendDojo Market Data Updater             ║
+// ║                                                    ║
+// ║  Mode: 1-minute bulk updates                      ║
+// ║  Symbols: ALL (8000+)                             ║
+// ║  Stop Loss Checks: Enabled                        ║
+// ║  Historical Queue: Enabled                        ║
+// ╚═══════════════════════════════════════════════════╝
+//   `);
 
   try {
     // Initialize database connection

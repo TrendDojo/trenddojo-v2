@@ -153,7 +153,11 @@ Build a unified market data infrastructure where production PostgreSQL serves as
 - [ ] **MULTI-SOURCE**: Add source tracking to responses
 - [ ] **DATABASE**: Add data_tier, is_primary to broker_connections
 - [ ] **DATABASE**: Create user_data_preferences table
+  - NOTE: Code already exists in `/src/lib/market-data/DataRouter.ts:47-63` (currently commented out)
+  - Uncomment after table creation
 - [ ] **DATABASE**: Create user_data_sources table
+  - NOTE: Code already exists in `/src/lib/market-data/DataRouter.ts:99-107` (currently commented out)
+  - Uncomment after table creation
 - [ ] Set up production PostgreSQL market schema
 - [ ] Configure read-only access for dev/staging
 - [ ] Implement Vercel Cron for updates

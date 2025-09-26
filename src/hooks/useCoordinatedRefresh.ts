@@ -26,11 +26,11 @@ export function useCoordinatedRefresh<T>(config: CoordinatedRefreshConfig<T>) {
   };
 
     // DEBUG: console.log('[useCoordinatedRefresh] Initializing with config:', {
-    refreshType,
-    preset,
-    presetConfig,
-    finalConfig
-  });
+    //   refreshType,
+    //   preset,
+    //   presetConfig,
+    //   finalConfig
+    // });
 
   // Use the base refresh hook
   const refreshState = useDataRefresh<T>(finalConfig);

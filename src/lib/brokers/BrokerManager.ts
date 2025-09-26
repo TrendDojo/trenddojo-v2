@@ -242,15 +242,15 @@ export class BrokerManager {
   ): Promise<void> {
     // In production, this would save to database
     // DEBUG: console.log('Trade Execution:', {
-      broker,
-      orderId: response.orderId,
-      symbol: response.symbol,
-      quantity: response.quantity,
-      side: response.side,
-      status: response.status,
-      executedPrice: response.executedPrice,
-      timestamp: response.timestamp,
-    });
+    //   broker,
+    //   orderId: response.orderId,
+    //   symbol: response.symbol,
+    //   quantity: response.quantity,
+    //   side: response.side,
+    //   status: response.status,
+    //   executedPrice: response.executedPrice,
+    //   timestamp: response.timestamp,
+    // });
   }
 }
 
