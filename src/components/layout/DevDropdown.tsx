@@ -39,7 +39,7 @@ export function DevDropdown() {
       label: 'Theme Showcase',
       icon: Palette,
       onClick: () => {
-        router.push('/dev/theme-showcase');
+        router.push('/dev/theme');
         setIsOpen(false);
       },
       description: 'View all theme components'

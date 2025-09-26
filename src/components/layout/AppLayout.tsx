@@ -9,6 +9,7 @@ import { Sidebar } from "./Sidebar";
 import { Button } from "@/components/ui/Button";
 import { UserDropdown } from "./UserDropdown";
 import { DevDropdown } from "./DevDropdown";
+import { GlobalRefreshIndicator } from "@/components/ui/GlobalRefreshIndicator";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface AppLayoutProps {
@@ -18,14 +19,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    // Load collapsed state from localStorage on mount
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sidebarCollapsed');
-      return saved === 'true';
-    }
-    return false;
-  });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -45,10 +40,21 @@ export function AppLayout({ children, title }: AppLayoutProps) {
     }
   })();
 
+  // Load collapsed state from localStorage after mount
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem('sidebarCollapsed');
+    if (saved === 'true') {
+      setSidebarCollapsed(true);
+    }
+  }, []);
+
   // Save collapsed state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('sidebarCollapsed', sidebarCollapsed.toString());
-  }, [sidebarCollapsed]);
+    if (mounted) {
+      localStorage.setItem('sidebarCollapsed', sidebarCollapsed.toString());
+    }
+  }, [sidebarCollapsed, mounted]);
 
   // Close sidebar on window resize to desktop
   useEffect(() => {
@@ -134,10 +140,13 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 
                 {/* Right side actions */}
                 <div className="flex items-center gap-2">
-                  {/* Dev Dropdown - development only, desktop only */}
-                  <div className="hidden lg:block">
-                    <DevDropdown />
-                  </div>
+                  {/* Dev features - development only, desktop only */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="hidden lg:flex items-center gap-2">
+                      <GlobalRefreshIndicator variant="dev" />
+                      <DevDropdown />
+                    </div>
+                  )}
 
                   {/* Theme toggle button - desktop only */}
                   <button

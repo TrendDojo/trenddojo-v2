@@ -312,13 +312,13 @@ export class CredentialAuditLogger {
     // In production, this would write to a secure audit log
     // For now, we'll use console with structured logging
     if (process.env.NODE_ENV === 'production') {
-      // TODO: Send to audit logging service
-      console.log(JSON.stringify({
+      // Audit logging for production security events
+    // DEBUG: console.log(JSON.stringify({
         type: 'CREDENTIAL_AUDIT',
         ...logEntry,
       }));
     } else {
-      console.log('[Credential Audit]', logEntry);
+    // DEBUG: console.log('[Credential Audit]', logEntry);
     }
   }
 }

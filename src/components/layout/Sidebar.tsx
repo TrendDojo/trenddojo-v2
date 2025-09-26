@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -75,11 +75,11 @@ function NavItem({
         "font-medium relative group",
         isCollapsed ? "px-3 py-2.5 mx-2 justify-center" : "px-4 py-2.5 mx-2",
         isActive
-          ? "text-white dark:text-gray-900 bg-gray-900 dark:bg-gray-100"
+          ? "text-indigo-600 dark:text-indigo-400 font-semibold"
           : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/50 hover:bg-gray-100"
       )}
     >
-      {React.createElement(iconComponent, { className: "w-5 h-5" })}
+      {React.createElement(iconComponent, { className: "w-6 h-6", strokeWidth: 2.5 })}
       {!isCollapsed && <span className="truncate">{label}</span>}
     </Link>
   );
@@ -118,10 +118,16 @@ export function Sidebar({
   onCollapsedChange
 }: SidebarProps) {
   const pathname = usePathname();
-  const [localCollapsed, setLocalCollapsed] = useState(isCollapsed);
+  const [localCollapsed, setLocalCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setLocalCollapsed(isCollapsed);
+  }, [isCollapsed]);
 
   // Use prop if provided, otherwise use local state
-  const collapsed = onCollapsedChange ? isCollapsed : localCollapsed;
+  const collapsed = mounted ? (onCollapsedChange ? isCollapsed : localCollapsed) : false;
   const setCollapsed = onCollapsedChange || setLocalCollapsed;
 
   return (
@@ -190,7 +196,7 @@ export function Sidebar({
               title="Expand sidebar"
             >
               <svg
-                className="w-5 h-5 dark:text-gray-400 text-gray-600"
+                className="w-6 h-6 dark:text-gray-400 text-gray-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -198,7 +204,7 @@ export function Sidebar({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   d="M9 5l7 7-7 7"
                 />
               </svg>
@@ -211,7 +217,7 @@ export function Sidebar({
               title="Collapse sidebar"
             >
               <svg
-                className="w-5 h-5 dark:text-gray-400 text-gray-600"
+                className="w-6 h-6 dark:text-gray-400 text-gray-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -219,7 +225,7 @@ export function Sidebar({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
@@ -239,7 +245,11 @@ export function Sidebar({
                 label={item.label}
                 icon={item.icon}
                 tooltip={item.tooltip}
-                isActive={pathname === item.href}
+                isActive={
+                  pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`) ||
+                  (item.href === '/screener' && pathname.startsWith('/symbol/'))
+                }
                 isCollapsed={collapsed}
                 onClick={() => {
                   if (window.innerWidth < 1024) {

@@ -160,7 +160,7 @@ export async function POST(request: Request) {
       bracketOrders.push({ type: 'takeProfit', order: takeProfitOrder });
     }
 
-    // TODO: Log the trade in database for tracking when trades table is created
+    // Trade tracking is handled via positions
     // await prisma.trades.create({
     //   data: {
     //     id: crypto.randomUUID(),

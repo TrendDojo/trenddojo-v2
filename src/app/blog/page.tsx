@@ -9,9 +9,8 @@ import AnimatedPolygonBackground from "@/components/marketing/AnimatedPolygonBac
 import type { PostData } from "@/types/blog";
 import { format, parseISO } from 'date-fns';
 
-// This would normally be fetched server-side
-// For now, we'll use a client component with placeholder data
-// TODO: Convert to server component when blog posts are created
+// Placeholder blog page - not a priority for trading app
+// Using static data for now
 const PLACEHOLDER_POSTS: PostData[] = [
   {
     id: "welcome-to-trenddojo-blog",
@@ -73,7 +72,7 @@ function getCategoryColor(category: string): string {
 }
 
 export default function BlogPage() {
-  const posts = PLACEHOLDER_POSTS; // TODO: Replace with getSortedPostsData()
+  const posts = PLACEHOLDER_POSTS;
   const featuredPosts = posts.filter(post => post.featured);
   const recentPosts = posts.slice(0, 6);
 

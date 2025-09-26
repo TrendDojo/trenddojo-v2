@@ -60,11 +60,11 @@ export class InteractiveBrokersClient implements BrokerClient {
       
       // Listen to gateway events
       this.gateway.on('connected', (status) => {
-        console.log('IB Gateway connected:', status);
+    // DEBUG: console.log('IB Gateway connected:', status);
       });
       
       this.gateway.on('disconnected', () => {
-        console.log('IB Gateway disconnected');
+    // DEBUG: console.log('IB Gateway disconnected');
         this.connected = false;
       });
       
@@ -84,7 +84,7 @@ export class InteractiveBrokersClient implements BrokerClient {
         // Simulate connection delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.connected = true;
-        console.log(`Connected to IB (mock mode, ${this.config.paperTrading ? 'paper' : 'live'} trading)`);
+    // DEBUG: console.log(`Connected to IB (mock mode, ${this.config.paperTrading ? 'paper' : 'live'} trading)`);
         return true;
       }
       
@@ -111,7 +111,7 @@ export class InteractiveBrokersClient implements BrokerClient {
     }
     
     this.connected = false;
-    console.log('Disconnected from IB');
+    // DEBUG: console.log('Disconnected from IB');
   }
   
   async getAccountInfo(): Promise<AccountInfo> {

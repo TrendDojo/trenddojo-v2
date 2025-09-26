@@ -67,7 +67,7 @@ export class AlpacaClient implements BrokerClient {
         await this.validateTradingMode(accountInfo);
 
         this.connected = true;
-        console.log(`Connected to Alpaca (${this.config.paperTrading ? 'Paper' : 'Live'} trading)`);
+    // DEBUG: console.log(`Connected to Alpaca (${this.config.paperTrading ? 'Paper' : 'Live'} trading)`);
         return true;
       }
 
@@ -109,7 +109,7 @@ export class AlpacaClient implements BrokerClient {
     }
     
     this.connected = false;
-    console.log('Disconnected from Alpaca');
+    // DEBUG: console.log('Disconnected from Alpaca');
   }
   
   /**

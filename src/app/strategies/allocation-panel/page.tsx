@@ -26,7 +26,7 @@ export default function AllocationPanelPage() {
   const availableCash = 35000;
 
   const handleSaveAllocations = (allocations: any[]) => {
-    console.log("Saving allocations:", allocations);
+    // DEBUG: console.log("Saving allocations:", allocations);
     // In a real app, this would update the database
 
     // Show a simple confirmation

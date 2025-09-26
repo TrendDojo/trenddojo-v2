@@ -13,8 +13,8 @@ class GracefulDatabase {
 
   constructor() {
     if (useGracefulDegradation) {
-      console.log('🔄 Preview deployment detected - running in graceful degradation mode')
-      console.log('Environment info:', envInfo)
+    // DEBUG: console.log('🔄 Preview deployment detected - running in graceful degradation mode')
+    // DEBUG: console.log('Environment info:', envInfo)
       return
     }
 

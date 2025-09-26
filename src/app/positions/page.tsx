@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Atom, Edit3, Building2 } from "lucide-react";
+import { Atom, Edit3, Building2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns } from "lucide-react";
 import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
@@ -860,7 +860,7 @@ export default function PositionsPage() {
           <div className="pt-2"></div>
 
           {/* Filter and Actions Bar */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-6">
               {/* Strategy Dropdown */}
               <div className="flex items-center gap-2">
@@ -957,107 +957,103 @@ export default function PositionsPage() {
 
             </div>
 
-            {/* Right side controls - separate flex container */}
-            <div className="flex items-center gap-6">
+            {/* Right side controls - new theme format */}
+            <div className="flex items-center gap-4">
               {/* Column Selector */}
-              <div className="relative">
+              <button
+                onClick={() => setColumnsDropdownOpen(!columnsDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm dark:text-gray-400 text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                <Columns className="w-4 h-4" />
+                Columns
+              </button>
+
+              <span className="text-gray-300 dark:text-slate-600">|</span>
+
+              {/* Records per page selector */}
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="px-3 py-1.5 text-sm dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg"
+              >
+                <option value={10}>10 rows</option>
+                <option value={25}>25 rows</option>
+                <option value={50}>50 rows</option>
+                <option value={100}>100 rows</option>
+              </select>
+
+              {/* Icon Pagination */}
+              <div className="flex items-center gap-1">
                 <button
-                  onClick={() => setColumnsDropdownOpen(!columnsDropdownOpen)}
-                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                  title="Select columns"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
+                  <ChevronsLeft className="w-4 h-4" />
                 </button>
-                {columnsDropdownOpen && (
-                  <Dropdown
-                    isOpen={columnsDropdownOpen}
-                    onClose={() => setColumnsDropdownOpen(false)}
-                    position="right"
-                    width="sm"
-                  >
-                    <div className="py-2">
-                      <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        Visible Columns
-                      </p>
-                      {Object.entries(visibleColumns).filter(([key]) => key !== 'actions').map(([key, value]) => (
-                        <label
-                          key={key}
-                          className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={value}
-                            onChange={(e) => setVisibleColumns(prev => ({
-                              ...prev,
-                              [key]: e.target.checked
-                            }))}
-                            className="mr-3"
-                          />
-                          <span className="text-sm capitalize dark:text-gray-300 text-gray-700">
-                            {key === 'entry' ? 'Entry / Change' : key}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </Dropdown>
-                )}
-              </div>
-
-              {/* Vertical Divider */}
-              <div className="h-8 w-px bg-gray-500 dark:bg-gray-400 self-end" />
-
-              {/* Top Pagination Controls - Same format as bottom */}
-              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
                 >
-                  <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={cn(
-                          "px-3 py-1 rounded-lg text-sm font-medium transition-colors",
-                          currentPage === pageNum
-                            ? "dark:bg-slate-700/50 bg-gray-200 dark:text-white text-gray-900"
-                            : "hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-gray-300 text-gray-700"
-                        )}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-                </div>
+                <span className="px-2 text-sm dark:text-gray-400 text-gray-600">
+                  {totalPages === 0 ? '0 of 0' : `${currentPage} of ${totalPages}`}
+                </span>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
                 >
-                  <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                >
+                  <ChevronsRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
+
+            {/* Column Selector Dropdown - moved outside to prevent z-index issues */}
+            {columnsDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1 z-50">
+                <Dropdown
+                  isOpen={columnsDropdownOpen}
+                  onClose={() => setColumnsDropdownOpen(false)}
+                  position="right"
+                  width="sm"
+                >
+                  <div className="py-2">
+                    <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      Visible Columns
+                    </p>
+                    {Object.entries(visibleColumns).filter(([key]) => key !== 'actions').map(([key, value]) => (
+                      <label
+                        key={key}
+                        className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={value}
+                          onChange={(e) => setVisibleColumns(prev => ({
+                            ...prev,
+                            [key]: e.target.checked
+                          }))}
+                          className="mr-3"
+                        />
+                        <span className="text-sm capitalize dark:text-gray-300 text-gray-700">
+                          {key === 'entry' ? 'Entry / Change' : key}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </Dropdown>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons Row (when items selected) */}
@@ -1415,63 +1411,15 @@ export default function PositionsPage() {
             </div>
           </div>
 
-          {/* Pagination Controls */}
+          {/* Bottom Status Bar */}
           <div className="flex items-center justify-between py-3">
-                <div className="text-sm dark:text-gray-400 text-gray-600">
-                  {filteredPositions.length > 0
-                    ? `Showing ${startIndex + 1} to ${Math.min(endIndex, filteredPositions.length)} of ${filteredPositions.length} positions`
-                    : "No positions to display"
-                  }
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
-                      }
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={cn(
-                            "px-3 py-1 rounded-lg text-sm font-medium transition-colors",
-                            currentPage === pageNum
-                              ? "dark:bg-slate-700/50 bg-gray-200 dark:text-white text-gray-900"
-                              : "hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-gray-300 text-gray-700"
-                          )}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <svg className="w-5 h-5 dark:text-gray-400 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
+            <div className="text-sm dark:text-gray-400 text-gray-600">
+              {filteredPositions.length > 0
+                ? `Showing ${startIndex + 1} to ${Math.min(endIndex, filteredPositions.length)} of ${filteredPositions.length} positions`
+                : "No positions to display"
+              }
             </div>
+          </div>
           </>
 
         {/* New Position Modal */}
@@ -1481,7 +1429,7 @@ export default function PositionsPage() {
           accountType={activeAccountType === "live" ? "live" : activeAccountType === "paper" ? "paper" : "dev"}
           onSubmit={async (positionData: NewPositionData) => {
             // In production, this would submit to API
-            console.log("Creating position:", positionData);
+    // DEBUG: console.log("Creating position:", positionData);
             // Mock success
             await new Promise(resolve => setTimeout(resolve, 1000));
             // Refresh positions or add optimistically

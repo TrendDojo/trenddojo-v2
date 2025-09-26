@@ -91,7 +91,7 @@ export const authConfig = {
 
             // If user doesn't exist in dev mode, create one
             if (!user) {
-              console.log("[AUTH] Creating development user:", email)
+    // DEBUG: console.log("[AUTH] Creating development user:", email)
               user = await prisma.users.create({
                 data: {
                   id: crypto.randomUUID(),
@@ -122,7 +122,7 @@ export const authConfig = {
               realTradingEnabled: false // Never allow real trading in dev mode
             }
 
-            console.log(`[AUTH] Dev user logged in: ${email} (${subscriptionTier})`)
+    // DEBUG: console.log(`[AUTH] Dev user logged in: ${email} (${subscriptionTier})`)
             return tradingUser
           }
 
@@ -176,7 +176,7 @@ export const authConfig = {
             realTradingEnabled
           }
 
-          console.log(`[AUTH] User logged in: ${email} (${subscriptionTier}, real trading: ${realTradingEnabled})`)
+    // DEBUG: console.log(`[AUTH] User logged in: ${email} (${subscriptionTier}, real trading: ${realTradingEnabled})`)
           
           return tradingUser
         } catch (error) {
@@ -269,7 +269,7 @@ export const authConfig = {
   events: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, account, profile: _profile, isNewUser }: { user: any; account: any; profile?: any; isNewUser?: boolean }) {
-      console.log(`[AUTH] Sign in event:`, {
+    // DEBUG: console.log(`[AUTH] Sign in event:`, {
         userId: user.id,
         email: user.email,
         provider: account?.provider,
@@ -297,7 +297,7 @@ export const authConfig = {
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signOut({ token, session }: { token: any; session: any }) {
-      console.log(`[AUTH] Sign out event:`, {
+    // DEBUG: console.log(`[AUTH] Sign out event:`, {
         userId: token?.id || session?.user?.id,
         email: token?.email || session?.user?.email,
         environment: process.env.NODE_ENV

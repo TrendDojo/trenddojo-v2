@@ -59,7 +59,7 @@ export class BaseEmailService {
   async send(options: EmailOptions): Promise<{ success: boolean; error?: string; messageId?: string }> {
     // In development/testing, we might not have SendGrid configured
     if (this.environment.isDevelopment && !this.getApiKey()) {
-      console.log('📧 [DEVELOPMENT] Email would be sent:', {
+    // DEBUG: console.log('📧 [DEVELOPMENT] Email would be sent:', {
         to: options.to,
         type: options.templateType,
         data: options.data,
@@ -76,7 +76,7 @@ export class BaseEmailService {
 
     // For now, return a mock response since we're setting up the infrastructure
     // Real SendGrid integration would be implemented here
-    console.log(`📧 [${this.environment.environment.toUpperCase()}] Trading email prepared:`, {
+    // DEBUG: console.log(`📧 [${this.environment.environment.toUpperCase()}] Trading email prepared:`, {
       to: options.to,
       type: options.templateType,
       priority: options.priority || 'normal',

@@ -58,26 +58,34 @@ export default function LoginPage() {
       {/* Main content */}
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">
-              Sign In
-            </h1>
-            <p className="dark:text-gray-400 text-gray-600">
-              Welcome back to TrendDojo
-            </p>
+          <div className="flex items-center gap-4 pl-6">
+            {/* Logo Icon */}
+            <img
+              src="/assets/icons/trenddojo-plain-icon.svg"
+              alt="TrendDojo"
+              className="h-16 w-16 flex-shrink-0"
+            />
+
+            {/* Text Content Wrapper */}
+            <div className="text-left">
+              <h1 className="text-3xl font-bold dark:text-white text-gray-900">
+                Sign In
+              </h1>
+              <p className="dark:text-gray-400 text-gray-600">
+                Welcome back to TrendDojo
+              </p>
+            </div>
           </div>
         
         <Panel variant="default" padding="xl" rounded="xl">
           {/* Development Mode Notice */}
           <Alert intent="info" className="mb-6">
-            <p className="text-info text-sm">
-              <strong>Development Mode:</strong> Sign in with any email and password "password123"
-            </p>
+            <strong>Development Mode:</strong> Sign in with any email and password "password123"
           </Alert>
-          
+
           {error && (
             <Alert intent="error" className="mb-6">
-              <p className="text-danger text-sm">{error}</p>
+              {error}
             </Alert>
           )}
           

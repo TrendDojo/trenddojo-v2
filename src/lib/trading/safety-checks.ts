@@ -279,7 +279,7 @@ export class TradingSafetyContext {
       }
 
       // Log the trade attempt
-      console.log(`[TRADING] ${request.realMoney ? 'REAL' : 'PAPER'} trade attempt:`, {
+    // DEBUG: console.log(`[TRADING] ${request.realMoney ? 'REAL' : 'PAPER'} trade attempt:`, {
         symbol: request.symbol,
         quantity: request.quantity,
         side: request.side,

@@ -46,7 +46,7 @@ export class BrokerManager {
           this.primaryBroker = broker;
         }
         
-        console.log(`Connected to ${broker}${connection.isPrimary ? ' (primary)' : ''}`);
+    // DEBUG: console.log(`Connected to ${broker}${connection.isPrimary ? ' (primary)' : ''}`);
         return true;
       }
       
@@ -241,7 +241,7 @@ export class BrokerManager {
     broker: string
   ): Promise<void> {
     // In production, this would save to database
-    console.log('Trade Execution:', {
+    // DEBUG: console.log('Trade Execution:', {
       broker,
       orderId: response.orderId,
       symbol: response.symbol,

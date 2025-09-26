@@ -23,7 +23,7 @@ export default function AllocationExamplePage() {
   };
 
   const handleAllocation = (allocation: { strategyId: string; amount: number; percentage: number }) => {
-    console.log("Allocation confirmed:", allocation);
+    // DEBUG: console.log("Allocation confirmed:", allocation);
     // In a real app, this would update the database and refresh the UI
     alert(`Allocated ${allocation.percentage.toFixed(1)}% ($${allocation.amount.toLocaleString()}) to ${selectedStrategy.name}`);
   };

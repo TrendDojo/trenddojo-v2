@@ -13,13 +13,13 @@ export default function Navigation({ variant, links, className = "" }: Navigatio
   const getNavLinkStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "text-white/90 hover:text-white font-medium transition-colors drop-shadow-sm";
+        return "text-white/90 hover:text-white font-medium transition-colors drop-shadow-sm no-underline";
       case 'internal':
-        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors no-underline";
       case 'pricing':
-        return "text-slate-700 hover:text-trenddojo-purple-700 font-medium transition-colors drop-shadow-sm";
+        return "text-slate-700 hover:text-trenddojo-purple-700 font-medium transition-colors drop-shadow-sm no-underline";
       default:
-        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors no-underline";
     }
   };
 

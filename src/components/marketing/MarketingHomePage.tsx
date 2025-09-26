@@ -7,6 +7,7 @@ import TrendDojoHeader from "@/components/ui/TrendDojoHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/Button";
 
 const features = [
   {
@@ -110,25 +111,23 @@ export default function MarketingHomePage() {
             </motion.div>
 
             <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 drop-shadow-lg">
-              Trade with <span className="text-trenddojo-purple-700">Discipline</span>
+              Trade with <span className="text-indigo-400">Discipline</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-12 drop-shadow-md">
-              Professional position sizing, risk management, and trade journaling 
-              for <span className="text-trenddojo-purple-700">swing</span> and <span className="text-trenddojo-purple-700">trend following</span> traders — whether professional or amateur, part-time or full-time.
+              Professional position sizing, risk management, and trade journaling
+              for <span className="text-indigo-400">swing</span> and <span className="text-indigo-400">trend following</span> traders — whether professional or amateur, part-time or full-time.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link
-                href="/signup"
-                className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg no-underline inline-block"
-              >
-                Start Free Trial
+              <Link href="/signup">
+                <Button variant="primary" size="lg">
+                  Start Free Trial
+                </Button>
               </Link>
-              <Link
-                href="/demo"
-                className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5 no-underline inline-block"
-              >
-                View Demo
+              <Link href="/demo">
+                <Button variant="ghost" size="lg" className="border border-white/20 hover:border-white/40 text-white hover:bg-white/10 dark:border-white/20 dark:hover:border-white/40 dark:text-white dark:hover:bg-white/10">
+                  View Demo
+                </Button>
               </Link>
             </div>
             
@@ -177,9 +176,9 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50 hover:border-trenddojo-purple-700/50 hover:bg-slate-800/90 transition-all duration-300"
+                className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50 hover:border-indigo-600/50 hover:bg-slate-800/90 transition-all duration-300"
               >
-                <feature.icon className="w-12 h-12 text-trenddojo-purple-700 mb-4" />
+                <feature.icon className="w-12 h-12 text-indigo-600 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{feature.description}</p>
               </motion.div>
@@ -215,7 +214,7 @@ export default function MarketingHomePage() {
                     viewport={{ once: true }}
                     className="flex items-center text-gray-200"
                   >
-                    <CheckCircle className="w-5 h-5 text-trenddojo-purple-700 mr-3 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-indigo-600 mr-3 flex-shrink-0" />
                     {item}
                   </motion.li>
                 ))}
@@ -285,7 +284,7 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-slate-200 hover:border-trenddojo-purple-700/60 hover:shadow-lg transition-all duration-300"
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-slate-200 hover:border-indigo-600/60 hover:shadow-lg transition-all duration-300"
               >
                 <p className="text-slate-700 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div>
@@ -299,7 +298,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-trenddojo-primary-600 to-trenddojo-purple-700">
+      <section className="py-20 bg-gradient-to-r from-indigo-600 to-indigo-700">
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -314,11 +313,10 @@ export default function MarketingHomePage() {
               Join thousands of traders who&apos;ve improved their consistency with 
               systematic risk management and disciplined execution.
             </p>
-            <Link
-              href="/signup"
-              className="bg-white text-trenddojo-purple-700 hover:bg-gray-100 hover:text-trenddojo-purple-800 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 inline-block shadow-lg"
-            >
-              Get Started Free
+            <Link href="/signup">
+              <Button variant="secondary" size="lg" className="bg-white hover:bg-gray-100 text-indigo-600 border-0 shadow-lg">
+                Get Started Free
+              </Button>
             </Link>
           </motion.div>
         </div>

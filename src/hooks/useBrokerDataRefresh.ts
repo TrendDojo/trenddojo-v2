@@ -106,7 +106,7 @@ export function useBrokerDataRefresh(options: RefreshOptions = {}) {
   const refresh = useCallback(async (isRetry = false) => {
     // Don't refresh if already fetching (unless it's a retry)
     if (status === 'fetching' && !isRetry) {
-      console.log('Already fetching, skipping refresh');
+    // DEBUG: console.log('Already fetching, skipping refresh');
       return;
     }
 
@@ -131,7 +131,7 @@ export function useBrokerDataRefresh(options: RefreshOptions = {}) {
       // Retry logic
       if (retryCountRef.current < opts.retryCount!) {
         retryCountRef.current++;
-        console.log(`Retrying fetch (${retryCountRef.current}/${opts.retryCount})...`);
+    // DEBUG: console.log(`Retrying fetch (${retryCountRef.current}/${opts.retryCount})...`);
 
         retryTimeoutRef.current = setTimeout(() => {
           refresh(true);
@@ -168,7 +168,7 @@ export function useBrokerDataRefresh(options: RefreshOptions = {}) {
     const handleFocus = () => {
       // Only refresh if data is stale or error
       if (isStale() || status === 'error') {
-        console.log('Window focused, refreshing stale data...');
+    // DEBUG: console.log('Window focused, refreshing stale data...');
         refresh();
       }
     };
@@ -182,7 +182,7 @@ export function useBrokerDataRefresh(options: RefreshOptions = {}) {
     if (!opts.triggers?.includes('interval') || !opts.intervalMs) return;
 
     intervalRef.current = setInterval(() => {
-      console.log('Interval refresh triggered');
+    // DEBUG: console.log('Interval refresh triggered');
       refresh();
     }, opts.intervalMs);
 

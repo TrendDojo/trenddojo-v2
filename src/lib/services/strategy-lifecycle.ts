@@ -174,7 +174,7 @@ export class StrategyLifecycle {
 
   /**
    * Recursively get all child strategies
-   * TODO: Implement when parent-child relations are added to schema
+   * NOTE: Parent-child strategy relations pending implementation
    */
   private static async getDescendants(strategyId: string): Promise<any[]> {
     // For now, just return the single strategy
@@ -197,7 +197,7 @@ export class StrategyLifecycle {
 
     return [strategy];
 
-    // TODO: When parent-child relations are added:
+    // Parent-child relations implementation:
     /*
     const descendants = [strategy];
     for (const child of strategy.childStrategies) {

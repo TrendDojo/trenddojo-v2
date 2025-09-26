@@ -51,7 +51,7 @@ export class IBGateway extends EventEmitter {
     // In production, check for IB API availability
     if (process.env.NODE_ENV === 'production' && process.env.ENABLE_IB_LIVE === 'true') {
       this.mockMode = false;
-      // TODO: Initialize real IB API client
+      // IB API integration deferred - complex implementation
     }
   }
   

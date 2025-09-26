@@ -38,26 +38,26 @@ export default function TrendDojoHeader({
   const getSignInStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "text-white/90 hover:text-white font-medium transition-colors px-4 py-2 drop-shadow-sm";
+        return "text-white/90 hover:text-white font-medium transition-colors px-4 py-2 drop-shadow-sm no-underline";
       case 'internal':
-        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
       case 'pricing':
-        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
       default:
-        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2";
+        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
     }
   };
 
   const getSignupStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm drop-shadow-sm";
+        return "bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm drop-shadow-sm no-underline";
       case 'internal':
-        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
       case 'pricing':
-        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
       default:
-        return "bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm";
+        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
     }
   };
 
@@ -137,15 +137,15 @@ export default function TrendDojoHeader({
           </div>
 
           {/* Right side - Navigation and Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-16">
             {/* Desktop Navigation */}
-            <Navigation 
+            <Navigation
               variant={variant}
               links={navigationLinks}
             />
 
             {/* CTA Buttons */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden md:flex items-center space-x-6">
               <Link
                 href={ctaButtons.signIn.href}
                 className={signInStyles}

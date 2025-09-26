@@ -72,7 +72,7 @@ export class MarketDataService {
       60000 // Cleanup every minute
     );
     
-    console.log(`MarketDataService initialized with ${this.providers.size} providers`);
+    // DEBUG: console.log(`MarketDataService initialized with ${this.providers.size} providers`);
   }
   
   /**
@@ -281,7 +281,7 @@ export class MarketDataService {
    * Warm up cache for active symbols
    */
   async warmupCache(symbols: string[]): Promise<void> {
-    console.log(`Warming up cache for ${symbols.length} symbols...`);
+    // DEBUG: console.log(`Warming up cache for ${symbols.length} symbols...`);
     
     // Fetch prices in bulk
     await this.getBulkPrices(symbols);
@@ -299,7 +299,7 @@ export class MarketDataService {
       }
     }
     
-    console.log('Cache warmup complete');
+    // DEBUG: console.log('Cache warmup complete');
   }
   
   // Private helper methods
@@ -486,7 +486,7 @@ export class MarketDataService {
   }
   
   private async getDbCachedTechnicalData(symbol: string): Promise<TechnicalData | null> {
-    // TODO: stock_technicals table not yet created in schema
+    // Technical indicators feature not implemented
     // Uncomment when table is added
     /*
     try {
@@ -522,7 +522,7 @@ export class MarketDataService {
     symbol: string,
     data: TechnicalData
   ): Promise<void> {
-    // TODO: stock_technicals table not yet created in schema
+    // Technical indicators feature not implemented
     // Uncomment when table is added
     /*
     try {

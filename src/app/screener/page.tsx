@@ -11,6 +11,7 @@ import { Pill } from "@/components/ui/Pill";
 import { tableStyles, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
 import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
+import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
 import {
   Monitor,
   Heart,
@@ -24,6 +25,7 @@ import {
   Droplets,
   Globe
 } from "lucide-react";
+import { dropdownStyles, getDropdownTriggerClasses, getDropdownItemClasses, getFilterPillClasses, screenerDropdownStyles } from "@/lib/dropdownStyles";
 
 interface Stock {
   symbol: string;
@@ -107,15 +109,27 @@ export default function ScreenerPage() {
   const [presetsTab, setPresetsTab] = useState<'custom' | 'library'>('library');
   const [filtersTab, setFiltersTab] = useState<'price-volume' | 'technical' | 'fundamentals'>('price-volume');
 
-  // Fetch market data and load saved filters on component mount
+  // Integrate with refresh coordinator
   useEffect(() => {
+    // Initial load
     fetchMarketData();
     loadSavedFilters();
-    
-    // Refresh data every 60 seconds
-    const interval = setInterval(fetchMarketData, 60000);
-    
-    return () => clearInterval(interval);
+
+    // Subscribe to market data refresh events
+    const unsubscribe = refreshCoordinator.subscribe('market-data', async () => {
+    // DEBUG: console.log('[Screener] Refreshing market data via coordinator');
+      await fetchMarketData();
+    });
+
+    // Set up interval-based refresh through the coordinator
+    const interval = setInterval(() => {
+      refreshCoordinator.triggerRefresh('market-data');
+    }, 60000);
+
+    return () => {
+      clearInterval(interval);
+      unsubscribe();
+    };
   }, []);
 
   const loadSavedFilters = () => {
@@ -526,7 +540,7 @@ export default function ScreenerPage() {
                   • Last updated: <span className="font-semibold">{getTimeAgo(lastUpdate)}</span>
                 </span>
                 <button
-                  onClick={fetchMarketData}
+                  onClick={() => refreshCoordinator.triggerRefresh('market-data')}
                   disabled={loading}
                   className="ml-2 p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
                   title="Refresh data"
@@ -543,7 +557,7 @@ export default function ScreenerPage() {
                   )}
                 </button>
                 <button
-                  onClick={fetchMarketData}
+                  onClick={() => refreshCoordinator.triggerRefresh('market-data')}
                   disabled={loading}
                   className="ml-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -1427,7 +1441,7 @@ export default function ScreenerPage() {
                       className={getTableRow(index)}
                     >
                       <td className={tableStyles.td}>
-                        <Link href={`/stocks/${stock.symbol}`}>
+                        <Link href={`/symbol/${stock.symbol}`}>
                           <div className="cursor-pointer hover:text-indigo-500 transition-colors">
                             <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
                             <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
@@ -1463,7 +1477,7 @@ export default function ScreenerPage() {
                       </td>
                       <td className={tableStyles.td}>
                         <div className="flex gap-2">
-                          <Link href={`/stocks/${stock.symbol}`}>
+                          <Link href={`/symbol/${stock.symbol}`}>
                             <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
                               View
                             </button>

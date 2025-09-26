@@ -67,7 +67,7 @@ export class MockProvider implements IMarketDataProvider {
     await this.generateHistoricalData();
     
     this.isInitialized = true;
-    console.log('Mock provider initialized with', this.basePrices.size, 'symbols');
+    // DEBUG: console.log('Mock provider initialized with', this.basePrices.size, 'symbols');
   }
   
   async shutdown(): Promise<void> {

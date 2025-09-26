@@ -122,7 +122,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen dark:bg-slate-900 bg-gray-100">
+    <div className="min-h-screen dark:bg-slate-900 bg-white">
       {/* Logo in top left */}
       <div className="absolute top-0 left-0 p-6">
         <Link href="/">
@@ -137,20 +137,30 @@ export default function SignupPage() {
       {/* Main content */}
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">
-              Start Your Free Trial
-            </h1>
-            <p className="dark:text-gray-400 text-gray-600">
-              Join thousands of traders using systematic discipline
-            </p>
+          <div className="flex items-center gap-4 pl-6">
+            {/* Logo Icon */}
+            <img
+              src="/assets/icons/trenddojo-plain-icon.svg"
+              alt="TrendDojo"
+              className="h-16 w-16 flex-shrink-0"
+            />
+
+            {/* Text Content Wrapper */}
+            <div className="text-left">
+              <h1 className="text-3xl font-bold dark:text-white text-gray-900">
+                Start Your Free Account
+              </h1>
+              <p className="dark:text-gray-400 text-gray-600">
+                Experience the power of systematic trading
+              </p>
+            </div>
           </div>
           
           <Panel variant="default" padding="xl" rounded="xl">
             {error && (
               <Alert intent="error" className="mb-6">
-                <p className="dark:text-red-300 text-red-700 text-sm">{error}</p>
-                <Link href="/login" className="text-danger hover:opacity-80 text-sm mt-2 inline-block">
+                {error}{" "}
+                <Link href="/login" className="underline hover:opacity-80">
                   Sign in to existing account
                 </Link>
               </Alert>
@@ -218,46 +228,16 @@ export default function SignupPage() {
                 fullWidth
                 variant="primary"
               >
-                Start Free Trial
+                Start Free Account
               </Button>
             </form>
-            
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t dark:border-slate-700 border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 dark:bg-slate-950 bg-white dark:text-gray-400 text-gray-600">Or continue with</span>
-                </div>
-              </div>
-              
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  variant="secondary"
-                  fullWidth
-                >
-                  Google
-                </Button>
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  variant="secondary"
-                  fullWidth
-                >
-                  GitHub
-                </Button>
-              </div>
-              
-              <p className="mt-6 text-center dark:text-gray-400 text-gray-600 text-sm">
-                Already have an account?{" "}
-                <Link href="/login" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
-                  Sign in
-                </Link>
-              </p>
-            </div>
+
+            <p className="mt-6 text-center dark:text-gray-400 text-gray-600 text-sm">
+              Already have an account?{" "}
+              <Link href="/login" className="text-indigo-600 dark:text-indigo-400 hover:opacity-80">
+                Sign in
+              </Link>
+            </p>
           </Panel>
         </div>
       </div>

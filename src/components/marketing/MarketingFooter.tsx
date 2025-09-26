@@ -11,7 +11,7 @@ export default function MarketingFooter() {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <Image
-              src="/assets/logos/td-logo-tr.svg"
+              src="/assets/logos/td-logo-s.svg"
               alt="TrendDojo"
               width={200}
               height={44}
@@ -28,9 +28,9 @@ export default function MarketingFooter() {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>
-                    <Link 
-                      href={link.href} 
-                      className="text-gray-400 hover:text-trenddojo-purple-700 transition-colors text-sm"
+                    <Link
+                      href={link.href}
+                      className="text-gray-400 hover:text-indigo-400 transition-colors text-sm"
                     >
                       {link.label}
                     </Link>

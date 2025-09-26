@@ -41,7 +41,7 @@ export default function AnimatedPolygonBackground({ density = 1.0 }: AnimatedPol
         
         // Larger shapes toward top-left, smaller toward bottom-right
         const sizeMultiplier = topLeftBias; // Bigger shapes when closer to top-left
-        const size = Math.random() * (10 * sizeMultiplier) + 6; // Much smaller: 6-16px
+        const size = (Math.random() * (10 * sizeMultiplier) + 6) * 0.7; // 30% smaller: 4.2-11.2px
         
         // Generate triangle points
         const points = [
@@ -77,7 +77,7 @@ export default function AnimatedPolygonBackground({ density = 1.0 }: AnimatedPol
         
         // Larger shapes toward bottom-right, smaller toward top-left
         const sizeMultiplier = bottomRightBias; // Bigger shapes when closer to bottom-right
-        const size = Math.random() * (10 * sizeMultiplier) + 6; // Much smaller: 6-16px
+        const size = (Math.random() * (10 * sizeMultiplier) + 6) * 0.7; // 30% smaller: 4.2-11.2px
         
         // Generate triangle points
         const points = [
@@ -109,7 +109,7 @@ export default function AnimatedPolygonBackground({ density = 1.0 }: AnimatedPol
       for (let i = startIndex; i < startIndex + scatteredShapes; i++) {
         const centerX = Math.random() * 1200;      // X: anywhere across full width
         const centerY = Math.random() * 800;       // Y: anywhere across full height
-        const size = Math.random() * 8 + 4;        // Very small shapes: 4-12px
+        const size = (Math.random() * 8 + 4) * 0.7;        // 30% smaller: 2.8-8.4px
         
         // Generate triangle points
         const points = [

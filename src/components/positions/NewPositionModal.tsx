@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/utils';
-import { Search, TrendingUp, Clock, Plus, Zap, Layers, Hand, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { alertStyles } from '@/lib/panelStyles';
+import { Search, TrendingUp, Clock, Plus, Zap, Layers, Hand, ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
+import { useSymbolSearch, useLatestPrice, useSymbolValidation } from '@/lib/market-data/client/useMarketData';
+import { useBrokerQuote } from '@/lib/market-data/client/useBrokerQuote';
 
 interface NewPositionModalProps {
   isOpen: boolean;
@@ -40,22 +43,9 @@ const mockStrategies = [
   { id: '4', name: 'Swing-Momentum', status: 'paused' },
 ];
 
-// Mock symbol suggestions - in production, these would come from your API
-const mockSymbolSuggestions = [
-  { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ' },
-  { symbol: 'MSFT', name: 'Microsoft Corporation', exchange: 'NASDAQ' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', exchange: 'NASDAQ' },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ' },
-  { symbol: 'META', name: 'Meta Platforms Inc.', exchange: 'NASDAQ' },
-  { symbol: 'NVDA', name: 'NVIDIA Corporation', exchange: 'NASDAQ' },
-  { symbol: 'JPM', name: 'JPMorgan Chase & Co.', exchange: 'NYSE' },
-  { symbol: 'V', name: 'Visa Inc.', exchange: 'NYSE' },
-  { symbol: 'JNJ', name: 'Johnson & Johnson', exchange: 'NYSE' },
-];
-
-const recentSymbols = ['AAPL', 'MSFT', 'TSLA']; // Mock recent symbols
-const popularSymbols = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'NVDA']; // Mock popular symbols
+// Popular symbols for quick access
+const recentSymbols = ['AAPL', 'MSFT', 'TSLA']; // Placeholder - will get from user history
+const popularSymbols = ['AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN'];
 
 export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefilledSymbol }: NewPositionModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -70,8 +60,34 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [symbolSearch, setSymbolSearch] = useState(prefilledSymbol || '');
   const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState(mockSymbolSuggestions);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Use real market data hooks
+  const { query: searchQuery, setQuery: setSearchQuery, results: searchResults, loading: searchLoading } = useSymbolSearch();
+
+  // Determine if we should use broker data or general market data
+  const useBrokerData = formData.source === 'alpaca_live' || formData.source === 'alpaca_paper';
+
+  // Get general market data (from Polygon) when no broker selected
+  const { price: polygonPrice, loading: polygonLoading, error: polygonError } = useLatestPrice(
+    !useBrokerData && formData.symbol ? formData.symbol : null
+  );
+
+  // Get broker-specific data (from Alpaca) when Alpaca is selected
+  const { quote: alpacaQuote, loading: alpacaLoading, error: alpacaError } = useBrokerQuote(
+    useBrokerData && formData.symbol ? formData.symbol : null,
+    formData.source
+  );
+
+  // Determine which price to show
+  const currentPrice = useBrokerData ? alpacaQuote?.price : polygonPrice;
+  const priceLoading = useBrokerData ? alpacaLoading : polygonLoading;
+  const priceError = useBrokerData ? alpacaError : polygonError;
+  const bidPrice = useBrokerData ? alpacaQuote?.bid : undefined;
+  const askPrice = useBrokerData ? alpacaQuote?.ask : undefined;
+  const spread = bidPrice && askPrice ? (askPrice - bidPrice) : undefined;
+
+  const { isValid: symbolValid, loading: validationLoading } = useSymbolValidation(formData.symbol || null);
 
   // Mock broker connection status - in production, this would come from your API/context
   const brokerConnections = {
@@ -87,19 +103,17 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
     }
   }, [prefilledSymbol]);
 
-  // Filter symbol suggestions based on search
+  // Update search query when symbol search changes
   useEffect(() => {
-    if (symbolSearch && symbolSearch.length > 0) {
-      const filtered = mockSymbolSuggestions.filter(
-        item =>
-          item.symbol.toUpperCase().includes(symbolSearch.toUpperCase()) ||
-          item.name.toLowerCase().includes(symbolSearch.toLowerCase())
-      );
-      setFilteredSuggestions(filtered);
-    } else {
-      setFilteredSuggestions(mockSymbolSuggestions);
+    setSearchQuery(symbolSearch);
+  }, [symbolSearch, setSearchQuery]);
+
+  // Auto-fill limit price with current market price
+  useEffect(() => {
+    if (formData.orderType === 'limit' && currentPrice && !formData.limitPrice) {
+      setFormData(prev => ({ ...prev, limitPrice: currentPrice }));
     }
-  }, [symbolSearch]);
+  }, [formData.orderType, currentPrice, formData.limitPrice]);
 
   // Click outside to close suggestions
   useEffect(() => {
@@ -175,7 +189,14 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full h-[85vh] overflow-hidden flex flex-col lg:flex-row">
         {/* Left Side - Chart Area (2/3 on desktop, full width on mobile) */}
         <div className="w-full lg:w-2/3 p-6 border-b lg:border-b-0 lg:border-r dark:border-slate-700 border-gray-200 flex flex-col">
-          <div className="flex-1 min-h-[400px] bg-gray-100 dark:bg-slate-900 rounded-lg flex items-center justify-center">
+          <div
+            className="flex-1 min-h-[400px] rounded-lg flex items-center justify-center"
+            style={{
+              backgroundColor: typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
+                ? 'rgba(148, 163, 184, 0.03)' // Light tint in dark mode (same as chart)
+                : 'rgba(15, 23, 42, 0.03)' // Dark tint in light mode (same as chart)
+            }}
+          >
             <div className="text-center">
               <svg className="w-20 h-20 mx-auto mb-4 dark:text-gray-600 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -496,23 +517,21 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                     {symbolSearch && (
                       <>
                         <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-t dark:border-slate-600 border-gray-200">
-                          Search Results
+                          {searchLoading ? 'Searching...' : 'Search Results'}
                         </div>
-                        {filteredSuggestions.length > 0 ? (
-                          filteredSuggestions.map(item => (
+                        {searchLoading ? (
+                          <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            Loading...
+                          </div>
+                        ) : searchResults.length > 0 ? (
+                          searchResults.map(symbol => (
                             <button
-                              key={item.symbol}
+                              key={symbol}
                               type="button"
-                              onClick={() => handleSymbolSelect(item.symbol)}
+                              onClick={() => handleSymbolSelect(symbol)}
                               className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-slate-700"
                             >
-                              <div className="flex justify-between">
-                                <div>
-                                  <span className="font-medium dark:text-white">{item.symbol}</span>
-                                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{item.name}</span>
-                                </div>
-                                <span className="text-xs text-gray-400">{item.exchange}</span>
-                              </div>
+                              <span className="font-medium dark:text-white">{symbol}</span>
                             </button>
                           ))
                         ) : (
@@ -617,6 +636,75 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
             {/* Step 2: Trade Details */}
             {currentStep === 2 && (
               <div className="space-y-4 pb-4">
+              {/* Current Market Price Display */}
+              {formData.symbol && (
+                <div className={cn(
+                  alertStyles.base,
+                  "mb-4",
+                  useBrokerData
+                    ? alertStyles.background.success
+                    : "bg-gray-50 dark:bg-slate-800"
+                )}>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="text-xs uppercase mb-1">
+                        {useBrokerData ? (
+                          <span className="flex items-center gap-1 text-success">
+                            <span className="text-xs">●</span>
+                            {formData.source === 'alpaca_paper' ? 'Alpaca Paper Quote' : 'Alpaca Live Quote'}
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 dark:text-gray-400">Market Price (Polygon)</span>
+                        )}
+                      </div>
+                      <div className="text-2xl font-bold dark:text-white text-gray-900">
+                        {priceLoading ? (
+                          <span className="text-gray-500 text-lg">Loading...</span>
+                        ) : currentPrice ? (
+                          `$${currentPrice.toFixed(2)}`
+                        ) : (
+                          <span className="text-gray-500 text-lg">--</span>
+                        )}
+                      </div>
+                      {/* Show bid/ask spread for Alpaca */}
+                      {useBrokerData && !priceLoading && bidPrice && askPrice && (
+                        <div className="mt-2 grid grid-cols-3 gap-3 text-sm">
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Bid</div>
+                            <div className="font-semibold text-success">
+                              ${bidPrice.toFixed(2)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Ask</div>
+                            <div className="font-semibold text-danger">
+                              ${askPrice.toFixed(2)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Spread</div>
+                            <div className="font-semibold dark:text-gray-300 text-gray-700">
+                              ${spread?.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {!useBrokerData && formData.symbol && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Select Alpaca to see live bid/ask prices
+                        </div>
+                      )}
+                    </div>
+                    {!symbolValid && formData.symbol && !validationLoading && (
+                      <div className="flex items-center gap-2 text-yellow-500 text-sm">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Symbol not found</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Order Type */}
               <div>
                 <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">
@@ -661,7 +749,7 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                     step="0.01"
                     value={formData.limitPrice || ''}
                     onChange={(e) => setFormData({ ...formData, limitPrice: parseFloat(e.target.value) || undefined })}
-                    placeholder="150.00"
+                    placeholder={currentPrice ? currentPrice.toFixed(2) : "150.00"}
                     required
                     className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700 bg-white dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
