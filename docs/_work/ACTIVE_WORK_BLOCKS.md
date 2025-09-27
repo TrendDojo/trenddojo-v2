@@ -155,11 +155,11 @@ Build a unified market data infrastructure where production PostgreSQL serves as
 - [x] **DATABASE**: Create user_data_preferences table (DONE 2025-01-27)
 - [x] **DATABASE**: Create user_data_sources table (DONE 2025-01-27)
 - [x] **DATABASE**: Uncomment DataRouter code for new tables (DONE 2025-01-27)
-- [ ] Set up production PostgreSQL market schema
-- [ ] Configure read-only access for dev/staging
-- [ ] Implement Vercel Cron for updates
-- [ ] Create sync state tracking per environment
-- [ ] Build catch-up mechanism for data gaps
+- [x] Set up production PostgreSQL market schema (DONE 2025-01-27)
+- [x] Configure read-only access for dev/staging (DONE 2025-01-27)
+- [x] Implement Vercel Cron for updates (DONE 2025-01-27)
+- [x] Create sync state tracking per environment (DONE 2025-01-27)
+- [x] Build catch-up mechanism for data gaps (DONE 2025-01-27)
 - [ ] **EXPANSION**: Implement symbol universe management
 - [ ] **EXPANSION**: Create tiered update strategy
 
