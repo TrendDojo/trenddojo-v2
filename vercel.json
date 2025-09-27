@@ -2,6 +2,22 @@
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/cron/market-update/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/cron/daily-close/route.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/market-update",
+      "schedule": "*/5 9-16 * * 1-5"
+    },
+    {
+      "path": "/api/cron/daily-close",
+      "schedule": "0 17 * * 1-5"
+    }
+  ]
 }
