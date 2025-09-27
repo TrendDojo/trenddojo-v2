@@ -43,7 +43,7 @@ describe('Critical: Market Data API Endpoints', () => {
 
   describe('Price Data Endpoint', () => {
     it('MUST return current price for valid symbol', async () => {
-      const request = new Request('http://localhost:3011/api/market-data/price/AAPL');
+      const request = new NextRequest('http://localhost:3011/api/market-data/price/AAPL');
       const params = Promise.resolve({ symbol: 'AAPL' });
 
       const response = await getPriceData(request, { params });
@@ -108,7 +108,7 @@ describe('Critical: Market Data API Endpoints', () => {
 
   describe('Quote Data Endpoint', () => {
     it('MUST return quote data for valid symbol', async () => {
-      const request = new Request('http://localhost:3011/api/market-data/quote/AAPL');
+      const request = new NextRequest('http://localhost:3011/api/market-data/quote/AAPL');
       const params = Promise.resolve({ symbol: 'AAPL' });
 
       const response = await getQuoteData(request, { params });
@@ -126,7 +126,7 @@ describe('Critical: Market Data API Endpoints', () => {
   describe('Error Handling', () => {
     it('MUST return appropriate error for missing symbol parameter', async () => {
       process.env.POLYGON_API_KEY = 'test-key';
-      const request = new Request('http://localhost:3011/api/market-data/symbol/');
+      const request = new NextRequest('http://localhost:3011/api/market-data/symbol/');
       const params = Promise.resolve({ symbol: '' });
 
       const response = await getSymbolData(request, { params });

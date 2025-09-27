@@ -11,7 +11,7 @@ import { MarketDataError, MarketDataErrorCode } from '@/lib/market-data/types';
 // Mock Prisma
 vi.mock('@/lib/prisma', () => ({
   prisma: {
-    marketDataCache: {
+    market_data_cache: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
       create: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock('@/lib/prisma', () => ({
       upsert: vi.fn(),
       deleteMany: vi.fn(),
     },
-    stockTechnicals: {
+    stock_technicals: {
       findFirst: vi.fn(),
       upsert: vi.fn(),
     },
@@ -53,16 +53,16 @@ describe('MarketDataService', () => {
 
   describe('getCurrentPrice', () => {
     it('should fetch price from provider when cache is empty', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
-      
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
+
       const price = await service.getCurrentPrice('AAPL');
-      
+
       expect(price).toBeDefined();
       expect(price.symbol).toBe('AAPL');
       expect(price.price).toBeGreaterThan(0);
-      
+
       // Should attempt to cache the result
-      expect(prisma.marketDataCache.create).toHaveBeenCalledWith({
+      expect(prisma.market_data_cache.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           symbol: 'AAPL',
           timeframe: 'current',
@@ -78,48 +78,48 @@ describe('MarketDataService', () => {
         volume: 50000000,
       };
       
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(cachedPrice);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(cachedPrice);
       
       const price = await service.getCurrentPrice('AAPL');
       
       expect(price.price).toBe(175.50);
-      expect(prisma.marketDataCache.findFirst).toHaveBeenCalled();
+      expect(prisma.market_data_cache.findFirst).toHaveBeenCalled();
     });
 
     it('should use memory cache for subsequent requests', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
       
       // First call - fetches from provider
       const price1 = await service.getCurrentPrice('AAPL');
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(1);
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(1);
       
       // Second call - should use memory cache
       const price2 = await service.getCurrentPrice('AAPL');
       expect(price1.symbol).toBe(price2.symbol);
       
       // Create should still only be called once
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(1);
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(1);
     });
 
     it('should refresh cache after TTL expires', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
       
       // First call
       await service.getCurrentPrice('AAPL');
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(1);
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(1);
       
       // Wait for cache to expire
       await new Promise(resolve => setTimeout(resolve, 1100));
       
       // Second call after expiry
       await service.getCurrentPrice('AAPL');
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(2);
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('getBulkPrices', () => {
     it('should fetch multiple symbols efficiently', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
       
       const symbols = ['AAPL', 'GOOGL', 'MSFT'];
       const prices = await service.getBulkPrices(symbols);
@@ -132,7 +132,7 @@ describe('MarketDataService', () => {
     });
 
     it('should use cached prices when available', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
       
       // Pre-fetch one symbol
       await service.getCurrentPrice('AAPL');
@@ -142,13 +142,13 @@ describe('MarketDataService', () => {
       
       expect(prices.size).toBe(2);
       // Should only create cache entry for GOOGL
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(2); // 1 for AAPL, 1 for GOOGL
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(2); // 1 for AAPL, 1 for GOOGL
     });
   });
 
   describe('getHistoricalData', () => {
     it('should fetch historical data from provider', async () => {
-      (prisma.marketDataCache.findMany as any).mockResolvedValue([]);
+      (prisma.market_data_cache.findMany as any).mockResolvedValue([]);
       
       const candles = await service.getHistoricalData({
         symbol: 'AAPL',
@@ -162,7 +162,7 @@ describe('MarketDataService', () => {
       expect(candles[0]).toHaveProperty('close');
       
       // Should cache the data
-      expect(prisma.marketDataCache.createMany).toHaveBeenCalled();
+      expect(prisma.market_data_cache.createMany).toHaveBeenCalled();
     });
 
     it('should return cached historical data when available', async () => {
@@ -177,7 +177,7 @@ describe('MarketDataService', () => {
         },
       ];
       
-      (prisma.marketDataCache.findMany as any).mockResolvedValue(cachedCandles);
+      (prisma.market_data_cache.findMany as any).mockResolvedValue(cachedCandles);
       
       const candles = await service.getHistoricalData({
         symbol: 'AAPL',
@@ -187,7 +187,7 @@ describe('MarketDataService', () => {
       
       expect(candles).toHaveLength(1);
       expect(candles[0].close).toBe(175.5);
-      expect(prisma.marketDataCache.createMany).not.toHaveBeenCalled();
+      expect(prisma.market_data_cache.createMany).not.toHaveBeenCalled();
     });
   });
 
@@ -268,17 +268,17 @@ describe('MarketDataService', () => {
 
   describe('warmupCache', () => {
     it('should pre-fetch data for multiple symbols', async () => {
-      (prisma.marketDataCache.findFirst as any).mockResolvedValue(null);
-      (prisma.marketDataCache.findMany as any).mockResolvedValue([]);
+      (prisma.market_data_cache.findFirst as any).mockResolvedValue(null);
+      (prisma.market_data_cache.findMany as any).mockResolvedValue([]);
       
       const symbols = ['AAPL', 'GOOGL', 'MSFT'];
       await service.warmupCache(symbols);
       
       // Should have fetched current prices for all symbols
-      expect(prisma.marketDataCache.create).toHaveBeenCalledTimes(3);
+      expect(prisma.market_data_cache.create).toHaveBeenCalledTimes(3);
       
       // Should have fetched historical data for all symbols
-      expect(prisma.marketDataCache.createMany).toHaveBeenCalledTimes(3);
+      expect(prisma.market_data_cache.createMany).toHaveBeenCalledTimes(3);
     });
   });
 

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     success: true,
     symbolsProcessed: 0,
     recordsInserted: 0,
-    errors: [],
+    errors: [] as string[],
     duration: 0,
     date: new Date().toISOString().split('T')[0]
   };
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
         recordsInserted++;
       } catch (error) {
         console.error(`Failed to insert data for ${bar.symbol}:`, error);
-        results.errors.push(`${bar.symbol}: ${error}`);
+        results.errors.push(`${bar.symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
 

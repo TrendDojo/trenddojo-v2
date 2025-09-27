@@ -26,9 +26,10 @@ export async function GET(request: NextRequest) {
   const results = {
     success: true,
     symbolsUpdated: 0,
-    errors: [],
+    errors: [] as string[],
     duration: 0,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    marketStatus: 'unknown'
   };
 
   try {
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
 
     // During market hours, update tier 1 every 5 minutes
     const isMarketHours = checkMarketHours();
+    results.marketStatus = isMarketHours ? 'open' : 'closed';
     const symbolsToUpdate = isMarketHours ? tier1Symbols : [];
 
     if (symbolsToUpdate.length === 0) {
