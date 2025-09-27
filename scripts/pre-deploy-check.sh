@@ -12,10 +12,14 @@ echo "===================================="
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Track overall success
 ALL_PASSED=true
+
+# Check if we're in CI/CD environment
+IS_CI="${CI:-false}"
 
 echo -e "\n📝 ${YELLOW}Step 1: TypeScript Check${NC}"
 echo "Running full TypeScript compilation..."
@@ -83,12 +87,38 @@ fi
 
 echo -e "\n🔍 ${YELLOW}Step 7: Check for Debug Artifacts${NC}"
 echo "Checking for console.log statements..."
-CONSOLE_COUNT=$(grep -r "console.log" src --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "// DEBUG:" | wc -l || echo "0")
+CONSOLE_COUNT=$(grep -r "console.log" src --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "// DEBUG:" | grep -v "Look for console.log" | wc -l || echo "0")
 if [ "$CONSOLE_COUNT" -eq "0" ]; then
     echo -e "${GREEN}✅ No active console.log statements${NC}"
 else
     echo -e "${YELLOW}⚠️ Found $CONSOLE_COUNT active console.log statements${NC}"
     echo "Consider commenting them with // DEBUG: prefix"
+fi
+
+echo -e "\n💾 ${YELLOW}Step 8: Database Migration Check${NC}"
+echo "Checking database migrations..."
+if [ "$IS_CI" = "false" ] && [ -f ./scripts/validate-migrations.sh ]; then
+    if ./scripts/validate-migrations.sh 2>/dev/null; then
+        echo -e "${GREEN}✅ Database migrations validated${NC}"
+    else
+        echo -e "${YELLOW}⚠️ Database migration issues detected${NC}"
+        # Don't fail for migration warnings
+    fi
+else
+    echo -e "${BLUE}ℹ️ Skipping database check (CI environment or script not found)${NC}"
+fi
+
+echo -e "\n🌍 ${YELLOW}Step 9: Environment Validation${NC}"
+echo "Validating environment variables..."
+if [ "$IS_CI" = "false" ] && [ -f ./scripts/validate-environment.sh ]; then
+    if ./scripts/validate-environment.sh 2>/dev/null; then
+        echo -e "${GREEN}✅ Environment variables validated${NC}"
+    else
+        echo -e "${YELLOW}⚠️ Environment variable issues detected${NC}"
+        # Don't fail for env warnings in development
+    fi
+else
+    echo -e "${BLUE}ℹ️ Skipping environment check (CI environment or script not found)${NC}"
 fi
 
 echo -e "\n📊 ${YELLOW}Final Result${NC}"
