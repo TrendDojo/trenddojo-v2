@@ -158,13 +158,13 @@ export class MarketDataService {
     
     // Fetch uncached symbols
     if (uncachedSymbols.length > 0) {
-      const bulkResponse = await this.fetchWithFallback(
+      const bulkPrices = await this.fetchWithFallback(
         async (provider) => provider.getBulkPrices(uncachedSymbols)
       );
 
       // Cache and add to result
-      if (bulkResponse && bulkResponse.prices) {
-        for (const [symbol, price] of bulkResponse.prices) {
+      if (bulkPrices) {
+        for (const [symbol, price] of bulkPrices) {
           await this.cachePrice(symbol, price);
           result.set(symbol, price);
           this.notifySubscribers(symbol, price);
@@ -327,8 +327,8 @@ export class MarketDataService {
       try {
         const polygonProvider = new PolygonMarketDataProvider({
           type: 'polygon',
-          tier: this.config.userTier,
-          rateLimit: this.config.userTier === 'pro' ? 100 : 5,
+          tier: 'pro', // Using pro tier
+          rateLimit: 100, // Pro tier limits
           timeout: 30000,
           retryAttempts: 3,
         });

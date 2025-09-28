@@ -18,6 +18,7 @@ import {
   ProviderConfig,
   MarketDataError,
   MarketDataErrorCode,
+  Timeframe,
 } from '../types';
 
 export class PolygonMarketDataProvider implements IMarketDataProvider {
@@ -30,7 +31,7 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
     this.config = {
       ...config,
       tier: config.tier || 'free',
-      rateLimit: config.rateLimit || 5, // Polygon free tier: 5 req/min
+      rateLimit: config.rateLimit || 100, // Polygon pro tier: 100 req/min
     };
   }
 
@@ -50,7 +51,7 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
     } catch (error) {
       throw new MarketDataError(
         'Failed to initialize Polygon provider',
-        MarketDataErrorCode.INITIALIZATION_ERROR,
+        MarketDataErrorCode.PROVIDER_ERROR,
         this.name,
         error
       );
@@ -65,7 +66,7 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
     if (!this.isInitialized) {
       throw new MarketDataError(
         'Provider not initialized',
-        MarketDataErrorCode.INITIALIZATION_ERROR,
+        MarketDataErrorCode.PROVIDER_ERROR,
         this.name
       );
     }
@@ -77,7 +78,7 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
       if (!snapshot) {
         throw new MarketDataError(
           `No data available for ${symbol}`,
-          MarketDataErrorCode.SYMBOL_NOT_FOUND,
+          MarketDataErrorCode.INVALID_SYMBOL,
           this.name
         );
       }
@@ -94,13 +95,9 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
         changePercent,
         volume: snapshot.day?.volume || 0,
         timestamp: new Date(snapshot.lastTrade?.timestamp || snapshot.updated || Date.now()),
-        provider: this.name,
         bid: snapshot.lastQuote?.bid,
         ask: snapshot.lastQuote?.ask,
-        dayHigh: snapshot.day?.high,
-        dayLow: snapshot.day?.low,
-        dayOpen: snapshot.day?.open,
-        previousClose,
+        marketCap: snapshot.marketCap,
       };
     } catch (error) {
       if (error instanceof MarketDataError) throw error;
@@ -116,10 +113,9 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
 
   async getBulkPrices(symbols: string[]): Promise<BulkPriceResponse> {
     const prices = new Map<string, PriceData>();
-    const errors: string[] = [];
 
     // Process in batches to avoid rate limiting
-    const batchSize = this.config.tier === 'pro' ? 10 : 3;
+    const batchSize = 10; // Pro tier can handle more
 
     for (let i = 0; i < symbols.length; i += batchSize) {
       const batch = symbols.slice(i, i + batchSize);
@@ -130,32 +126,32 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
             const price = await this.getCurrentPrice(symbol);
             prices.set(symbol, price);
           } catch (error) {
-            errors.push(`${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            console.error(`Failed to fetch price for ${symbol}:`, error instanceof Error ? error.message : 'Unknown error');
           }
         })
       );
 
-      // Rate limiting delay
+      // Small delay between batches (pro tier has higher limits)
       if (i + batchSize < symbols.length) {
-        await new Promise(resolve => setTimeout(resolve, this.config.tier === 'pro' ? 100 : 12000));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
 
-    return { prices, errors };
+    return prices;
   }
 
   async getHistoricalData(options: HistoricalDataOptions): Promise<Candle[]> {
     if (!this.isInitialized) {
       throw new MarketDataError(
         'Provider not initialized',
-        MarketDataErrorCode.INITIALIZATION_ERROR,
+        MarketDataErrorCode.PROVIDER_ERROR,
         this.name
       );
     }
 
     try {
-      const endDate = options.endDate || new Date();
-      const startDate = options.startDate || new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const endDate = new Date();
+      const startDate = new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
 
       const fromStr = startDate.toISOString().split('T')[0];
       const toStr = endDate.toISOString().split('T')[0];
@@ -248,7 +244,7 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
     if (historicalData.length < 20) {
       throw new MarketDataError(
         'Insufficient data for technical indicators',
-        MarketDataErrorCode.INSUFFICIENT_DATA,
+        MarketDataErrorCode.INVALID_RESPONSE,
         this.name
       );
     }
@@ -264,13 +260,12 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
     return {
       symbol,
       rsi,
-      macd: null, // Would need proper calculation
+      macd: undefined, // Would need proper calculation
       sma20,
       sma50,
-      sma200: null, // Would need 200 days of data
-      ema12: null,
-      ema26: null,
-      volumeAvg: historicalData.slice(-20).reduce((a, b) => a + b.volume, 0) / 20,
+      sma200: undefined, // Would need 200 days of data
+      ema12: undefined,
+      ema26: undefined,
       timestamp: new Date(),
     };
   }
@@ -287,7 +282,6 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
         isHealthy: true,
         latency,
         lastCheck: new Date(),
-        message: 'Provider is operational',
       };
     } catch (error) {
       return {
@@ -295,24 +289,21 @@ export class PolygonMarketDataProvider implements IMarketDataProvider {
         isHealthy: false,
         latency: 0,
         lastCheck: new Date(),
-        message: `Provider error: ${error instanceof Error ? error.message : 'Unknown'}`,
-        error: error instanceof Error ? error : new Error('Unknown error'),
       };
     }
   }
 
   getCapabilities(): ProviderCapabilities {
     return {
-      realTimeData: this.config.tier === 'pro',
-      historicalData: true,
+      realtime: this.config.tier === 'pro',
+      historical: true,
       technicalIndicators: false, // We calculate them, not provided directly
-      options: false,
-      crypto: false, // Could be enabled with different subscription
-      forex: false,
+      fundamentals: false,
       streaming: false, // WebSocket available but not implemented yet
+      bulkQuotes: true,
       maxSymbolsPerRequest: this.config.tier === 'pro' ? 100 : 10,
-      rateLimit: this.config.tier === 'pro' ? 100 : 5, // requests per minute
-      dataGranularity: ['1m', '5m', '15m', '1h', '4h', '1d', '1w', '1M'],
+      supportedTimeframes: ['1m', '5m', '15m', '1h', '4h', '1d'] as Timeframe[],
+      supportedMarkets: ['US'],
     };
   }
 
