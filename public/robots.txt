@@ -1,0 +1,25 @@
+# Robots.txt for TrendDojo
+# This file is dynamically served based on environment
+
+# Production (trenddojo.com)
+# Allows indexing of public pages
+
+User-agent: *
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /positions/
+Disallow: /settings/
+Disallow: /portfolios/
+Disallow: *.json
+
+# Allow important pages
+Allow: /
+Allow: /login
+Allow: /signup
+Allow: /pricing
+Allow: /about
+Allow: /blog
+
+# Sitemap location (update when ready)
+# Sitemap: https://trenddojo.com/sitemap.xml

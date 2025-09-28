@@ -87,7 +87,7 @@ while [ $ELAPSED -lt $MAX_WAIT_TIME ]; do
                     # Run verification
                     echo -e "\n${YELLOW}Running automated verification...${NC}"
                     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                    if ./scripts/verify-preview.sh "$url"; then
+                    if ./scripts/deployment/verify-preview.sh "$url"; then
                         echo -e "\n${GREEN}🎉 DEPLOYMENT VERIFIED SUCCESSFULLY!${NC}"
                         echo -e "Ready for production: ${BLUE}npm run deploy:production${NC}"
                         exit 0
@@ -99,7 +99,7 @@ while [ $ELAPSED -lt $MAX_WAIT_TIME ]; do
                 else
                     echo -e "\n${YELLOW}⚠️ Deployment ready but URL not found${NC}"
                     echo "Please run verification manually:"
-                    echo -e "${BLUE}./scripts/verify-preview.sh <preview-url>${NC}"
+                    echo -e "${BLUE}./scripts/deployment/verify-preview.sh <preview-url>${NC}"
                     exit 0
                 fi
                 ;;
@@ -130,7 +130,7 @@ while [ $ELAPSED -lt $MAX_WAIT_TIME ]; do
                         echo -e "\n\n${GREEN}✅ Deployment accessible!${NC}"
                         echo -e "URL: ${BLUE}$url${NC}"
                         echo -e "\n${YELLOW}Running verification...${NC}"
-                        ./scripts/verify-preview.sh "$url"
+                        ./scripts/deployment/verify-preview.sh "$url"
                         exit $?
                     fi
                 fi
