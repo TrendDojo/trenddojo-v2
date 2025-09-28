@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add API keys to Vercel (Polygon, Cron)
 - Production deployment setup
 
+## [0.3.0] - 2025-09-28
+### Added
+- Release documentation process with CHANGELOG.md
+- Release notes directory structure
+- Integrated release phase into deployment workflow
+- Shared framework release documentation standard
+
+### Changed
+- Deployment process now includes release documentation phase
+- Version numbers assigned AFTER preview verification
+
 ## [0.2.0] - 2025-09-28
 ### Added
 - Comprehensive deployment documentation system
