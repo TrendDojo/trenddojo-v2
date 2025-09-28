@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev --turbopack --port 3011",
     "build": "npx prisma generate && next build",
+    "vercel-build": "bash scripts/vercel-build.sh",
+    "migrate:setup": "node scripts/secure-migrate.js --setup",
+    "migrate:run": "node scripts/secure-migrate.js --migrate",
     "postinstall": "npx prisma generate",
     "start": "next start",
     "lint": "eslint",

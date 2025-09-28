@@ -37,13 +37,12 @@
 ### ⚠️ Partially Working
 - [ ] Database connections (DATABASE_URL exists but connections failing)
 - [ ] Authentication (configured, waiting for database connection)
-- [ ] Cron jobs (need CRON_SECRET environment variable)
 
-### ✅ Recently Configured
-- [x] Polygon API key in Vercel - Added 2025-09-28
+### ✅ Recently Configured (2025-09-28)
+- [x] **Polygon API key** - Working! Health check shows "Market data API configured"
+- [x] **CRON_SECRET** - Working! Health check shows "Cron jobs configured"
 
 ### ❌ Not Yet Configured
-- [ ] CRON_SECRET in Vercel (for scheduled jobs) - **REQUIRED FOR HEALTH CHECK TO PASS**
 - [ ] Error tracking (Sentry)
 - [ ] Monitoring/alerts
 
@@ -57,17 +56,7 @@
 ## 🔧 Next Steps to Full Deployment
 
 ### Immediate (NOW)
-1. **Add CRON_SECRET to Vercel** ⚠️ **CRITICAL - Health Check Failing**
-   ```bash
-   # Generated CRON_SECRET (use this exact value):
-   # 5bef2b153c55b450d23e8c27116634e4c7af4e4cbc92bdf0da7e1e5cdfc9dfb8
-
-   # Add to production:
-   vercel env add CRON_SECRET production
-   # When prompted, paste: 5bef2b153c55b450d23e8c27116634e4c7af4e4cbc92bdf0da7e1e5cdfc9dfb8
-   ```
-
-2. **Fix Database Connection**
+1. **Fix Database Connection** ⚠️ **CRITICAL - Only Remaining Issue**
    ```bash
    # DATABASE_URL exists but connection is failing
    # Check if Supabase database is active/not paused
@@ -156,9 +145,10 @@ npx prisma studio
 
 ## 🚨 Known Issues
 
-1. **Health Check Returning 503**: Production health endpoint failing due to:
-   - Database connection failing (DATABASE_URL configured but can't connect)
-   - CRON_SECRET not configured (required for production)
+1. **Health Check Returning 503**: Production health endpoint failing due to database connection only
+   - ✅ CRON_SECRET now working
+   - ✅ Polygon API key now working
+   - ❌ Database connection still failing
 2. **Database Not Accessible**: DATABASE_URL exists but connection failing - possible causes:
    - Supabase database may be paused (free tier auto-pauses after inactivity)
    - Credentials may need rotation
