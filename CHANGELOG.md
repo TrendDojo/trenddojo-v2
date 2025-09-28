@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Comprehensive deployment documentation system
   - DEPLOYMENT_GUIDE.md - Single source for deployment procedures
-  - SECURITY_CONFIG.md - Consolidated security configuration
+  - SECURITY.md - Consolidated security configuration
   - ENVIRONMENT_VARIABLES.md - Complete env var reference
   - PORT_CONFIG.md - Dynamic port management via starto
   - DEPLOYMENT_STATUS.md - Current deployment state tracking
@@ -70,8 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 - DEPLOYMENT.md (use DEPLOYMENT_GUIDE.md)
 - DEPLOYMENT_COMPLETE.md (use DEPLOYMENT_GUIDE.md)
-- SECURITY_SETUP.md (use SECURITY_CONFIG.md)
-- VERCEL_URL_SECURITY.md (use SECURITY_CONFIG.md)
+- SECURITY_SETUP.md (use SECURITY.md)
+- VERCEL_URL_SECURITY.md (use SECURITY.md)
+- SECURITY_CONFIG.md (use SECURITY.md)
 - PREVIEW_URL_SETUP.md (conflicts with security best practices)
 
 ### Security

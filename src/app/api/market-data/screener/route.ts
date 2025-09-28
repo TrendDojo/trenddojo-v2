@@ -78,10 +78,14 @@ export async function GET(request: NextRequest) {
     // Sort by change percent (biggest movers first)
     filteredStocks.sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent));
     
+    // Get the actual provider being used
+    const provider = marketDataService.getActiveProviderName() ||
+      (process.env.POLYGON_API_KEY ? 'polygon' : 'yahoo');
+
     return NextResponse.json({
       stocks: filteredStocks,
       timestamp: new Date().toISOString(),
-      provider: 'yahoo', // Using Yahoo Finance as default provider
+      provider,
     });
   } catch (error) {
     console.error('Screener API error:', error);

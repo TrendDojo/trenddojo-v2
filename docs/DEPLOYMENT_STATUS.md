@@ -127,7 +127,7 @@ npx prisma studio
 
 ### ✅ Created/Updated
 - `docs/DEPLOYMENT_GUIDE.md` - Comprehensive deployment guide
-- `docs/SECURITY_CONFIG.md` - Security configuration
+- `docs/SECURITY.md` - Security configuration
 - `docs/ENVIRONMENT_VARIABLES.md` - Environment variable reference
 - `docs/PORT_CONFIG.md` - Port management documentation
 - `scripts/deployment/*` - All deployment scripts
@@ -168,7 +168,7 @@ npx prisma studio
 
 ### Documentation
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
-- [Security Config](./SECURITY_CONFIG.md)
+- [Security Config](./SECURITY.md)
 - [Environment Variables](./ENVIRONMENT_VARIABLES.md)
 - [Port Config](./PORT_CONFIG.md)
 

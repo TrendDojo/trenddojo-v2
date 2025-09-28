@@ -45,17 +45,21 @@ WB-* → dev → PR to staging → PR to main
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns
 - **Trading Patterns**: `/docs/patterns/TRADING-PATTERNS.md` - Risk management, position sizing, strategy implementation
-- **Broker Integration**: `/docs/patterns/BROKER-INTEGRATION-PATTERNS.md` - Alpaca, IBKR integration patterns
-- **Market Data Provider**: `/docs/patterns/MARKET-DATA-PROVIDER-IMPLEMENTATION.md` - Polygon implementation guide
+- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - Alpaca, IBKR integration patterns
+- **Market Data System**: `/docs/MARKET_DATA_SYSTEM.md` - Complete market data architecture and implementation guide
 
 ### Technical Documentation
-- **Technical Setup**: `/docs/reference/trenddojo-setup-technical-spec.md` - Complete technical architecture
+- **Architecture**: `/docs/reference/ARCHITECTURE.md` - System architecture and tech stack
+- **Data Models**: `/docs/reference/DATA_MODELS.md` - Database schemas and data structures
+- **API Specification**: `/docs/reference/API_SPECIFICATION.md` - API endpoints and request/response formats
+- **UI Components**: `/docs/reference/UI_COMPONENTS.md` - Component specifications and patterns
+- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - External broker API integrations
 - **Database Plan**: `/docs/DATABASE-PLAN.md` - Database schema and deployment
 - **Trading Philosophy**: `/docs/TRADING-PHILOSOPHY.md` - What we support and DON'T support
 
 ### Work Management
-- **Work Tracking**: `/docs/_work/ACTIVE_WORK_BLOCKS.md` - Current work context
-- **Work History**: `/docs/_work/COMPLETED_WORK_BLOCKS.md` - Historical record
+- **Work Tracking**: `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work context
+- **Work History**: `/_workblocks/COMPLETED_WORK_BLOCKS.md` - Historical record
 - **Archive**: `/docs/archive/` - V1 reference materials and legacy docs
 
 ## 📁 Directory Structure

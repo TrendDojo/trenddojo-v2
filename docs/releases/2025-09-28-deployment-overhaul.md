@@ -20,7 +20,7 @@ Complete overhaul of TrendDojo deployment documentation to eliminate inconsisten
 
 #### Core Documents (Active)
 1. **DEPLOYMENT_GUIDE.md** - Complete deployment procedures
-2. **SECURITY_CONFIG.md** - All security configurations
+2. **SECURITY.md** - All security configurations
 3. **ENVIRONMENT_VARIABLES.md** - Comprehensive env var reference
 4. **PORT_CONFIG.md** - Dynamic port management
 5. **DEPLOYMENT_STATUS.md** - Current deployment state
@@ -30,8 +30,9 @@ Complete overhaul of TrendDojo deployment documentation to eliminate inconsisten
 #### Deprecated Documents (With Notices)
 - ~~DEPLOYMENT.md~~ → Consolidated into DEPLOYMENT_GUIDE.md
 - ~~DEPLOYMENT_COMPLETE.md~~ → Consolidated into DEPLOYMENT_GUIDE.md
-- ~~SECURITY_SETUP.md~~ → Consolidated into SECURITY_CONFIG.md
-- ~~VERCEL_URL_SECURITY.md~~ → Consolidated into SECURITY_CONFIG.md
+- ~~SECURITY_SETUP.md~~ → Consolidated into SECURITY.md
+- ~~VERCEL_URL_SECURITY.md~~ → Consolidated into SECURITY.md
+- ~~SECURITY_CONFIG.md~~ → Consolidated into SECURITY.md
 - ~~PREVIEW_URL_SETUP.md~~ → Removed (conflicted with security best practices)
 
 ## 🔧 Technical Improvements
@@ -98,7 +99,7 @@ For developers using old documentation:
 1. **Check DEPLOYMENT_README.md** for the new structure
 2. **Use DEPLOYMENT_GUIDE.md** for all deployment procedures
 3. **Reference PORT_CONFIG.md** for local development ports
-4. **Follow SECURITY_CONFIG.md** for security setup
+4. **Follow SECURITY.md** for security setup
 5. **Ignore deprecated files** (they have warning notices)
 
 ## 📝 Lessons Learned

@@ -20,7 +20,7 @@ Create essential pattern documentation to support production-ready development w
 - [x] **ARCHITECTURE-PATTERNS.md**: Next.js structure, tRPC setup, database patterns, state management
 - [x] **DESIGN-PATTERNS.md**: UI components, colors, trading-specific styling
 - [x] **UX-PATTERNS.md**: Trading forms, real-time updates, mobile patterns
-- [ ] **BROKER-INTEGRATION-PATTERNS.md**: API abstraction layer, mock development patterns, error handling, rate limiting
+- [x] **BROKER-INTEGRATION-PATTERNS.md**: API abstraction layer, mock development patterns, error handling, rate limiting (consolidated into BROKER_INTEGRATION.md)
 - [ ] **FINANCIAL-CALCULATIONS.md**: P&L formulas, position sizing math, risk calculations, validation requirements
 - [ ] **RISK-MANAGEMENT-PATTERNS.md**: Position limits, stop loss logic, drawdown protection, account safeguards
 - [ ] **SECURITY-PATTERNS.md**: API key management, financial data protection, audit trails

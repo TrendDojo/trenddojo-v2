@@ -100,13 +100,13 @@
 
 ### RULE #12: [UNIVERSAL] Design System Consistency (For UI Projects)
 **IF project has UI components, check for design system:**
-- [x] Does `/docs/AI-DESIGN-RULES.md` exist? **YES - READ IT FIRST**
+- [x] Does `/docs/DESIGN_SYSTEM.md` exist? **YES - READ IT FIRST**
 - [x] Does `/app/theme/page.tsx` exist? **YES - Check before ANY UI work**
 - [x] Are there shared UI components in `/components/ui/`? **YES - ALWAYS use them**
 - [x] **NEVER change visual appearance without user permission** - colors, layouts, themes, etc.
 
 **Design consistency enforcement:**
-- Follow AI-DESIGN-RULES.md exactly, no exceptions
+- Follow DESIGN_SYSTEM.md exactly, no exceptions
 - Theme page is single source of truth for UI
 - Shared components prevent inconsistency - use them always
 - Alerts have NO borders (TrendDojo specific rule)
@@ -167,19 +167,23 @@ GitHub → Staging (automatic) → Production (manual promotion)
 ## 📚 Key Reference Documents
 
 ### Pattern Documentation (CHECK BEFORE BUILDING)
-- **🚨 AI Design Rules**: `/docs/AI-DESIGN-RULES.md` - MANDATORY: Read this FIRST for all UI work
+- **🚨 Design System**: `/docs/DESIGN_SYSTEM.md` - MANDATORY: Read this FIRST for all UI work
 - **Design Patterns**: `/docs/patterns/DESIGN-PATTERNS.md` - UI components, colors, trading-specific styling
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns
 - **Trading Patterns**: `/docs/patterns/TRADING-PATTERNS.md` - Risk management, position sizing, strategy implementation
 
 ### Technical Documentation
-- **Technical Setup**: `/docs/reference/trenddojo-setup-technical-spec.md` - Complete technical architecture
+- **Architecture**: `/docs/reference/ARCHITECTURE.md` - System architecture and tech stack
+- **Data Models**: `/docs/reference/DATA_MODELS.md` - Database schemas and data structures
+- **API Specification**: `/docs/reference/API_SPECIFICATION.md` - API endpoints and request/response formats
+- **UI Components**: `/docs/reference/UI_COMPONENTS.md` - Component specifications and patterns
+- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - External broker API integrations
 - **Database Plan**: `/docs/DATABASE-PLAN.md` - Database schema and deployment
 
 ### Work Management
-- **Work Tracking**: `/docs/_work/ACTIVE_WORK_BLOCKS.md` - Current work context
-- **Work History**: `/docs/_work/COMPLETED_WORK_BLOCKS.md` - Historical record
+- **Work Tracking**: `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work context
+- **Work History**: `/_workblocks/COMPLETED_WORK_BLOCKS.md` - Historical record
 - **Archive**: `/docs/archive/` - V1 reference materials and legacy docs
 
 ## 🔧 Tool Usage Preferences

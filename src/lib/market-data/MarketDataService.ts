@@ -8,6 +8,7 @@
 
 import { IMarketDataProvider } from './providers/IMarketDataProvider';
 import { YahooFinanceProvider } from './providers/YahooFinanceProvider';
+import { PolygonMarketDataProvider } from './providers/PolygonMarketDataProvider';
 import { prisma } from '@/lib/prisma';
 import {
   PriceData,
@@ -44,10 +45,14 @@ export class MarketDataService {
   private priceCache: Map<string, { data: PriceData; expires: number }> = new Map();
   private subscriptions: Map<string, Set<(price: PriceData) => void>> = new Map();
   private cacheCleanupInterval?: NodeJS.Timeout;
-  
+
   constructor(config?: Partial<ServiceConfig>) {
+    // Check if Polygon API key is available and use it as default
+    const hasPolygonKey = !!process.env.POLYGON_API_KEY;
+    const defaultProvider = hasPolygonKey ? 'polygon' : 'yahoo';
+
     this.config = {
-      defaultProvider: config?.defaultProvider || 'yahoo',
+      defaultProvider: config?.defaultProvider || defaultProvider,
       fallbackProviders: config?.fallbackProviders || [],
       userTier: config?.userTier || 'free',
       cache: {
@@ -75,6 +80,13 @@ export class MarketDataService {
     // DEBUG: console.log(`MarketDataService initialized with ${this.providers.size} providers`);
   }
   
+  /**
+   * Get the name of the active primary provider
+   */
+  getActiveProviderName(): string | null {
+    return this.primaryProvider?.name || null;
+  }
+
   /**
    * Shutdown the service and all providers
    */
@@ -146,15 +158,17 @@ export class MarketDataService {
     
     // Fetch uncached symbols
     if (uncachedSymbols.length > 0) {
-      const freshPrices = await this.fetchWithFallback(
+      const bulkResponse = await this.fetchWithFallback(
         async (provider) => provider.getBulkPrices(uncachedSymbols)
       );
-      
+
       // Cache and add to result
-      for (const [symbol, price] of freshPrices) {
-        await this.cachePrice(symbol, price);
-        result.set(symbol, price);
-        this.notifySubscribers(symbol, price);
+      if (bulkResponse && bulkResponse.prices) {
+        for (const [symbol, price] of bulkResponse.prices) {
+          await this.cachePrice(symbol, price);
+          result.set(symbol, price);
+          this.notifySubscribers(symbol, price);
+        }
       }
     }
     
@@ -305,25 +319,50 @@ export class MarketDataService {
   // Private helper methods
   
   private async initializeProviders(): Promise<void> {
-    // Initialize Yahoo provider (always available)
-    const yahooProvider = new YahooFinanceProvider({
-      tier: this.config.userTier,
-    });
-    await yahooProvider.initialize();
-    this.providers.set('yahoo', yahooProvider);
-    
-    // Set primary provider based on tier
-    switch (this.config.userTier) {
-      case 'pro':
-        // In future, initialize Polygon provider for pro users
-        // For now, fall back to Yahoo
+    const isProduction = process.env.NODE_ENV === 'production';
+    const hasPolygonKey = !!process.env.POLYGON_API_KEY;
+
+    // ONLY use Polygon in production when API key is available
+    if (isProduction && hasPolygonKey) {
+      try {
+        const polygonProvider = new PolygonMarketDataProvider({
+          type: 'polygon',
+          tier: this.config.userTier,
+          rateLimit: this.config.userTier === 'pro' ? 100 : 5,
+          timeout: 30000,
+          retryAttempts: 3,
+        });
+        await polygonProvider.initialize();
+        this.providers.set('polygon', polygonProvider);
+        this.primaryProvider = polygonProvider;
+        console.log('MarketDataService: Using Polygon as primary provider (PRODUCTION)');
+      } catch (error) {
+        console.error('Failed to initialize Polygon provider:', error);
+      }
+    }
+
+    // For dev/staging OR as fallback, use Yahoo provider
+    if (!this.primaryProvider) {
+      try {
+        const yahooProvider = new YahooFinanceProvider({
+          type: 'yahoo',
+          tier: this.config.userTier,
+          rateLimit: 5,
+          timeout: 10000,
+          retryAttempts: 3,
+        });
+        await yahooProvider.initialize();
+        this.providers.set('yahoo', yahooProvider);
         this.primaryProvider = yahooProvider;
-        break;
-      case 'basic':
-      case 'free':
-      default:
-        this.primaryProvider = yahooProvider;
-        break;
+        console.log(`MarketDataService: Using Yahoo Finance as primary provider (${process.env.NODE_ENV || 'development'})`);
+      } catch (error) {
+        console.error('Failed to initialize Yahoo provider:', error);
+      }
+    }
+
+    // If no providers initialized, we're in trouble
+    if (!this.primaryProvider) {
+      throw new Error('No market data providers could be initialized');
     }
   }
   

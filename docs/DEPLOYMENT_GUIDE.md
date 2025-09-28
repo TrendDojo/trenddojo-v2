@@ -269,12 +269,12 @@ This tests:
 - No SSL transparency logs
 - Zero DNS footprint
 
-See [SECURITY_CONFIG.md](./SECURITY_CONFIG.md) for full details.
+See [SECURITY.md](./SECURITY.md) for full details.
 
 ## 📚 Related Documentation
 
 - [PORT_CONFIG.md](./PORT_CONFIG.md) - Local port management
-- [SECURITY_CONFIG.md](./SECURITY_CONFIG.md) - Security settings
+- [SECURITY.md](./SECURITY.md) - Security settings
 - [ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md) - Complete env var reference
 - [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md) - Business & technical context
 - [CHANGELOG.md](../CHANGELOG.md) - Release history

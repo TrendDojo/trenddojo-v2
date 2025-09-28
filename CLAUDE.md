@@ -113,7 +113,7 @@
 **BEFORE RESPONDING TO ANY USER REQUEST, YOU MUST READ:**
 1. **THIS FILE** (`/CLAUDE.md`) - For rules and behavior
 2. **`/docs/PROJECT_CONTEXT.md`** - For project-specific information
-3. **`/docs/_work/ACTIVE_WORK_BLOCKS.md`** - For current work status
+3. **`/_workblocks/ACTIVE_WORK_BLOCKS.md`** - For current work status
 
 **FAILURE TO READ ALL THREE FILES WILL RESULT IN INCORRECT BEHAVIOR**
 
@@ -168,8 +168,8 @@ This separation ensures:
 
 **Project Context**: `/docs/PROJECT_CONTEXT.md` - Business model, tech stack, workflows
 **Pattern Docs**: `/docs/patterns/` - Check BEFORE building anything
-**Work Tracking**: `/docs/_work/ACTIVE_WORK_BLOCKS.md` - Current work
-**Work History**: `/docs/_work/COMPLETED_WORK_BLOCKS.md` - Completed work
+**Work Tracking**: `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work
+**Work History**: `/_workblocks/COMPLETED_WORK_BLOCKS.md` - Completed work
 
 ## 🔧 Tool Usage Preferences
 

@@ -70,16 +70,25 @@ export async function GET(request: NextRequest) {
       offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : 0,
     };
 
-    // Use local market-data/screener endpoint instead of production
-    // This endpoint has MarketDataService with Yahoo Finance provider
+    // Determine data source based on environment
     let stocks: ScreenerStock[] = [];
     let source = 'local';
 
     try {
-      // Build URL for internal market-data endpoint
-      const baseUrl = request.nextUrl.origin;
+      // In production, use local market-data endpoint (which connects to Polygon)
+      // In dev/staging, fetch from production
+      const isProduction = process.env.NODE_ENV === 'production';
+      const baseUrl = isProduction
+        ? request.nextUrl.origin
+        : 'https://www.trenddojo.com';
+
       const marketDataUrl = `${baseUrl}/api/market-data/screener`;
       const marketDataParams = new URLSearchParams();
+
+      if (!isProduction) {
+        console.log('Dev/Staging: Fetching market data from production');
+        source = 'production';
+      }
 
       // Pass sector filter if provided
       if (filters.sector && filters.sector !== 'all') {
