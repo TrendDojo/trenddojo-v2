@@ -25,13 +25,20 @@ The process is NOT complete until:
 # Pre-deployment checks
 npm run pre-deploy          # Run all checks before deployment
 
-# Deployment
+# Deployment (includes automatic migrations)
 git push origin dev         # Deploy to Preview
-git push origin main        # Deploy to Production
+git push origin main        # Deploy to Production (runs migrations via build hook)
 
 # Verification
 ./scripts/deployment/verify-preview.sh [PREVIEW_URL]
 ```
+
+### 🔄 Automatic Migration System
+**Migrations run automatically on every production deployment:**
+1. Vercel uses `npm run vercel-build` as the build command
+2. Script checks for `MIGRATE_DATABASE_URL` environment variable
+3. If present, runs `prisma migrate deploy` before building
+4. Build continues even if migrations fail (graceful fallback)
 
 ## 📋 Environment Structure
 

@@ -6,9 +6,17 @@
 
 | Variable | Description | Example | Required |
 |----------|-------------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` | ✅ Yes |
+| `DATABASE_URL` | PostgreSQL connection (pooled for runtime) | `postgresql://user:pass@host:6543/db?pgbouncer=true` | ✅ Yes |
 | `NEXTAUTH_SECRET` | Auth encryption key | Generate: `openssl rand -base64 32` | ✅ Yes |
 | `NEXTAUTH_URL` | Application URL | See environment-specific values below | ✅ Yes |
+
+### Database Migration (Production Only)
+
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `MIGRATE_DATABASE_URL` | Direct connection for migrations | `postgresql://user:pass@host:5432/db` | ✅ Production |
+
+**Note:** `MIGRATE_DATABASE_URL` uses port 5432 (direct) while `DATABASE_URL` uses port 6543 (pooled)
 
 ### Market Data Integration
 
