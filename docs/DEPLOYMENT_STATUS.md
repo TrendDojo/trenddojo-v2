@@ -8,17 +8,17 @@
 
 | Environment | Status | URL | Database | Last Deploy |
 |------------|--------|-----|----------|-------------|
-| **Local Dev** | ✅ Active | localhost (see PORT_CONFIG.md) | Local PostgreSQL | N/A |
-| **Preview** | ✅ Deployed | [Vercel URL](https://trenddojo-v2-git-dev-traderclicks.vercel.app) | ⚠️ Not connected | 2025-09-27 |
-| **Production** | ❌ Not deployed | trenddojo.com | ❌ Not configured | Never |
+| **Local Dev** | ✅ Active | localhost:3002 (via starto) | Local PostgreSQL | N/A |
+| **Preview** | ✅ Deployed | [Vercel URL](https://trenddojo-v2-git-dev-traderclicks.vercel.app) | ⚠️ Connection failing | 2025-09-28 |
+| **Production** | ✅ Deployed | [www.trenddojo.com](https://www.trenddojo.com) | ⚠️ Connection failing | 2025-09-28 |
 
 ### Database Status
 
 | Environment | Database Type | Status | Migration Status |
 |------------|--------------|--------|------------------|
 | **Local** | PostgreSQL (local) | ✅ Working | Current |
-| **Preview** | PostgreSQL (Supabase) | ⚠️ Not connected | Pending setup |
-| **Production** | PostgreSQL (Supabase) | ❌ Not created | N/A |
+| **Preview** | PostgreSQL (Supabase) | ⚠️ DATABASE_URL configured but connection failing | Needs investigation |
+| **Production** | PostgreSQL (Supabase) | ⚠️ DATABASE_URL configured but connection failing | Needs investigation |
 
 ## 📋 What's Working
 
@@ -35,37 +35,43 @@
 - [x] Theme system implementation
 
 ### ⚠️ Partially Working
-- [ ] Database connections (local only, not Preview/Prod)
-- [ ] Authentication (configured but needs database)
-- [ ] Cron jobs (configured but not running without database)
+- [ ] Database connections (DATABASE_URL exists but connections failing)
+- [ ] Authentication (configured, waiting for database connection)
+- [ ] Cron jobs (need CRON_SECRET environment variable)
+
+### ✅ Recently Configured
+- [x] Polygon API key in Vercel - Added 2025-09-28
 
 ### ❌ Not Yet Configured
-- [ ] Production deployment
-- [ ] Production database (Supabase)
-- [ ] Preview database connection
-- [ ] Polygon API key in Vercel
+- [ ] CRON_SECRET in Vercel (for scheduled jobs) - **REQUIRED FOR HEALTH CHECK TO PASS**
 - [ ] Error tracking (Sentry)
 - [ ] Monitoring/alerts
-- [ ] Custom domain setup
+
+### ✅ Already Configured (Discovered)
+- [x] Custom domain - www.trenddojo.com (working!)
+- [x] DATABASE_URL in both Preview and Production (24 days ago)
+- [x] NEXTAUTH_SECRET in both environments
+- [x] SENDGRID configuration for emails
+- [x] NEXT_PUBLIC_APP_URL and NEXTAUTH_URL
 
 ## 🔧 Next Steps to Full Deployment
 
 ### Immediate (NOW)
-1. **Connect Preview Database**
+1. **Add CRON_SECRET to Vercel** ⚠️ **CRITICAL - Health Check Failing**
    ```bash
-   # 1. Create Supabase project
-   # 2. Get connection string
-   # 3. Add to Vercel environment variables
-   vercel env add DATABASE_URL preview
+   # Generated CRON_SECRET (use this exact value):
+   # 5bef2b153c55b450d23e8c27116634e4c7af4e4cbc92bdf0da7e1e5cdfc9dfb8
+
+   # Add to production:
+   vercel env add CRON_SECRET production
+   # When prompted, paste: 5bef2b153c55b450d23e8c27116634e4c7af4e4cbc92bdf0da7e1e5cdfc9dfb8
    ```
 
-2. **Add API Keys to Vercel**
+2. **Fix Database Connection**
    ```bash
-   # Add Polygon API key
-   vercel env add POLYGON_API_KEY preview production
-
-   # Add cron secret
-   vercel env add CRON_SECRET preview production
+   # DATABASE_URL exists but connection is failing
+   # Check if Supabase database is active/not paused
+   # Verify credentials are current
    ```
 
 3. **Run Database Migrations**
@@ -150,10 +156,14 @@ npx prisma studio
 
 ## 🚨 Known Issues
 
-1. **Database Not Connected**: Preview/Production need database setup
-2. **API Keys Missing**: Polygon API key not in Vercel
-3. **Cron Jobs Inactive**: Need database and CRON_SECRET
-4. **No Error Tracking**: Sentry not configured
+1. **Health Check Returning 503**: Production health endpoint failing due to:
+   - Database connection failing (DATABASE_URL configured but can't connect)
+   - CRON_SECRET not configured (required for production)
+2. **Database Not Accessible**: DATABASE_URL exists but connection failing - possible causes:
+   - Supabase database may be paused (free tier auto-pauses after inactivity)
+   - Credentials may need rotation
+   - Connection pooling not configured
+3. **No Error Tracking**: Sentry not configured
 
 ## 📞 Resources & Links
 
