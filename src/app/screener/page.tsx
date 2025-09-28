@@ -111,8 +111,7 @@ export default function ScreenerPage() {
 
   // Integrate with refresh coordinator
   useEffect(() => {
-    // Initial load
-    fetchMarketData();
+    // Load saved filters on mount
     loadSavedFilters();
 
     // Subscribe to market data refresh events
@@ -257,64 +256,76 @@ export default function ScreenerPage() {
       setLoading(true);
       setError(null);
 
-      // Define the stocks we want to fetch
-      // Popular stocks across different sectors for a diverse screener
-      const popularSymbols = [
-        // Technology
-        'AAPL', 'MSFT', 'GOOGL', 'META', 'NVDA', 'AMD', 'INTC', 'ORCL', 'CRM', 'ADBE',
-        // Consumer
-        'AMZN', 'TSLA', 'NKE', 'SBUX', 'MCD', 'DIS', 'NFLX',
-        // Finance
-        'JPM', 'BAC', 'WFC', 'GS', 'MS', 'V', 'MA', 'PYPL',
-        // Healthcare
-        'JNJ', 'PFE', 'UNH', 'CVS', 'ABBV', 'MRK',
-        // Energy & Industrials
-        'XOM', 'CVX', 'BA', 'CAT', 'GE',
-        // Retail & Consumer Staples
-        'WMT', 'TGT', 'HD', 'LOW', 'PG', 'KO', 'PEP'
-      ];
+      // Build query params from filters
+      const params = new URLSearchParams();
 
-      // Try to fetch real data from Yahoo Finance
-      let quotes: StockQuote[] = [];
-      try {
-        quotes = await YahooFinanceService.getQuotes(popularSymbols);
+      // Add all active filters to the query
+      if (filters.search) params.append('search', filters.search);
+      if (filters.sector !== 'all') params.append('sector', filters.sector);
+      if (filters.minPrice) params.append('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+      if (filters.minVolume) params.append('minVolume', filters.minVolume);
+      if (filters.minMarketCap) params.append('minMarketCap', filters.minMarketCap);
+      if (filters.minChange) params.append('minChange', filters.minChange);
+      if (filters.maxPE) params.append('maxPE', filters.maxPE);
+      if (filters.signal !== 'all') params.append('signal', filters.signal);
 
-        // If we got no data or very little data, use mock as fallback
-        if (quotes.length < 5) {
-          console.warn('Insufficient real data, falling back to mock data');
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder);
+      params.append('limit', '200'); // Get more results
+
+      // Fetch from our screener API
+      const response = await fetch(`/api/screener?${params.toString()}`);
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setStocks(result.data);
+        setFilteredStocks(result.data); // Since filtering is done server-side
+        setLastUpdate(new Date());
+      } else {
+        // Fallback to Yahoo Finance / mock data
+        console.warn('Screener API failed, falling back to Yahoo Finance');
+
+        const popularSymbols = [
+          'AAPL', 'MSFT', 'GOOGL', 'META', 'NVDA', 'AMZN', 'TSLA',
+          'JPM', 'V', 'JNJ', 'WMT', 'PG', 'UNH', 'HD', 'MA', 'DIS',
+          'BAC', 'ADBE', 'NFLX', 'CRM', 'PFE', 'KO', 'PEP'
+        ];
+
+        let quotes: StockQuote[] = [];
+        try {
+          quotes = await YahooFinanceService.getQuotes(popularSymbols);
+          if (quotes.length < 5) {
+            quotes = YahooFinanceService.getMockQuotes();
+          }
+        } catch {
           quotes = YahooFinanceService.getMockQuotes();
         }
-      } catch (apiError) {
-        console.warn('Yahoo Finance API failed, using mock data:', apiError);
-        quotes = YahooFinanceService.getMockQuotes();
+
+        const stockData: Stock[] = quotes.map(quote => ({
+          symbol: quote.symbol,
+          name: quote.name,
+          sector: quote.sector || 'Unknown',
+          price: quote.price,
+          change: quote.change,
+          changePercent: quote.changePercent,
+          volume: quote.volume,
+          marketCap: quote.marketCap || 0,
+          pe: quote.pe || 0,
+          weekHigh52: quote.fiftyTwoWeekHigh || quote.price * 1.2,
+          weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
+          avgVolume: quote.volume || 0,
+          rsi: Math.floor(Math.random() * 70) + 15,
+          movingAvg50: quote.price * (0.95 + Math.random() * 0.1),
+          movingAvg200: quote.price * (0.9 + Math.random() * 0.2),
+          signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
+        }));
+
+        setStocks(stockData);
       }
-
-      // Convert StockQuote to Stock interface
-      const stockData: Stock[] = quotes.map(quote => ({
-        symbol: quote.symbol,
-        name: quote.name,
-        sector: quote.sector || 'Unknown',
-        price: quote.price,
-        change: quote.change,
-        changePercent: quote.changePercent,
-        volume: quote.volume,
-        marketCap: quote.marketCap || 0,
-        pe: quote.pe || 0,
-        weekHigh52: quote.fiftyTwoWeekHigh || quote.price * 1.2,
-        weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
-        avgVolume: quote.volume || 0,
-        rsi: Math.floor(Math.random() * 70) + 15, // Random RSI between 15-85 (would need technical data API)
-        movingAvg50: quote.price * (0.95 + Math.random() * 0.1), // Random MA50 (would need technical data API)
-        movingAvg200: quote.price * (0.9 + Math.random() * 0.2), // Random MA200 (would need technical data API)
-        signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
-      }));
-
-      setStocks(stockData);
-      setLastUpdate(new Date());
     } catch (err) {
       console.error('Error fetching market data:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch market data');
-      // Keep existing data if fetch fails
     } finally {
       // Ensure minimum loading time of 350ms for better UX
       const elapsed = Date.now() - startTime;
@@ -342,78 +353,15 @@ export default function ScreenerPage() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Apply filters and sorting
+  // Refetch data when filters change
   useEffect(() => {
-    let filtered = [...stocks];
+    // Debounce filter changes to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      fetchMarketData();
+    }, 500); // 500ms debounce
 
-    // Search filter
-    if (filters.search) {
-      filtered = filtered.filter(stock => 
-        stock.symbol.toLowerCase().includes(filters.search.toLowerCase()) ||
-        stock.name.toLowerCase().includes(filters.search.toLowerCase())
-      );
-    }
-
-    // Sector filter
-    if (filters.sector !== "all") {
-      filtered = filtered.filter(stock => stock.sector === filters.sector);
-    }
-
-    // Price filters
-    if (filters.minPrice) {
-      filtered = filtered.filter(stock => stock.price >= parseFloat(filters.minPrice));
-    }
-    if (filters.maxPrice) {
-      filtered = filtered.filter(stock => stock.price <= parseFloat(filters.maxPrice));
-    }
-
-    // Volume filter
-    if (filters.minVolume) {
-      filtered = filtered.filter(stock => stock.volume >= parseFloat(filters.minVolume));
-    }
-
-    // Market cap filter
-    if (filters.minMarketCap) {
-      filtered = filtered.filter(stock => stock.marketCap >= parseFloat(filters.minMarketCap) * 1000000000);
-    }
-
-    // Change filter
-    if (filters.minChange) {
-      filtered = filtered.filter(stock => stock.changePercent >= parseFloat(filters.minChange));
-    }
-
-    // PE filter
-    if (filters.maxPE) {
-      filtered = filtered.filter(stock => stock.pe <= parseFloat(filters.maxPE));
-    }
-
-    // Technical signals
-    if (filters.signal !== "all") {
-      switch (filters.signal) {
-        case "bullish":
-          filtered = filtered.filter(stock => stock.price > stock.movingAvg50);
-          break;
-        case "bearish":
-          filtered = filtered.filter(stock => stock.price < stock.movingAvg50);
-          break;
-        case "overbought":
-          filtered = filtered.filter(stock => stock.rsi > 70);
-          break;
-        case "oversold":
-          filtered = filtered.filter(stock => stock.rsi < 30);
-          break;
-      }
-    }
-
-    // Sorting
-    filtered.sort((a, b) => {
-      const aVal = a[sortBy as keyof typeof a] as number;
-      const bVal = b[sortBy as keyof typeof b] as number;
-      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-    });
-
-    setFilteredStocks(filtered);
-  }, [stocks, filters, sortBy, sortOrder]);
+    return () => clearTimeout(timeoutId);
+  }, [filters, sortBy, sortOrder]);
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
