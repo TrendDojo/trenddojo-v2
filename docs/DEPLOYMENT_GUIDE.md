@@ -2,6 +2,17 @@
 
 > 📏 **Documentation Standards**: See [DEPLOYMENT_AUDIT_CLAUSE.md](./DEPLOYMENT_AUDIT_CLAUSE.md) for accuracy requirements and monthly audit procedures.
 
+## 🤖 AI Assistant Responsibility
+**The AI assistant is responsible for leading the COMPLETE deployment process from start to finish, including production deployment.**
+
+The process is NOT complete until:
+- ✅ Code is deployed to Preview
+- ✅ Preview is verified
+- ✅ Release is documented and tagged
+- ✅ **Production is deployed**
+- ✅ Production is verified
+- ✅ User is informed of completion WITH production status
+
 ## 🚀 Quick Reference
 
 ### URLs
@@ -78,8 +89,11 @@ git commit -m "chore: release v0.3.0"
 git tag -a v0.3.0 -m "Release v0.3.0 - verified in preview"
 ```
 
-### Phase 4: Production Deployment
+### Phase 4: Production Deployment (REQUIRED - DO NOT SKIP)
 ```bash
+# AI ASSISTANT MUST COMPLETE THIS PHASE
+# Do not stop at Phase 3 unless explicitly told to
+
 # 1. Merge to main with release tag
 git checkout main
 git merge dev
@@ -90,6 +104,11 @@ git push origin main --tags
 
 # 3. Verify production health
 curl https://trenddojo.com/api/health
+
+# 4. Report to user:
+# - Production deployment status
+# - Any issues found
+# - Confirmation that release is FULLY complete
 ```
 
 ## ✅ Pre-Deployment Checklist
