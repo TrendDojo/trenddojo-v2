@@ -7,9 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### To Do
-- Connect Preview database (Supabase)
-- Add API keys to Vercel (Polygon, Cron)
-- Production deployment setup
+- Error tracking setup (Sentry)
+- External monitoring/alerting
+- Automated database backups
+
+## [0.4.0] - 2025-09-28
+### Added
+- Automated database migration system via Vercel build hook
+- Market schema with 4 tables for price data and quotes
+- Secure migration script with encryption for local runs
+- GitHub Actions workflow for CI/CD migrations
+- DATABASE_MIGRATIONS.md documentation
+
+### Fixed
+- Database connection using proper pooling (port 6543 with pgbouncer)
+- All API keys configured (Polygon, CRON_SECRET)
+- Health check now returns "healthy" status
+- Market schema initialization warning resolved
+
+### Changed
+- Build process uses `npm run vercel-build` for automatic migrations
+- DATABASE_URL requires `?pgbouncer=true` for Vercel deployments
+- Added MIGRATE_DATABASE_URL for direct migration connections
 
 ## [0.3.0] - 2025-09-28
 ### Added
