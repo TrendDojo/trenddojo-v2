@@ -182,7 +182,9 @@ export async function GET(request: NextRequest) {
         });
 
         // Apply pagination
-        const paginatedStocks = stocks.slice(filters.offset, filters.offset + filters.limit);
+        const offset = filters.offset || 0;
+        const limit = filters.limit || 100;
+        const paginatedStocks = stocks.slice(offset, offset + limit);
 
         return NextResponse.json({
           success: true,
@@ -313,7 +315,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Apply pagination
-    const paginatedMocks = filteredMocks.slice(filters.offset, filters.offset + filters.limit);
+    const mockOffset = filters.offset || 0;
+    const mockLimit = filters.limit || 100;
+    const paginatedMocks = filteredMocks.slice(mockOffset, mockOffset + mockLimit);
 
     return NextResponse.json({
       success: true,
