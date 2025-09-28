@@ -1,4 +1,12 @@
-# Preview URL Configuration
+# ⚠️ DEPRECATED - Do Not Use
+
+**This document is deprecated and its recommendations conflict with security best practices.**
+**We use Vercel URLs for Preview environments for security reasons.**
+**See [SECURITY_CONFIG.md](./SECURITY_CONFIG.md#preview-url-security-strategy) for current approach.**
+
+---
+
+# Preview URL Configuration [DEPRECATED - DO NOT FOLLOW]
 
 ## Recommended Setup: Permanent Preview URL
 

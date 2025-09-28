@@ -1,4 +1,11 @@
-# Security & SEO Configuration
+# ⚠️ DEPRECATED - Use SECURITY_CONFIG.md Instead
+
+**This document is deprecated and has been consolidated.**
+**Please use [SECURITY_CONFIG.md](./SECURITY_CONFIG.md) for current security configuration.**
+
+---
+
+# Security & SEO Configuration [DEPRECATED]
 
 ## 🔒 Security Measures Implemented
 

@@ -1,4 +1,11 @@
-# TrendDojo V2 Deployment Guide
+# ⚠️ DEPRECATED - Use DEPLOYMENT_GUIDE.md Instead
+
+**This document is deprecated and should not be used.**
+**Please use [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for current deployment procedures.**
+
+---
+
+# TrendDojo V2 Deployment Guide [DEPRECATED]
 
 ## 🚀 Deployment Pipeline
 
