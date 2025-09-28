@@ -27,3 +27,4 @@ For full setup including database, see [/docs/reference/quick-start.md](./docs/r
 ---
 
 *All project documentation is in `/docs/` - this README is just a signpost.*# Force rebuild Sun 28 Sep 2025 18:39:02 NZDT
+# Force migration run Sun 28 Sep 2025 19:24:18 NZDT
