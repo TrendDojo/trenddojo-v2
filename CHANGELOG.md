@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - External monitoring/alerting
 - Automated database backups
 
+## [HOTFIX] - 2025-09-30
+### Fixed
+- Critical: CORS headers missing from screener-clean API endpoint
+- Impact: Local development unable to fetch from production API
+- Root cause: Missing Access-Control-Allow-Origin headers
+- Fix: Added CORS headers to API response and OPTIONS handler
+
+### Changed
+- Alert component now uses theme styling with danger icon for errors
+- Production API domain corrected from trenddojo.com to www.trenddojo.com
+
 ## [HOTFIX] - 2025-01-29
 ### Fixed
 - Critical: Screener API returning wrong total count (300 instead of 11,446)

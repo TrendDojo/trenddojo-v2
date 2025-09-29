@@ -193,17 +193,17 @@ describe('MarketDataService', () => {
 
   describe('getTechnicalIndicators', () => {
     it('should fetch technical indicators', async () => {
-      (prisma.stockTechnicals.findFirst as any).mockResolvedValue(null);
-      
+      ((prisma as any).stock_technicals.findFirst as any).mockResolvedValue(null);
+
       const indicators = await service.getTechnicalIndicators('AAPL');
-      
+
       expect(indicators.symbol).toBe('AAPL');
       expect(indicators).toHaveProperty('sma20');
       expect(indicators).toHaveProperty('rsi');
       expect(indicators).toHaveProperty('atr');
-      
+
       // Should cache the indicators
-      expect(prisma.stockTechnicals.upsert).toHaveBeenCalled();
+      expect((prisma as any).stock_technicals.upsert).toHaveBeenCalled();
     });
 
     it('should return cached indicators when fresh', async () => {
@@ -216,13 +216,13 @@ describe('MarketDataService', () => {
         updated_at: new Date(),
       };
       
-      (prisma.stockTechnicals.findFirst as any).mockResolvedValue(cachedIndicators);
-      
+      ((prisma as any).stock_technicals.findFirst as any).mockResolvedValue(cachedIndicators);
+
       const indicators = await service.getTechnicalIndicators('AAPL');
-      
+
       expect(indicators.sma20).toBe(175);
       expect(indicators.rsi).toBe(55);
-      expect(prisma.stockTechnicals.upsert).not.toHaveBeenCalled();
+      expect((prisma as any).stock_technicals.upsert).not.toHaveBeenCalled();
     });
   });
 

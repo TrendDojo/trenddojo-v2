@@ -6,14 +6,15 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
+// Create mock functions
+const mockAuthorize = vi.fn()
+const mockJwtCallback = vi.fn()
+const mockSessionCallback = vi.fn()
+const mockRedirectCallback = vi.fn()
+const mockSignInEvent = vi.fn()
+
 // Mock the auth module directly - must use factory function
 vi.mock('@/lib/auth', () => {
-  const mockAuthorize = vi.fn()
-  const mockJwtCallback = vi.fn()
-  const mockSessionCallback = vi.fn()
-  const mockRedirectCallback = vi.fn()
-  const mockSignInEvent = vi.fn()
-  
   return {
     authConfig: {
       providers: [{
@@ -31,14 +32,8 @@ vi.mock('@/lib/auth', () => {
         signIn: mockSignInEvent
       }
     },
-    // Export mocks for test access
-    __mocks: {
-      mockAuthorize,
-      mockJwtCallback,
-      mockSessionCallback,
-      mockRedirectCallback,
-      mockSignInEvent
-    }
+    default: vi.fn(),
+    auth: vi.fn()
   }
 })
 
@@ -49,18 +44,27 @@ vi.mock('@/lib/email/trenddojo-email-service', () => ({
   }
 }))
 
-import { authConfig, __mocks } from '@/lib/auth'
-const { mockAuthorize, mockJwtCallback, mockSessionCallback, mockRedirectCallback, mockSignInEvent } = __mocks as any
+// Mock prisma
+vi.mock('@/lib/db', () => ({
+  prisma: {
+    users: {
+      findUnique: vi.fn(),
+      create: vi.fn()
+    }
+  }
+}))
+
+import { authConfig } from '@/lib/auth'
 
 describe('Authentication System', () => {
-  let originalEnv: NodeJS.ProcessEnv
+  let originalEnv: any
 
   beforeEach(() => {
     vi.clearAllMocks()
     // Save original environment
     originalEnv = { ...process.env }
     // Reset environment variables
-    process.env.NODE_ENV = 'development'
+    (process.env as any).NODE_ENV = 'development'
     process.env.NEXT_PUBLIC_REAL_MONEY_ENABLED = 'false'
     
     // Set up default mock implementations
@@ -101,14 +105,14 @@ describe('Authentication System', () => {
   afterEach(() => {
     vi.clearAllMocks()
     // Restore original environment
-    process.env = originalEnv
+    Object.assign(process.env, originalEnv)
   })
 
   describe('Credentials Provider', () => {
     it('should reject invalid email format', async () => {
       mockAuthorize.mockResolvedValue(null)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'invalid-email',
         password: 'password123'
       })
@@ -123,7 +127,7 @@ describe('Authentication System', () => {
     it('should reject short passwords', async () => {
       mockAuthorize.mockResolvedValue(null)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'short'
       })
@@ -134,7 +138,7 @@ describe('Authentication System', () => {
     it('should reject non-existent users', async () => {
       mockAuthorize.mockResolvedValue(null)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'nonexistent@example.com',
         password: 'password123'
       })
@@ -157,7 +161,7 @@ describe('Authentication System', () => {
 
       mockAuthorize.mockResolvedValue(mockUser)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -166,10 +170,10 @@ describe('Authentication System', () => {
     })
 
     it('should block authentication in production without password implementation', async () => {
-      process.env.NODE_ENV = 'production'
+      (process.env as any).NODE_ENV = 'production'
       mockAuthorize.mockResolvedValue(null)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -193,7 +197,7 @@ describe('Authentication System', () => {
 
       mockAuthorize.mockResolvedValue(mockUser)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -217,7 +221,7 @@ describe('Authentication System', () => {
 
       mockAuthorize.mockResolvedValue(mockUser)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -242,7 +246,7 @@ describe('Authentication System', () => {
 
       mockAuthorize.mockResolvedValue(mockUser)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -268,7 +272,7 @@ describe('Authentication System', () => {
       mockAuthorize.mockResolvedValue(mockUser)
       process.env.NEXT_PUBLIC_REAL_MONEY_ENABLED = 'false'
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })
@@ -422,7 +426,7 @@ describe('Authentication System', () => {
 
         mockAuthorize.mockResolvedValue(mockUser)
         
-        const result = await authConfig.providers[0].authorize({
+        const result = await (authConfig.providers[0] as any).authorize({
           email: 'test@example.com',
           password: 'password123'
         })
@@ -448,7 +452,7 @@ describe('Authentication System', () => {
 
       mockAuthorize.mockResolvedValue(mockUser)
       
-      const result = await authConfig.providers[0].authorize({
+      const result = await (authConfig.providers[0] as any).authorize({
         email: 'test@example.com',
         password: 'password123'
       })

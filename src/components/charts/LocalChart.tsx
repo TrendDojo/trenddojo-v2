@@ -289,7 +289,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
         }
 
         loadedDataRef.current.allData = extendedData;
-        const sortedDates = actualData.map(d => d.time).sort();
+        const sortedDates = actualData.map((d: any) => d.time).sort();
         loadedDataRef.current.earliest = sortedDates[0];
         loadedDataRef.current.latest = sortedDates[sortedDates.length - 1];
 
@@ -448,7 +448,6 @@ export function LocalChart({ symbol }: { symbol: string }) {
         // Configure time scale
         chart.timeScale().applyOptions({
           rightOffset: 20,  // Even more space on the right to show future dates
-          leftOffset: 0,
           barSpacing: 6,
           minBarSpacing: 2,
           fixLeftEdge: false,
