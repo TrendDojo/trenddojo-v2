@@ -4,7 +4,36 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { AllocationPanel } from "@/components/panels/AllocationPanel";
-import sampleData from "../../../../temp/sampleData.json";
+
+// Mock sample data for demonstration
+const sampleData = {
+  strategies: [
+    {
+      id: "strat_1",
+      name: "Trend Momentum Pro",
+      status: "active",
+      winRate: 68.5,
+      sharpeRatio: 1.82,
+      netPnl: 45000
+    },
+    {
+      id: "strat_2",
+      name: "Mean Reversion Alpha",
+      status: "active",
+      winRate: 72.3,
+      sharpeRatio: 2.15,
+      netPnl: 32000
+    },
+    {
+      id: "strat_3",
+      name: "Volatility Harvester",
+      status: "paused",
+      winRate: 61.2,
+      sharpeRatio: 1.45,
+      netPnl: 18500
+    }
+  ]
+};
 
 export default function AllocationPanelPage() {
   // Transform sample data to match the panel's expected format

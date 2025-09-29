@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Screener API error:', error);
+    console.error('[screener-clean] API error:', error);
 
     // Return empty data on error - NO MOCK DATA
     return NextResponse.json({

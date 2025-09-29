@@ -6,7 +6,42 @@ import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { AllocationModal } from "@/components/modals/AllocationModal";
 import { DollarSign, TrendingUp } from "lucide-react";
-import sampleData from "../../../../temp/sampleData.json";
+
+// Mock sample data for demonstration
+const sampleData = {
+  strategies: [
+    {
+      id: "strat_1",
+      name: "Trend Momentum Pro",
+      status: "active",
+      description: "Captures medium-term price momentum across major indices",
+      winRate: 68.5,
+      sharpeRatio: 1.82,
+      maxDrawdown: -12.3,
+      netPnl: 45000
+    },
+    {
+      id: "strat_2",
+      name: "Mean Reversion Alpha",
+      status: "active",
+      description: "Exploits short-term price dislocations in liquid stocks",
+      winRate: 72.3,
+      sharpeRatio: 2.15,
+      maxDrawdown: -8.7,
+      netPnl: 32000
+    },
+    {
+      id: "strat_3",
+      name: "Volatility Harvester",
+      status: "paused",
+      description: "Options-based strategy that profits from volatility spikes",
+      winRate: 61.2,
+      sharpeRatio: 1.45,
+      maxDrawdown: -15.8,
+      netPnl: 18500
+    }
+  ]
+};
 
 export default function AllocationExamplePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
