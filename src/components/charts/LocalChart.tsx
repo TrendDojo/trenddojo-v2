@@ -204,8 +204,8 @@ export function LocalChart({ symbol }: { symbol: string }) {
 
       try {
         // Calculate date range based on selected timeframe
-        const endDate = new Date('2024-12-31');
-        let startDate = new Date('2024-12-31');
+        const endDate = new Date(); // Use current date
+        let startDate = new Date();
 
         switch (timeframe) {
           case '1M':
@@ -236,7 +236,12 @@ export function LocalChart({ symbol }: { symbol: string }) {
         console.log(`Fetching data for ${symbol} from ${startDateStr} to ${endDateStr} (${timeframe})`);
 
         const response = await fetch(`/api/market-data/history/${symbol}?from=${startDateStr}&to=${endDateStr}`);
-        if (!response.ok) throw new Error('Failed to fetch market data');
+        if (!response.ok) {
+          console.error(`API returned ${response.status}: ${response.statusText}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch market data: ${response.status}`);
+        }
 
         const marketData = await response.json();
         console.log(`Received ${marketData.data?.length || 0} data points for ${timeframe}`);
@@ -268,7 +273,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
 
         if (lastDataPoint) {
           const lastDate = new Date(lastDataPoint.time);
-          const maxDate = new Date('2024-12-31');
+          const maxDate = new Date(); // Use current date
           const currentDate = new Date(lastDate);
 
           // Add one data point per week up to the max date
@@ -484,8 +489,9 @@ export function LocalChart({ symbol }: { symbol: string }) {
           const barsInfo = mainSeries.barsInLogicalRange(range);
           if (barsInfo === null) return;
 
-          // Define maximum future date (end of 2024 - our data limit)
-          const maxFutureDate = new Date('2024-12-31');
+          // Define maximum future date (end of current year)
+          const currentYear = new Date().getFullYear();
+          const maxFutureDate = new Date(`${currentYear}-12-31`);
           const maxFutureDateStr = maxFutureDate.toISOString().split('T')[0];
 
           // If user scrolled near the left edge and we have the earliest data

@@ -111,6 +111,47 @@ Reorganize development tools, implement flexible trading mode indicators, enhanc
 ### Outcome
 **Success** - Complete UI reorganization with dev tools centralized, flexible trading mode system supporting multiple brokers, enhanced positions page with paper trading indicators, and improved broker connection experience. Established /temp/ directory convention for temporary files.
 
+## WB-2025-09-30-001: CORS Headers and Market Data Fetching Fix
+**State**: doing
+**Timeframe**: NOW
+**Created**: 2025-09-30 10:00
+**Dependencies**: None
+**Tags**: #bug #api #cors #market-data #production
+
+### Goal
+Fix CORS headers for production API access and resolve chart loading failures despite data being present.
+
+### Tasks
+- [x] Add CORS headers to /api/market-data/screener-clean endpoint
+- [x] Add OPTIONS handler for preflight requests
+- [x] Fix production domain (trenddojo.com → www.trenddojo.com)
+- [x] Update Alert component to use theme styling with danger icon
+- [x] Deploy CORS fix to production
+- [x] Verify CORS headers are working in production
+- [ ] Fix "Failed to fetch market data" error on chart loading
+- [ ] Investigate why charts fail despite data being returned
+- [ ] Ensure LocalChart component properly handles API responses
+- [ ] Test chart loading across all symbol pages
+
+### Issues Fixed
+- **CORS Error**: Local development couldn't fetch from production API due to missing Access-Control-Allow-Origin headers
+- **Alert Styling**: Error messages now use proper theme styling with danger icon
+- **Domain Issue**: Corrected production API domain reference
+
+### Remaining Issues
+- **Chart Loading**: Despite API returning data, charts show "Failed to fetch market data"
+- **Root Cause**: Need to investigate LocalChart component's data fetching and error handling
+- Possible issues:
+  - Data format mismatch between API and chart component
+  - Timing issue with chart initialization
+  - Error in data transformation logic
+
+### Notes
+- CORS headers successfully deployed and verified: `access-control-allow-origin: *`
+- Production API confirmed returning data (tested with curl)
+- Screener page now works when fetching from production
+- Chart issue appears to be separate from CORS problem
+
 ## WB-2025-01-25-001: Market Data Infrastructure - Unified Architecture
 **State**: doing
 **Timeframe**: NOW
