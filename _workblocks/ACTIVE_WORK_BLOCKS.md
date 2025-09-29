@@ -152,6 +152,37 @@ Fix CORS headers for production API access and resolve chart loading failures de
 - Screener page now works when fetching from production
 - Chart issue appears to be separate from CORS problem
 
+## WB-2025-09-30-002: Fix LocalChart Date Issues
+**State**: completed
+**Timeframe**: NOW
+**Created**: 2025-09-30 14:00
+**Completed**: 2025-09-30 15:00
+**Dependencies**: None
+**Tags**: #charts #bug-fix #ui
+
+### Goal
+Fix LocalChart component failing to load due to hardcoded 2024 dates when system is in 2025
+
+### Tasks
+- [x] Identify root cause: hardcoded dates from 2024
+- [x] Update endDate to use current date instead of '2024-12-31'
+- [x] Update maxFutureDate to use current year dynamically
+- [x] Add better error logging for debugging
+- [x] Create test page for chart verification (/test-chart)
+- [x] Test API endpoints with multiple symbols
+- [x] Verify chart works with AAPL, GOOGL, MSFT, TSLA
+- [x] Commit and deploy fix to production
+
+### Outcome
+**Success** - Charts now load correctly with current year data. All test symbols confirmed working.
+
+### Notes
+- Root cause: LocalChart had hardcoded dates from 2024 that broke in 2025
+- API was working correctly, returning 2025 data
+- Fixed by using dynamic dates based on current date
+- All test symbols confirmed working with 15+ data points each
+- Deployed to production via main branch push (commit 88bdfbd)
+
 ## WB-2025-01-25-001: Market Data Infrastructure - Unified Architecture
 **State**: doing
 **Timeframe**: NOW
