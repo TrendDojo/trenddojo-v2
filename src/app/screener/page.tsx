@@ -8,10 +8,12 @@ import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
+import { Tabs } from "@/components/ui/Tabs";
 import { tableStyles, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
 import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
+import { cn } from "@/lib/utils";
 import {
   Monitor,
   Heart,
@@ -23,7 +25,11 @@ import {
   Home,
   Wifi,
   Droplets,
-  Globe
+  Globe,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from "lucide-react";
 import { dropdownStyles, getDropdownTriggerClasses, getDropdownItemClasses, getFilterPillClasses, screenerDropdownStyles } from "@/lib/dropdownStyles";
 
@@ -70,11 +76,14 @@ function getTimeAgo(date: Date): string {
 }
 
 export default function ScreenerPage() {
+  const [activeTab, setActiveTab] = useState('popular');
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25;
   const [filters, setFilters] = useState({
     search: "",
     sector: "all",
@@ -256,8 +265,12 @@ export default function ScreenerPage() {
       setLoading(true);
       setError(null);
 
+      // Use the clean screener endpoint with source parameter
+      const endpoint = '/api/market-data/screener-clean';
+
       // Build query params from filters
       const params = new URLSearchParams();
+      params.append('source', activeTab); // 'popular' or 'all'
 
       // Add all active filters to the query
       if (filters.search) params.append('search', filters.search);
@@ -272,56 +285,48 @@ export default function ScreenerPage() {
 
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
-      params.append('limit', '200'); // Get more results
+      // Fetch enough data for client-side operations but not too much
+      // For "all" stocks, we'll paginate server-side due to large volume
+      params.append('limit', activeTab === 'all' ? '1000' : '100');
+      params.append('offset', '0'); // Always start from beginning for now
 
-      // Fetch from our screener API
-      const response = await fetch(`/api/screener?${params.toString()}`);
+      // Fetch from the screener-v2 API
+      const response = await fetch(`${endpoint}?${params.toString()}`);
       const result = await response.json();
 
+      // Handle response from screener-v2
       if (result.success && result.data) {
-        setStocks(result.data);
-        setFilteredStocks(result.data); // Since filtering is done server-side
-        setLastUpdate(new Date());
-      } else {
-        // Fallback to Yahoo Finance / mock data
-        console.warn('Screener API failed, falling back to Yahoo Finance');
+        // Apply initial sort to the data
+        const sorted = result.data.sort((a: Stock, b: Stock) => {
+          const aVal = a[sortBy as keyof Stock];
+          const bVal = b[sortBy as keyof Stock];
 
-        const popularSymbols = [
-          'AAPL', 'MSFT', 'GOOGL', 'META', 'NVDA', 'AMZN', 'TSLA',
-          'JPM', 'V', 'JNJ', 'WMT', 'PG', 'UNH', 'HD', 'MA', 'DIS',
-          'BAC', 'ADBE', 'NFLX', 'CRM', 'PFE', 'KO', 'PEP'
-        ];
+          if (aVal === undefined || aVal === null) return 1;
+          if (bVal === undefined || bVal === null) return -1;
 
-        let quotes: StockQuote[] = [];
-        try {
-          quotes = await YahooFinanceService.getQuotes(popularSymbols);
-          if (quotes.length < 5) {
-            quotes = YahooFinanceService.getMockQuotes();
+          // Handle string comparison for symbol, name, and sector
+          if (typeof aVal === 'string' && typeof bVal === 'string') {
+            return sortOrder === "asc"
+              ? aVal.localeCompare(bVal)
+              : bVal.localeCompare(aVal);
           }
-        } catch {
-          quotes = YahooFinanceService.getMockQuotes();
-        }
 
-        const stockData: Stock[] = quotes.map(quote => ({
-          symbol: quote.symbol,
-          name: quote.name,
-          sector: quote.sector || 'Unknown',
-          price: quote.price,
-          change: quote.change,
-          changePercent: quote.changePercent,
-          volume: quote.volume,
-          marketCap: quote.marketCap || 0,
-          pe: quote.pe || 0,
-          weekHigh52: quote.fiftyTwoWeekHigh || quote.price * 1.2,
-          weekLow52: quote.fiftyTwoWeekLow || quote.price * 0.8,
-          avgVolume: quote.volume || 0,
-          rsi: Math.floor(Math.random() * 70) + 15,
-          movingAvg50: quote.price * (0.95 + Math.random() * 0.1),
-          movingAvg200: quote.price * (0.9 + Math.random() * 0.2),
-          signal: Math.random() > 0.5 ? 'Buy' : Math.random() > 0.5 ? 'Hold' : 'Sell',
-        }));
+          // Handle numeric comparison
+          const aNum = aVal as number;
+          const bNum = bVal as number;
+          return sortOrder === "asc" ? aNum - bNum : bNum - aNum;
+        });
 
-        setStocks(stockData);
+        setStocks(sorted);
+        setFilteredStocks(sorted);
+        setLastUpdate(new Date());
+        setCurrentPage(1); // Reset to first page when data changes
+      } else if (!result.success || result.data.length === 0) {
+        // Show empty state - no fake data
+        console.warn('No market data available');
+        setStocks([]);
+        setFilteredStocks([]);
+        setError(result.error || 'Market data unavailable');
       }
     } catch (err) {
       console.error('Error fetching market data:', err);
@@ -353,7 +358,7 @@ export default function ScreenerPage() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Refetch data when filters change
+  // Refetch data when filters or tab changes (but not sort)
   useEffect(() => {
     // Debounce filter changes to avoid too many API calls
     const timeoutId = setTimeout(() => {
@@ -361,15 +366,50 @@ export default function ScreenerPage() {
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [filters, sortBy, sortOrder]);
+  }, [filters, activeTab]); // Removed sortBy and sortOrder to prevent refetch on sort
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredStocks.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedStocks = filteredStocks.slice(startIndex, endIndex);
+  const showingFrom = filteredStocks.length > 0 ? startIndex + 1 : 0;
+  const showingTo = Math.min(endIndex, filteredStocks.length);
 
   const handleSort = (field: string) => {
+    // Sort the filteredStocks array directly for client-side sorting
+    let newSortOrder: "asc" | "desc" = "desc";
+
     if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("desc");
+      newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     }
+
+    setSortBy(field);
+    setSortOrder(newSortOrder);
+
+    // Sort the stocks array
+    const sorted = [...filteredStocks].sort((a, b) => {
+      const aVal = a[field as keyof Stock];
+      const bVal = b[field as keyof Stock];
+
+      if (aVal === undefined || aVal === null) return 1;
+      if (bVal === undefined || bVal === null) return -1;
+
+      // Handle string comparison for symbol, name, and sector
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return newSortOrder === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+
+      // Handle numeric comparison
+      const aNum = aVal as number;
+      const bNum = bVal as number;
+      return newSortOrder === "asc" ? aNum - bNum : bNum - aNum;
+    });
+
+    setFilteredStocks(sorted);
+    setCurrentPage(1); // Reset to first page when sorting changes
   };
 
   const toggleStockSelection = (symbol: string) => {
@@ -515,6 +555,19 @@ export default function ScreenerPage() {
             )}
             {error && <span className="ml-2 text-yellow-500">• Using mock data</span>}
           </p>
+
+          {/* Tabs */}
+          <div className="border-b dark:border-slate-700 border-gray-200 mb-6">
+            <Tabs
+              tabs={[
+                { id: 'popular', label: 'Popular Stocks' },
+                { id: 'all', label: 'All US Stocks' }
+              ]}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              variant="modern"
+            />
+          </div>
 
           {/* Filter Dropdowns */}
           <div className="flex items-center justify-between mb-4 relative z-[60]">
@@ -1301,7 +1354,7 @@ export default function ScreenerPage() {
                 {/* Results Count and Actions */}
                 <div className="flex justify-between items-center pt-3 border-t dark:border-slate-700 border-gray-200">
                   <p className="text-sm dark:text-gray-400 text-gray-600">
-                    Found {filteredStocks.length} stocks
+                    Found {filteredStocks.length} {activeTab === 'all' ? 'total' : 'popular'} stocks
                     {selectedStocks.size > 0 && ` • ${selectedStocks.size} selected`}
                   </p>
                   <div className="flex gap-2">
@@ -1318,8 +1371,52 @@ export default function ScreenerPage() {
             </div>
           )}
 
+          {/* Minimal Top Pagination */}
+          {!loading && filteredStocks.length > itemsPerPage && (
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Showing <strong>{showingFrom}-{showingTo}</strong> of <strong>{filteredStocks.length}</strong> stocks
+              </span>
+
+              {/* Icon Pagination */}
+              <div className="flex items-center gap-1">
+                <button
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(1)}
+                >
+                  <ChevronsLeft className="w-4 h-4" />
+                </button>
+                <button
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="px-2 text-sm dark:text-gray-400 text-gray-600">
+                  {currentPage} of {totalPages}
+                </span>
+                <button
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  className="p-1.5 dark:hover:bg-slate-700 hover:bg-gray-100 rounded disabled:opacity-50"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  <ChevronsRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Results Table */}
-          {loading && stocks.length === 0 ? (
+          {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-flex items-center gap-2 dark:text-gray-400 text-gray-600">
                   <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -1327,6 +1424,18 @@ export default function ScreenerPage() {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   Loading market data...
+                </div>
+              </div>
+            ) : stocks.length === 0 ? (
+              <div className="p-8 text-center border dark:border-slate-700 border-gray-200 rounded-lg">
+                <div className="text-gray-500 dark:text-gray-400">
+                  <svg className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 className="text-lg font-semibold mb-2">{error || 'No market data available'}</h3>
+                  <p className="text-sm">
+                    {error ? 'Please try again later or check your connection.' : 'Market data will appear when available.'}
+                  </p>
                 </div>
               </div>
             ) : (
@@ -1339,43 +1448,92 @@ export default function ScreenerPage() {
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("symbol")}
                     >
-                      Symbol
+                      <div className="flex items-center gap-1">
+                        Symbol
+                        {sortBy === "symbol" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("price")}
                     >
-                      Price
+                      <div className="flex items-center gap-1">
+                        Price
+                        {sortBy === "price" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("changePercent")}
                     >
-                      Change
+                      <div className="flex items-center gap-1">
+                        Change
+                        {sortBy === "changePercent" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("volume")}
                     >
-                      Volume
+                      <div className="flex items-center gap-1">
+                        Volume
+                        {sortBy === "volume" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("marketCap")}
                     >
-                      Market Cap
+                      <div className="flex items-center gap-1">
+                        Market Cap
+                        {sortBy === "marketCap" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("pe")}
                     >
-                      P/E
+                      <div className="flex items-center gap-1">
+                        P/E
+                        {sortBy === "pe" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th
                       className={`${tableStyles.th} cursor-pointer hover:dark:text-white hover:text-gray-900`}
                       onClick={() => handleSort("rsi")}
                     >
-                      RSI
+                      <div className="flex items-center gap-1">
+                        RSI
+                        {sortBy === "rsi" && (
+                          <span className="text-indigo-500">
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                     <th className={tableStyles.th}>
                       Actions
@@ -1383,7 +1541,7 @@ export default function ScreenerPage() {
                   </tr>
                 </thead>
                 <tbody className={tableStyles.tbody}>
-                  {filteredStocks.map((stock, index) => (
+                  {paginatedStocks.map((stock, index) => (
                     <tr
                       key={stock.symbol}
                       className={getTableRow(index)}
@@ -1392,7 +1550,9 @@ export default function ScreenerPage() {
                         <Link href={`/symbol/${stock.symbol}`}>
                           <div className="cursor-pointer hover:text-indigo-500 transition-colors">
                             <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
-                            <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
+                            {stock.sector !== 'Unknown' && (
+                              <div className="text-xs dark:text-gray-400 text-gray-600">{stock.sector}</div>
+                            )}
                           </div>
                         </Link>
                       </td>
@@ -1406,22 +1566,26 @@ export default function ScreenerPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        {formatNumber(stock.volume)}
+                        {stock.volume > 0 ? formatNumber(stock.volume) : '-'}
                       </td>
                       <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        ${formatNumber(stock.marketCap)}
+                        {stock.marketCap > 0 ? `$${formatNumber(stock.marketCap)}` : '-'}
                       </td>
                       <td className="px-4 py-3 dark:text-gray-300 text-gray-700">
-                        {stock.pe.toFixed(1)}
+                        {stock.pe > 0 ? stock.pe.toFixed(1) : '-'}
                       </td>
                       <td className={tableStyles.td}>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          stock.rsi > 70 ? "bg-danger/20 text-danger" :
-                          stock.rsi < 30 ? "bg-success/20 text-success" :
-                          "dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700"
-                        }`}>
-                          {stock.rsi.toFixed(0)}
-                        </span>
+                        {stock.rsi > 0 ? (
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            stock.rsi > 70 ? "bg-danger/20 text-danger" :
+                            stock.rsi < 30 ? "bg-success/20 text-success" :
+                            "dark:bg-slate-700 bg-gray-200 dark:text-gray-300 text-gray-700"
+                          }`}>
+                            {stock.rsi.toFixed(0)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </td>
                       <td className={tableStyles.td}>
                         <div className="flex gap-2">
@@ -1442,6 +1606,86 @@ export default function ScreenerPage() {
                 </div>
               </div>
             )}
+
+          {/* Simple Bottom Pagination */}
+          {!loading && filteredStocks.length > itemsPerPage && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                className="px-3 py-2 text-sm dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {/* Always show first page */}
+                <button
+                  className={`px-3 py-2 text-sm rounded-lg ${
+                    currentPage === 1
+                      ? "bg-indigo-600 text-white"
+                      : "dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                  }`}
+                  onClick={() => setCurrentPage(1)}
+                >
+                  1
+                </button>
+
+                {/* Show ellipsis if needed */}
+                {currentPage > 3 && (
+                  <span className="px-2 text-gray-500">...</span>
+                )}
+
+                {/* Show pages around current page */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    return page !== 1 && page !== totalPages &&
+                           page >= currentPage - 1 && page <= currentPage + 1;
+                  })
+                  .map(page => (
+                    <button
+                      key={page}
+                      className={`px-3 py-2 text-sm rounded-lg ${
+                        page === currentPage
+                          ? "bg-indigo-600 text-white"
+                          : "dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                      }`}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                {/* Show ellipsis if needed */}
+                {currentPage < totalPages - 2 && totalPages > 2 && (
+                  <span className="px-2 text-gray-500">...</span>
+                )}
+
+                {/* Always show last page if more than 1 page */}
+                {totalPages > 1 && (
+                  <button
+                    className={`px-3 py-2 text-sm rounded-lg ${
+                      currentPage === totalPages
+                        ? "bg-indigo-600 text-white"
+                        : "dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                    }`}
+                    onClick={() => setCurrentPage(totalPages)}
+                  >
+                    {totalPages}
+                  </button>
+                )}
+              </div>
+
+              <button
+                className="px-3 py-2 text-sm dark:bg-slate-800 bg-white border dark:border-slate-700 border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Save Filter Dialog */}
