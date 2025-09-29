@@ -280,6 +280,90 @@ See [SECURITY.md](./SECURITY.md) for full details.
 - [CHANGELOG.md](../CHANGELOG.md) - Release history
 - [Release Standard](../../_shared-framework/standards/RELEASE-DOCUMENTATION-STANDARD.md) - Release process
 
+## 🚨 Emergency Hotfix Procedure
+
+### When to Use Emergency Process
+Use ONLY when ALL conditions are met:
+- Production is broken or severely degraded
+- Users are actively impacted
+- Fix is isolated and well-understood
+- Fix contains ONLY the bug resolution (no other changes)
+
+### Emergency Deployment Process
+
+#### Phase 1: Isolated Fix Branch (5 minutes)
+1. Create dedicated hotfix branch from main: `git checkout -b hotfix/YYYY-MM-DD-issue`
+2. Make ONLY the change needed to fix the issue
+3. **NO OTHER CHANGES** allowed in this branch:
+   - No code cleanup
+   - No "while we're here" improvements
+   - No dependency updates
+   - No documentation except the fix explanation
+4. Test locally to verify fix works
+5. Commit with prefix: `hotfix: [specific issue description]`
+
+#### Phase 2: Direct to Production (10 minutes)
+1. Push hotfix branch: `git push origin hotfix/YYYY-MM-DD-issue`
+2. Merge to main: `git checkout main && git merge hotfix/YYYY-MM-DD-issue`
+3. Push directly: `git push origin main`
+4. Monitor Vercel deployment
+5. Verify fix is working at trenddojo.com
+
+#### Phase 3: Mandatory Documentation (Within same session)
+1. Update CHANGELOG.md with new HOTFIX section:
+   ```
+   ## [HOTFIX] - YYYY-MM-DD
+   ### Fixed
+   - Critical: [Description of what was broken]
+   - Impact: [How many users/what features affected]
+   - Root cause: [Why it broke]
+   - Fix: [What was changed]
+   ```
+
+2. Create/update incident record in `/_workblocks/INCIDENTS.md`:
+   ```markdown
+   ## INC-YYYY-MM-DD: [Issue Title]
+   **Severity**: Critical
+   **Detection Time**: HH:MM
+   **Resolution Time**: HH:MM
+   **User Impact**: [Description]
+
+   ### What Happened
+   [Detailed description]
+
+   ### Root Cause
+   [Technical explanation]
+
+   ### Fix Applied
+   - Branch: hotfix/YYYY-MM-DD-issue
+   - Commit: [hash]
+   - Changes: [Specific files and changes]
+
+   ### Prevention
+   [What will prevent this in future]
+   ```
+
+3. Add entry to `/_workblocks/ACTIVE_WORK_BLOCKS.md`:
+   - Mark as completed immediately
+   - Reference incident number
+   - Note that standard process was bypassed for emergency
+
+### AI Assistant Protocol
+When user says "emergency" or "production is broken":
+1. IMMEDIATELY ask: "Is this a critical production issue affecting users?"
+2. If yes, state: "Initiating emergency hotfix procedure - creating isolated branch"
+3. Create the hotfix branch and make ONLY the necessary fix
+4. After deployment, state: "Hotfix deployed. Now documenting in CHANGELOG and INCIDENTS.md"
+
+### What NOT to Use Emergency Process For:
+- ❌ Feature additions (even if "urgent" for demo)
+- ❌ Performance improvements (unless site is completely down)
+- ❌ UI/cosmetic fixes
+- ❌ Refactoring or code cleanup
+- ❌ "Quick" additions while fixing something else
+
+**CRITICAL RULE**: The hotfix branch contains EXACTLY and ONLY what fixes the issue.
+
 ## 🆘 Support
 
 ### Issues?

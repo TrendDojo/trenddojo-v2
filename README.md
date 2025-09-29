@@ -1,8 +1,9 @@
 # TrendDojo
 
 > 🚀 **DEPLOYMENT PROCESS**: `/docs/DEPLOYMENT_GUIDE.md` - **READ BEFORE ANY DEPLOYMENT**
-> - MANDATORY 4-phase process: Local → Preview → Documentation → Production
-> - NEVER push directly to main branch without following the complete workflow
+> - **STANDARD**: 4-phase process (Local → Preview → Documentation → Production)
+> - **EMERGENCY**: Hotfix procedure for critical production issues ONLY (see guide)
+> - **NEVER** skip phases except for documented emergencies
 
 Professional trading platform for swing and trend following strategies - systematic risk management and position sizing.
 

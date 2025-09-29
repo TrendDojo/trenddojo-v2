@@ -4,10 +4,11 @@
 
 ## 🚀 CRITICAL DEPLOYMENT PROCESS - READ BEFORE ANY DEPLOYMENT
 **⚠️ MANDATORY**: Before pushing to dev, staging, preview, or main branches:
-- **READ**: `/docs/DEPLOYMENT_GUIDE.md` - Complete 4-phase deployment process
-- **NEVER** skip phases or push directly to production
-- **ALWAYS** follow: Local → Preview → Documentation → Production
-- The AI assistant is responsible for the COMPLETE deployment process
+- **READ**: `/docs/DEPLOYMENT_GUIDE.md` - Complete deployment process
+- **STANDARD**: Follow 4-phase process (Local → Preview → Documentation → Production)
+- **EMERGENCY**: Hotfix procedure ONLY for critical production issues
+- **RULE**: Emergency fixes must contain ONLY the fix, nothing else
+- The AI assistant is responsible for the COMPLETE deployment process and documentation
 
 ## 🚨 MANDATORY RULES (IN ORDER OF PRECEDENCE)
 

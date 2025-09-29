@@ -2,9 +2,10 @@
 
 > 🚀 **CRITICAL DEPLOYMENT PROCESS**
 > **BEFORE ANY DEPLOYMENT**: READ `/docs/DEPLOYMENT_GUIDE.md`
-> - **MANDATORY**: Complete all 4 phases (Local → Preview → Documentation → Production)
-> - **NEVER** skip steps or push directly to production
-> - **AI ASSISTANT**: You are responsible for the COMPLETE deployment process
+> - **STANDARD**: Complete all 4 phases (Local → Preview → Documentation → Production)
+> - **EMERGENCY**: Hotfix procedure for critical issues - branch must contain ONLY the fix
+> - **DOCUMENTATION**: All hotfixes must be logged in `/_workblocks/INCIDENTS.md`
+> - **AI ASSISTANT**: You are responsible for the COMPLETE deployment process and documentation
 
 ## 🔴 MANDATORY AI CONTEXT REFRESH
 **BEFORE STARTING ANY WORK BLOCK, YOU MUST READ:**
