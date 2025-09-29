@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { AllocationModal } from "@/components/modals/AllocationModal";
@@ -64,7 +63,7 @@ export default function AllocationExamplePage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-8">
@@ -204,6 +203,6 @@ export default function AllocationExamplePage() {
           portfolio={portfolio}
         />
       </PageContent>
-    </AppLayout>
+    
   );
 }

@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - External monitoring/alerting
 - Automated database backups
 
+## [HOTFIX] - 2025-01-29
+### Fixed
+- Critical: Screener API returning wrong total count (300 instead of 11,446)
+- Impact: All users viewing "All US Stocks" tab saw limited stock count
+- Root cause: Total calculated after pagination instead of before
+- Fix: Store totalCount before applying pagination slice
+
 ## [0.4.0] - 2025-09-28
 ### Added
 - Automated database migration system via Vercel build hook

@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
-import { CDNChart } from "@/components/charts/CDNChart";
+import { LocalChart } from "@/components/charts/LocalChart";  // Using lightweight-charts v5 local dependency
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
 
 export default function StockPage() {
@@ -112,7 +111,7 @@ export default function StockPage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         {/* Breadcrumb */}
         <div className="mb-6">
@@ -200,7 +199,7 @@ export default function StockPage() {
 
         {/* Action Buttons */}
         <div className="mb-8 flex gap-3">
-          <Link href="/screener">
+          <Link href="/app/screener">
             <Button variant="secondary" size="sm">
               ← Back to Screener
             </Button>
@@ -218,7 +217,7 @@ export default function StockPage() {
           {/* Left Column - Chart */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-4">
-              <CDNChart symbol={symbolData.symbol} />
+              <LocalChart symbol={symbolData.symbol} />
             </Card>
           </div>
 
@@ -347,6 +346,6 @@ export default function StockPage() {
           }}
         />
       </PageContent>
-    </AppLayout>
+    
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
@@ -63,7 +62,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         {/* Header */}
         <div className="mb-8">
@@ -472,6 +471,6 @@ export default function ProfilePage() {
           )}
         </div>
       </PageContent>
-    </AppLayout>
+    
   );
 }

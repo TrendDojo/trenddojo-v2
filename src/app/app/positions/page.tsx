@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Atom, Edit3, Building2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns } from "lucide-react";
 import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -744,7 +743,7 @@ export default function PositionsPage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         <div className="space-y-4">
 
@@ -787,7 +786,7 @@ export default function PositionsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span className="text-gray-500 dark:text-gray-400">
-                    <Link href="/brokers" className="font-bold hover:underline">Connect broker</Link> for live trades. Manual trades only.
+                    <Link href="/app/brokers" className="font-bold hover:underline">Connect broker</Link> for live trades. Manual trades only.
                   </span>
                 </div>
               )}
@@ -799,7 +798,7 @@ export default function PositionsPage() {
                   <span className="text-gray-500 dark:text-gray-400">
                     No paper broker connected.
                   </span>
-                  <Link href="/brokers" className="font-bold hover:underline text-xs">
+                  <Link href="/app/brokers" className="font-bold hover:underline text-xs">
                     Connect
                   </Link>
                 </div>
@@ -1146,7 +1145,7 @@ export default function PositionsPage() {
                               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                                 Connect your {activeAccountType === "live" ? "brokerage account" : "paper trading account"} to view positions.
                               </p>
-                              <Link href="/brokers">
+                              <Link href="/app/brokers">
                                 <Button variant="primary" size="sm">
                                   Connect Broker
                                 </Button>
@@ -1465,6 +1464,6 @@ export default function PositionsPage() {
       </div>
 
       </PageContent>
-    </AppLayout>
+    
   );
 }

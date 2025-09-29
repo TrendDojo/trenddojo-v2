@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { CDNChart } from '@/components/charts/CDNChart';
+import { LocalChart } from '@/components/charts/LocalChart';  // Using local dependency
 
 export default function ChartTestPage() {
   const [showChart, setShowChart] = useState(false);
@@ -55,12 +55,12 @@ export default function ChartTestPage() {
       <div className="mb-4 text-sm">
         <p>Current Symbol: {symbol}</p>
         <p>Chart Visible: {showChart ? 'Yes' : 'No'}</p>
-        <p>LightweightCharts loaded: {typeof window !== 'undefined' && (window as any).LightweightCharts ? 'Yes' : 'No'}</p>
+        <p>Using local lightweight-charts dependency (always available)</p>
       </div>
 
       {showChart && (
         <div className="border-2 border-red-500 p-4">
-          <CDNChart symbol={symbol} />
+          <LocalChart symbol={symbol} />
         </div>
       )}
 
@@ -70,7 +70,7 @@ export default function ChartTestPage() {
         <ol className="list-decimal list-inside space-y-1 text-sm">
           <li>Open browser console (F12)</li>
           <li>Look for console.log messages from chart initialization</li>
-          <li>Check if "LightweightCharts loaded" appears above</li>
+          <li>Chart should load instantly (no CDN dependency)</li>
           <li>Click "Show Chart" if not auto-shown</li>
           <li>Note any error messages in console</li>
         </ol>

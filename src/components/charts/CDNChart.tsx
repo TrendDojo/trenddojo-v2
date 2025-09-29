@@ -107,34 +107,112 @@ export function CDNChart({ symbol }: { symbol: string }) {
     }
   };
 
-  // First useEffect: Load the script once
+  // First useEffect: Load the script once with retry logic
   useEffect(() => {
-    if (!window.LightweightCharts && !isScriptLoaded) {
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js';
-      script.async = true;
-      script.onload = () => {
-    // DEBUG: console.log('Script loaded, LightweightCharts available');
-        setIsScriptLoaded(true);
-      };
-      script.onerror = () => {
-        console.error('Failed to load script');
-        setError('Failed to load chart library');
-      };
+    let retryCount = 0;
+    const maxRetries = 3;
+    let scriptLoadTimeout: NodeJS.Timeout;
 
-      // Check if script already exists
+    const loadScript = async () => {
+      // If already loaded, we're done
+      if (window.LightweightCharts) {
+        setIsScriptLoaded(true);
+        return;
+      }
+
+      // Check if script is already in DOM and loading
       const existing = document.querySelector('script[src*="lightweight-charts"]');
-      if (!existing) {
+      if (existing) {
+        // Wait for existing script to load
+        const checkInterval = setInterval(() => {
+          if (window.LightweightCharts) {
+            clearInterval(checkInterval);
+            setIsScriptLoaded(true);
+          }
+        }, 100);
+
+        // Stop checking after 5 seconds
+        setTimeout(() => clearInterval(checkInterval), 5000);
+        return;
+      }
+
+      // Try primary CDN first
+      const primaryUrl = 'https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js';
+      // Fallback CDN options
+      const fallbackUrls = [
+        'https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.0/lightweight-charts.standalone.production.js'
+      ];
+
+      const urls = [primaryUrl, ...fallbackUrls];
+
+      for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+
+        // Create a promise to handle script loading
+        const loadPromise = new Promise((resolve, reject) => {
+          script.onload = () => {
+            console.log(`Successfully loaded chart library from: ${url}`);
+            resolve(true);
+          };
+
+          script.onerror = () => {
+            console.warn(`Failed to load from ${url}, trying next CDN...`);
+            script.remove();
+            reject(new Error(`Failed to load from ${url}`));
+          };
+
+          // Timeout after 10 seconds
+          scriptLoadTimeout = setTimeout(() => {
+            script.remove();
+            reject(new Error(`Timeout loading from ${url}`));
+          }, 10000);
+        });
+
         document.head.appendChild(script);
-      } else {
-        // Script already in DOM, check if loaded
-        if (window.LightweightCharts) {
+
+        try {
+          await loadPromise;
+          clearTimeout(scriptLoadTimeout);
           setIsScriptLoaded(true);
+          setError(null);
+          return; // Success!
+        } catch (err) {
+          clearTimeout(scriptLoadTimeout);
+          // Try next CDN
+          if (i === urls.length - 1) {
+            // All CDNs failed
+            throw new Error('Failed to load chart library from all CDN sources');
+          }
         }
       }
-    } else if (window.LightweightCharts) {
-      setIsScriptLoaded(true);
-    }
+    };
+
+    // Start loading process
+    loadScript().catch(err => {
+      console.error('Chart library loading failed:', err);
+      setError('Unable to load chart library. Please check your internet connection and refresh the page.');
+
+      // Retry logic
+      if (retryCount < maxRetries) {
+        retryCount++;
+        console.log(`Retrying chart library load (attempt ${retryCount}/${maxRetries})...`);
+        setTimeout(() => {
+          loadScript().catch(() => {
+            // Final failure after retries
+            setError('Chart library unavailable. Please try again later.');
+          });
+        }, 2000 * retryCount); // Exponential backoff
+      }
+    });
+
+    return () => {
+      clearTimeout(scriptLoadTimeout);
+    };
   }, []);
 
   // Second useEffect: Create chart when script is loaded
@@ -533,8 +611,14 @@ export function CDNChart({ symbol }: { symbol: string }) {
     return (
       <div className="w-full">
         <h3 className="text-lg font-semibold mb-2">Chart for {symbol}</h3>
-        <div className="flex items-center justify-center h-[400px]">
-          <p className="text-red-500">{error}</p>
+        <div className="flex flex-col items-center justify-center h-[400px] space-y-4">
+          <p className="text-red-500 text-center px-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
+          >
+            Reload Page
+          </button>
         </div>
       </div>
     );

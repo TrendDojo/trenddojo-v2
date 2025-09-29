@@ -15,7 +15,7 @@ export const buttonStyles = {
 
   // Variant styles
   variant: {
-    primary: "bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white focus:ring-indigo-500",
+    primary: "bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 dark:bg-trenddojo-purple-700 dark:hover:bg-trenddojo-purple-800 text-white focus:ring-trenddojo-purple-600",
     secondary: "dark:bg-transparent bg-transparent border dark:border-slate-700 border-gray-300 dark:hover:bg-slate-800 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
     ghost: "bg-transparent dark:hover:bg-slate-700/30 hover:bg-gray-100 dark:text-white text-gray-900 focus:ring-slate-500",
     danger: "bg-danger hover:opacity-90 text-white focus:ring-red-500",
@@ -24,9 +24,9 @@ export const buttonStyles = {
 
   // Size styles
   size: {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-3",
-    lg: "px-6 py-4 text-lg",
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3",
+    lg: "px-8 py-4 text-lg",
   },
 
   // State styles

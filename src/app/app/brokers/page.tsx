@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { AlpacaConnectionModal, AlpacaCredentials } from "@/components/brokers/AlpacaConnectionModal";
 import { Card } from "@/components/ui/Panel";
@@ -214,7 +213,7 @@ export default function BrokersPage() {
   }, []);
 
   return (
-    <AppLayout>
+    
       <PageContent>
 
         <div className="mb-8">
@@ -663,6 +662,6 @@ export default function BrokersPage() {
           </div>
         </Modal>
       </PageContent>
-    </AppLayout>
+    
   );
 }

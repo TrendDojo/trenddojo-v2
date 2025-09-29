@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -12,7 +11,7 @@ export default function SettingsPage() {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   return (
-    <AppLayout>
+    
       <PageContent>
           {/* Account Section */}
           <div className="mb-8">
@@ -280,6 +279,6 @@ export default function SettingsPage() {
           </div>
         )}
       </PageContent>
-    </AppLayout>
+    
   );
 }

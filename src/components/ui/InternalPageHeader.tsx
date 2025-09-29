@@ -59,17 +59,17 @@ export default function InternalPageHeader({
               >
                 Pricing
               </Link>
-              <Link 
-                href="/demo" 
+              <Link
+                href="/blog"
                 className="text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors"
               >
-                Demo
+                Blog
               </Link>
-              <Link 
-                href="/support" 
+              <Link
+                href="/about"
                 className="text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors"
               >
-                Support
+                About
               </Link>
             </nav>
 

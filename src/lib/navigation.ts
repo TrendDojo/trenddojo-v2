@@ -12,7 +12,6 @@ export interface CTAButton {
 export const navigationLinks: NavigationLink[] = [
   { href: '/features', label: 'Features' },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/demo', label: 'Demo' },
   { href: '/blog', label: 'Blog' }
 ];
 
@@ -27,8 +26,7 @@ export const footerSections = {
     title: 'Platform',
     links: [
       { href: '/features', label: 'Features' },
-      { href: '/pricing', label: 'Pricing' },
-      { href: '/demo', label: 'Live Demo' }
+      { href: '/pricing', label: 'Pricing' }
     ]
   },
   resources: {

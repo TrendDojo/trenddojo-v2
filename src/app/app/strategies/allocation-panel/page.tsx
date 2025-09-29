@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { AllocationPanel } from "@/components/panels/AllocationPanel";
 
@@ -67,7 +66,7 @@ export default function AllocationPanelPage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         <div className="max-w-5xl mx-auto">
           <div className="mb-8">
@@ -176,6 +175,6 @@ export default function AllocationPanelPage() {
           </div>
         </div>
       </PageContent>
-    </AppLayout>
+    
   );
 }

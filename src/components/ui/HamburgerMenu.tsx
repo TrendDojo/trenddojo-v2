@@ -9,7 +9,6 @@ const menuItems = [
   { href: "/", label: "Home" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/demo", label: "Demo" },
   { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
 ];

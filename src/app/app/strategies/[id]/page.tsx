@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
@@ -71,7 +70,7 @@ export default function StrategyDetailPage() {
   ];
 
   return (
-    <AppLayout>
+    
       <PageContent>
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -441,6 +440,6 @@ export default function StrategyDetailPage() {
           </div>
         )}
       </PageContent>
-    </AppLayout>
+    
   );
 }

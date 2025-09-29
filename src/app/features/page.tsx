@@ -179,10 +179,10 @@ export default function FeaturesPage() {
                 Start Free Trial
               </Link>
               <Link
-                href="/demo"
+                href="/pricing"
                 className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
               >
-                View Demo
+                View Pricing
               </Link>
             </div>
           </motion.div>
@@ -403,10 +403,10 @@ export default function FeaturesPage() {
                 Start Free Trial
               </Link>
               <Link
-                href="/demo"
+                href="/pricing"
                 className="border border-white/20 hover:border-white/40 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200 backdrop-blur-sm"
               >
-                View Demo
+                View Pricing
               </Link>
             </div>
           </motion.div>

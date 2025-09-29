@@ -69,21 +69,21 @@ export function UserDropdown({ className }: UserDropdownProps) {
           {/* Menu Links */}
           <div className="py-2">
             <a
-              href="/profile"
+              href="/app/profile"
               className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <User className="w-5 h-5" />
               <span>Profile Settings</span>
             </a>
             <a
-              href="/settings"
+              href="/app/settings"
               className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <Settings className="w-5 h-5" />
               <span>Account Settings</span>
             </a>
             <a
-              href="/subscription"
+              href="/app/subscription"
               className="w-full px-4 py-2 text-left dark:text-gray-300 text-gray-700 dark:hover:bg-slate-700 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900 transition-colors flex items-center gap-3 no-underline"
             >
               <CreditCard className="w-5 h-5" />

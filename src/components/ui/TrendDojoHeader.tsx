@@ -25,7 +25,7 @@ export default function TrendDojoHeader({
   const getHeaderStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "absolute top-0 left-0 right-0 z-40";
+        return "bg-white/95 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-40";
       case 'internal':
         return "bg-white border-b border-slate-200 sticky top-0 z-30";
       case 'pricing':
@@ -38,33 +38,33 @@ export default function TrendDojoHeader({
   const getSignInStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "text-white/90 hover:text-white font-medium transition-colors px-4 py-2 drop-shadow-sm no-underline";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-4 py-2 no-underline";
       case 'internal':
-        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2 no-underline";
       case 'pricing':
-        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2 no-underline";
       default:
-        return "text-slate-600 hover:text-indigo-600 font-medium transition-colors px-3 py-2 no-underline";
+        return "text-slate-600 hover:text-trenddojo-purple-700 font-medium transition-colors px-3 py-2 no-underline";
     }
   };
 
   const getSignupStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm drop-shadow-sm no-underline";
+        return "bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
       case 'internal':
-        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
+        return "bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
       case 'pricing':
-        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
+        return "bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
       default:
-        return "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
+        return "bg-trenddojo-purple-700 hover:bg-trenddojo-purple-800 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm no-underline";
     }
   };
 
   const getBackButtonStyles = () => {
     switch (variant) {
       case 'homepage':
-        return "text-white/90 hover:text-white text-sm font-medium transition-colors drop-shadow-sm";
+        return "text-trenddojo-purple-700 hover:text-trenddojo-purple-800 text-sm font-medium transition-colors";
       case 'internal':
         return "text-trenddojo-purple-700 hover:text-trenddojo-purple-800 text-sm font-medium transition-colors";
       case 'pricing':
@@ -95,23 +95,23 @@ export default function TrendDojoHeader({
       {variant === 'homepage' && (
         <style jsx>{`
           .homepage-hamburger button {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgb(71, 85, 105);
           }
           .homepage-hamburger button:hover {
-            color: white;
+            color: rgb(79, 70, 229);
           }
         `}</style>
       )}
       
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between py-6">
-          {/* Left side - Logo and Back Button */}
-          <div className="flex items-center space-x-6">
+          {/* Left side - Logo */}
+          <div className="flex items-center">
             {/* Logo */}
             {showLogo && (
               <Link href="/" className="flex-shrink-0">
                 <Image
-                  src="/assets/logos/td-logo.svg"
+                  src="/assets/logos/td-logo-s.svg"
                   alt="TrendDojo"
                   width={140}
                   height={31}
@@ -119,33 +119,30 @@ export default function TrendDojoHeader({
                 />
               </Link>
             )}
-            
-            {/* Homepage variant uses flex-1 for spacing when no logo */}
-            {variant === 'homepage' && !showLogo && (
-              <div className="flex-1" />
-            )}
-            
+
             {/* Back Button */}
             {showBackButton && (
-              <Link 
+              <Link
                 href={backButtonHref}
-                className={`hidden sm:block ${backButtonStyles}`}
+                className={`hidden sm:block ml-6 ${backButtonStyles}`}
               >
                 {backButtonText}
               </Link>
             )}
           </div>
 
-          {/* Right side - Navigation and Menu */}
-          <div className="flex items-center space-x-16">
-            {/* Desktop Navigation */}
+          {/* Center - Navigation */}
+          <div className="flex-1 flex justify-center">
             <Navigation
               variant={variant}
               links={navigationLinks}
             />
+          </div>
 
+          {/* Right side - CTA Buttons and Menu */}
+          <div className="flex items-center">
             {/* CTA Buttons */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-4">
               <Link
                 href={ctaButtons.signIn.href}
                 className={signInStyles}

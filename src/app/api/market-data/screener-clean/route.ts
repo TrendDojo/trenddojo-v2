@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
     const paginatedStocks = stocks.slice(offset, offset + limit);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: paginatedStocks,
       total: totalCount,  // Return the actual total count, not the paginated count
@@ -149,16 +149,39 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
 
+    // Add CORS headers for local development
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return response;
+
   } catch (error) {
     console.error('[screener-clean] API error:', error);
 
     // Return empty data on error - NO MOCK DATA
-    return NextResponse.json({
+    const errorResponse = NextResponse.json({
       success: false,
       data: [],
       error: error instanceof Error ? error.message : 'Failed to fetch market data',
       provider: 'Polygon',
       timestamp: new Date().toISOString()
     }, { status: 500 });
+
+    // Add CORS headers for local development
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return errorResponse;
   }
+}
+
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  const response = new NextResponse(null, { status: 200 });
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { StrategiesTab } from "@/components/strategies/StrategiesTab";
 import { EntriesTab } from "@/components/strategies/EntriesTab";
@@ -11,7 +10,7 @@ export default function StrategiesPage() {
   const [activeTab, setActiveTab] = useState<"strategies" | "entries" | "exits">("strategies");
 
   return (
-    <AppLayout>
+    
       <PageContent>
         {/* Header */}
         <div className="mb-6">
@@ -66,6 +65,6 @@ export default function StrategiesPage() {
           {activeTab === "exits" && <ExitsTab />}
         </div>
       </PageContent>
-    </AppLayout>
+    
   );
 }

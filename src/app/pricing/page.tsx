@@ -138,10 +138,10 @@ export default function PricingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link
-                href="/demo"
+                href="/signup"
                 className="bg-trenddojo-primary-600 hover:bg-trenddojo-primary-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg"
               >
-                View Live Demo
+                Start Free Trial
               </Link>
               <Link
                 href="#plans"

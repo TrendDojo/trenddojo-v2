@@ -27,23 +27,17 @@ export default function HomePageHeader() {
               >
                 Pricing
               </Link>
-              <Link 
-                href="/demo" 
+              <Link
+                href="/blog"
                 className="text-white/90 hover:text-white font-medium transition-colors drop-shadow-sm"
               >
-                Demo
+                Blog
               </Link>
-              <Link 
-                href="/docs" 
+              <Link
+                href="/about"
                 className="text-white/90 hover:text-white font-medium transition-colors drop-shadow-sm"
               >
-                Docs
-              </Link>
-              <Link 
-                href="/support" 
-                className="text-white/90 hover:text-white font-medium transition-colors drop-shadow-sm"
-              >
-                Support
+                About
               </Link>
             </nav>
 

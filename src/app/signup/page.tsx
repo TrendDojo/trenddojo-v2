@@ -98,12 +98,12 @@ export default function SignupPage() {
             </Card>
             
             <div className="space-y-4">
-              <Link href="/demo" className="block">
+              <Link href="/features" className="block">
                 <Button
                   variant="primary"
                   fullWidth
                 >
-                  Try the Demo
+                  View Features
                 </Button>
               </Link>
               <Link href="/" className="block">

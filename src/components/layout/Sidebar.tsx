@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui/Tooltip';
@@ -14,33 +14,40 @@ interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-const navigationItems = [
+interface NavigationItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  tooltip?: string;
+}
+
+const navigationItems: NavigationItem[] = [
   {
-    href: "/dashboard",
+    href: "/app/dashboard",
     label: "Dashboard",
     icon: Gauge,
     tooltip: "View portfolio performance and key metrics"
   },
   {
-    href: "/screener",
+    href: "/app/screener",
     label: "Screener",
     icon: ArrowUpWideNarrow,
-    tooltip: "Find trading opportunities with market screeners"
+    tooltip: "Find trading opportunities with US stock market screeners"
   },
   {
-    href: "/positions",
+    href: "/app/positions",
     label: "Positions",
     icon: MapPin,
     tooltip: "Monitor and manage your open positions"
   },
   {
-    href: "/strategies",
+    href: "/app/strategies",
     label: "Strategies",
     icon: Atom,
     tooltip: "Create and manage automated trading strategies"
   },
   {
-    href: "/brokers",
+    href: "/app/brokers",
     label: "Brokers",
     icon: ArrowRightLeft,
     tooltip: "Connect and manage broker accounts"
@@ -75,11 +82,14 @@ function NavItem({
         "font-medium relative group",
         isCollapsed ? "px-3 py-2.5 mx-2 justify-center" : "px-4 py-2.5 mx-2",
         isActive
-          ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+          ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-100/70 dark:bg-indigo-950/40"
           : "dark:text-gray-400 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-slate-800/50 hover:bg-gray-100"
       )}
     >
-      {React.createElement(iconComponent, { className: "w-6 h-6", strokeWidth: 2.5 })}
+      {React.createElement(iconComponent, {
+        className: "flex-shrink-0 w-6 h-6",
+        strokeWidth: 2.5
+      })}
       {!isCollapsed && <span className="truncate">{label}</span>}
     </Link>
   );
@@ -238,26 +248,26 @@ export function Sidebar({
         <nav className="flex-1 px-2 pb-6 overflow-y-auto">
           <div className="space-y-4">
             {/* Main navigation items */}
-            {navigationItems.map((item) => (
-              <NavItem
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                icon={item.icon}
-                tooltip={item.tooltip}
-                isActive={
-                  pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`) ||
-                  (item.href === '/screener' && pathname.startsWith('/symbol/'))
-                }
-                isCollapsed={collapsed}
-                onClick={() => {
-                  if (window.innerWidth < 1024) {
-                    onToggle();
-                  }
-                }}
-              />
-            ))}
+            {navigationItems.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+              return (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  tooltip={item.tooltip}
+                  isActive={isActive}
+                  isCollapsed={collapsed}
+                  onClick={() => {
+                    if (window.innerWidth < 1024) {
+                      onToggle();
+                    }
+                  }}
+                />
+              );
+            })}
           </div>
         </nav>
       </aside>

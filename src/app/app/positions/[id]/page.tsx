@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -50,7 +49,7 @@ export default function PositionDetailPage() {
   const position = mockPosition; // In real app, fetch based on params.id
 
   return (
-    <AppLayout>
+    
       <PageContent>
         {/* Breadcrumb */}
         <div className="mb-8">
@@ -286,6 +285,6 @@ export default function PositionDetailPage() {
           </div>
         </div>
       </PageContent>
-    </AppLayout>
+    
   );
 }

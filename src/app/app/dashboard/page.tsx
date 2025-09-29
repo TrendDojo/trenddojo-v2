@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 
 export default function DashboardPage() {
@@ -59,8 +58,7 @@ export default function DashboardPage() {
   const totalPercent = (totalChange / (totalValue - totalChange)) * 100;
 
   return (
-    <AppLayout>
-      <PageContent>
+    <PageContent>
 
           {/* Main Account Value Card - Full Width */}
           <Card className="mb-6">
@@ -277,7 +275,6 @@ export default function DashboardPage() {
               </div>
             </Card>
           </div>
-      </PageContent>
-    </AppLayout>
+    </PageContent>
   );
 }

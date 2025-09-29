@@ -92,10 +92,10 @@ export default function AboutPage() {
                 Join TrendDojo
               </Link>
               <Link
-                href="/demo"
+                href="/features"
                 className="border border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 backdrop-blur-sm hover:bg-white/5"
               >
-                See Demo
+                See Features
               </Link>
             </div>
           </motion.div>

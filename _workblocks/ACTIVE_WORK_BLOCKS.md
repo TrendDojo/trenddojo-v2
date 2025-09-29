@@ -1113,9 +1113,92 @@ Implement a basic working stock screener that filters stocks based on price, vol
 - Use existing market data infrastructure
 - Focus on making filters work, not adding features
 
+## WB-2025-01-29-001: UI Component Living Theme Harmonization
+**State**: pending
+**Timeframe**: NOW
+**Created**: 2025-01-29 15:00
+**Dependencies**: WB-2025-01-26-002 (Living Theme System Migration)
+**Tags**: #ui #design-system #living-theme
+
+### Goal
+Harmonize filter buttons and other UI components with the current living theme system to ensure consistent visual appearance across the application.
+
+### Tasks
+- [ ] Identify all filter buttons across the application
+- [ ] Audit current filter button styles against living theme
+- [ ] Update filter buttons to use theme variables and styles
+- [ ] Test visual consistency across different pages
+- [ ] Document any new theme patterns discovered
+
+### Notes
+- Part of ongoing effort to achieve 90%+ living theme usage
+- Ensures consistency with existing buttonStyles, tableStyles, etc.
+
+## WB-2025-01-29-002: CDNChart Script Loading Bug Fix
+**State**: completed
+**Timeframe**: NOW
+**Created**: 2025-01-29 15:00
+**Completed**: 2025-01-29 16:00
+**Dependencies**: None
+**Tags**: #bug #charts #cdn #critical
+
+### Goal
+Fix the "Failed to load script" error in CDNChart component to ensure charts load reliably.
+
+### Tasks
+- [x] Investigate current CDNChart script loading implementation
+- [x] Identify root cause of script loading failure (CDN dependency)
+- [x] Implement proper script loading with error handling
+- [x] Add fallback mechanism if CDN fails
+- [x] Test chart loading across different scenarios
+- [x] Add monitoring/logging for script load failures
+
+### Solution Implemented
+Migrated from CDN-loaded script to local npm dependency:
+- Installed `lightweight-charts` as a direct dependency
+- Created new `LocalChart` component using the local import
+- Updated all pages to use `LocalChart` instead of `CDNChart`
+- Benefits: 100% reliability, no network dependency, instant loading, TypeScript support
+
+### Notes
+- Critical bug affecting chart functionality
+- Decided to use local dependency for reliability over CDN for bundle size
+- 45KB addition to bundle is acceptable for core trading functionality
+- Charts now work offline and load instantly without spinner
+
+## WB-2025-01-29-003: Migrate lightweight-charts to v5
+**State**: completed
+**Timeframe**: LATER
+**Created**: 2025-01-29 16:15
+**Completed**: 2025-01-29 16:30
+**Dependencies**: None
+**Tags**: #charts #upgrade #technical-debt
+
+### Goal
+Upgrade lightweight-charts from v4.1.0 to v5.x to get latest features and improvements.
+
+### Context
+We downgraded from v5.0.8 to v4.1.0 to quickly fix the CDN migration issue. The v5 API has breaking changes that need to be addressed.
+
+### Tasks
+- [x] Review v5 migration guide
+- [x] Update LocalChart component to use new API:
+  - [x] Change `addCandlestickSeries()` to `addSeries({ type: 'Candlestick' })`
+  - [x] Change `addLineSeries()` to `addSeries({ type: 'Line' })`
+  - [x] Change `addHistogramSeries()` to `addSeries({ type: 'Histogram' })`
+- [x] Update TypeScript types for v5
+- [x] Test all chart functionality
+- [x] Check for performance improvements
+
+### Notes
+- Successfully migrated to v5.0.8
+- API changes were straightforward - just method name changes
+- Using `addSeries()` with type parameter instead of individual methods
+- TypeScript compilation successful, no chart-related errors
+
 ## WB-2025-01-18-001: Position Indicator Graphic Enhancement
 **State**: paused
-**Timeframe**: NOW
+**Timeframe**: LATER
 **Created**: 2025-01-18 12:00
 **Dependencies**: None
 **Tags**: #ui #visualization #positions #data-viz

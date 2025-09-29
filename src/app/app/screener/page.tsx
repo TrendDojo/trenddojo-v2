@@ -2,16 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
-import { Card } from "@/components/ui/Panel";
+import { Card, Alert } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { Pill } from "@/components/ui/Pill";
-import { Tabs } from "@/components/ui/Tabs";
 import { tableStyles, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { ScreenerFilterService, DEFAULT_FILTERS, type ScreenerFilter } from "@/lib/screener-filters";
-import { YahooFinanceService, type StockQuote } from "@/lib/market-data/yahoo-finance";
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
 import { cn } from "@/lib/utils";
 import {
@@ -76,7 +73,6 @@ function getTimeAgo(date: Date): string {
 }
 
 export default function ScreenerPage() {
-  const [activeTab, setActiveTab] = useState('popular');
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +107,6 @@ export default function ScreenerPage() {
   }>>([]);
   const [showPresetsDropdown, setShowPresetsDropdown] = useState(false);
   const [showCustomDropdown, setShowCustomDropdown] = useState(false);
-  const [showProviderDropdown, setShowProviderDropdown] = useState(false);
   const [showMarketsDropdown, setShowMarketsDropdown] = useState(false);
   const [expandedSectors, setExpandedSectors] = useState<Set<string>>(new Set());
   const [selectedSectors, setSelectedSectors] = useState<Set<string>>(new Set());
@@ -265,12 +260,21 @@ export default function ScreenerPage() {
       setLoading(true);
       setError(null);
 
-      // Use the clean screener endpoint with source parameter
-      const endpoint = '/api/market-data/screener-clean';
+      // Determine the API endpoint based on environment
+      // In development, fetch from production to use their Polygon API key
+      const isLocal = typeof window !== 'undefined' &&
+                     (window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1');
+
+      const baseUrl = isLocal
+        ? 'https://www.trenddojo.com'
+        : '';
+
+      const endpoint = `${baseUrl}/api/market-data/screener-clean`;
 
       // Build query params from filters
       const params = new URLSearchParams();
-      params.append('source', activeTab); // 'popular' or 'all'
+      params.append('source', 'all'); // Always fetch all US stocks
 
       // Add all active filters to the query
       if (filters.search) params.append('search', filters.search);
@@ -287,7 +291,7 @@ export default function ScreenerPage() {
       params.append('sortOrder', sortOrder);
       // Fetch enough data for client-side operations but not too much
       // For "all" stocks, we'll paginate server-side due to large volume
-      params.append('limit', activeTab === 'all' ? '1000' : '100');
+      params.append('limit', '1000'); // Always fetch all stocks
       params.append('offset', '0'); // Always start from beginning for now
 
       // Fetch from the screener-v2 API
@@ -349,7 +353,6 @@ export default function ScreenerPage() {
       if (!target.closest('.dropdown-container')) {
         setShowPresetsDropdown(false);
         setShowCustomDropdown(false);
-        setShowProviderDropdown(false);
         setShowMarketsDropdown(false);
       }
     };
@@ -366,7 +369,7 @@ export default function ScreenerPage() {
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [filters, activeTab]); // Removed sortBy and sortOrder to prevent refetch on sort
+  }, [filters]); // Removed sortBy and sortOrder to prevent refetch on sort
 
   // Calculate pagination values
   const totalPages = Math.ceil(filteredStocks.length / itemsPerPage);
@@ -430,92 +433,14 @@ export default function ScreenerPage() {
   };
 
   return (
-    <AppLayout>
+    
       <PageContent>
         <div className="space-y-6 relative">
 
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold dark:text-white text-gray-900">Stock Screener</h1>
-              
-              {/* Data Source Selector - Inline with title */}
-              <div className="relative dropdown-container z-[80]">
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    setShowProviderDropdown(!showProviderDropdown);
-                    setShowPresetsDropdown(false);
-                    setShowCustomDropdown(false);
-                  }}
-                >
-                  {/* Yahoo Finance Logo */}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.6 3L12 13.5L5.4 3H0L9.3 16.5L6 21H11.4L12 20.1L12.6 21H18L14.7 16.5L24 3H18.6Z" fill="#7B3FF2"/>
-                  </svg>
-                  <span>Yahoo Finance</span>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </Button>
-                
-                {/* Dropdown Menu */}
-                <Dropdown
-                  isOpen={showProviderDropdown}
-                  onClose={() => setShowProviderDropdown(false)}
-                  width="md"
-                  position="left"
-                  className="py-2"
-                >
-                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.6 3L12 13.5L5.4 3H0L9.3 16.5L6 21H11.4L12 20.1L12.6 21H18L14.7 16.5L24 3H18.6Z" fill="#7B3FF2"/>
-                      </svg>
-                      <span className="text-base font-bold dark:text-white text-gray-900">Yahoo Finance</span>
-                      <div className="ml-auto flex items-center gap-1">
-                        <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="text-xs dark:text-gray-400 text-gray-600">Free</span>
-                      </div>
-                    </button>
-                    
-                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#FF5722"/>
-                        <path d="M2 17L12 22L22 17" stroke="#FF5722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M2 12L12 17L22 12" stroke="#FF5722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="text-base font-bold dark:text-gray-400 text-gray-600">Polygon.io</span>
-                      <span className="ml-auto text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Pro</span>
-                    </button>
-                    
-                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93ZM17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39Z" fill="#00ACC1"/>
-                      </svg>
-                      <span className="text-base font-bold dark:text-gray-400 text-gray-600 whitespace-nowrap">Alpha Vantage</span>
-                      <span className="ml-auto text-xs dark:text-gray-500 text-gray-500">Free</span>
-                    </button>
-                    
-                    <button className="w-full flex items-center gap-3 px-4 py-3 pr-6 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors opacity-50 cursor-not-allowed">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
-                        <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="text-base font-bold dark:text-gray-400 text-gray-600">Mock Data</span>
-                      <span className="ml-auto text-xs dark:text-gray-500 text-gray-500">Dev</span>
-                    </button>
-                    
-                    <div className="border-t dark:border-slate-700 border-gray-200 mt-2 pt-2">
-                      <div className="px-4 py-2">
-                        <p className="text-xs dark:text-gray-500 text-gray-500">More sources coming soon</p>
-                      </div>
-                    </div>
-                </Dropdown>
-              </div>
+              <h1 className="text-2xl font-bold dark:text-white text-gray-900">US Stocks</h1>
             </div>
           </div>
           
@@ -553,21 +478,8 @@ export default function ScreenerPage() {
                 </button>
               </>
             )}
-            {error && <span className="ml-2 text-yellow-500">• Using mock data</span>}
           </p>
 
-          {/* Tabs */}
-          <div className="border-b dark:border-slate-700 border-gray-200 mb-6">
-            <Tabs
-              tabs={[
-                { id: 'popular', label: 'Popular Stocks' },
-                { id: 'all', label: 'All US Stocks' }
-              ]}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              variant="modern"
-            />
-          </div>
 
           {/* Filter Dropdowns */}
           <div className="flex items-center justify-between mb-4 relative z-[60]">
@@ -1354,7 +1266,7 @@ export default function ScreenerPage() {
                 {/* Results Count and Actions */}
                 <div className="flex justify-between items-center pt-3 border-t dark:border-slate-700 border-gray-200">
                   <p className="text-sm dark:text-gray-400 text-gray-600">
-                    Found {filteredStocks.length} {activeTab === 'all' ? 'total' : 'popular'} stocks
+                    Found {filteredStocks.length} stocks
                     {selectedStocks.size > 0 && ` • ${selectedStocks.size} selected`}
                   </p>
                   <div className="flex gap-2">
@@ -1366,9 +1278,9 @@ export default function ScreenerPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="p-4 rounded-lg bg-danger/10 border border-danger/20">
-              <p className="text-danger text-sm">{error}</p>
-            </div>
+            <Alert intent="error">
+              {error}
+            </Alert>
           )}
 
           {/* Minimal Top Pagination */}
@@ -1547,7 +1459,7 @@ export default function ScreenerPage() {
                       className={getTableRow(index)}
                     >
                       <td className={tableStyles.td}>
-                        <Link href={`/symbol/${stock.symbol}`}>
+                        <Link href={`/app/symbol/${stock.symbol}`}>
                           <div className="cursor-pointer hover:text-indigo-500 transition-colors">
                             <div className="font-medium dark:text-white text-gray-900">{stock.symbol}</div>
                             {stock.sector !== 'Unknown' && (
@@ -1589,7 +1501,7 @@ export default function ScreenerPage() {
                       </td>
                       <td className={tableStyles.td}>
                         <div className="flex gap-2">
-                          <Link href={`/symbol/${stock.symbol}`}>
+                          <Link href={`/app/symbol/${stock.symbol}`}>
                             <button className="text-xs px-2 py-1 rounded dark:bg-slate-700 bg-gray-200 hover:dark:bg-slate-600 hover:bg-gray-300 dark:text-gray-300 text-gray-700">
                               View
                             </button>
@@ -1750,6 +1662,6 @@ export default function ScreenerPage() {
           </div>
         )}
       </PageContent>
-    </AppLayout>
+    
   );
 }

@@ -29,13 +29,16 @@ export function AppLayout({ children, title }: AppLayoutProps) {
   // Determine page title based on route if not provided
   const pageTitle = title || (() => {
     switch(pathname) {
-      case '/dashboard': return 'Dashboard';
-      case '/screener': return 'Screener';
-      case '/positions': return 'Positions';
-      case '/portfolios': return 'Portfolios';
-      case '/exchanges': return 'Exchanges';
-      case '/settings': return 'Settings';
-      case '/theme': return 'Theme Showcase';
+      case '/app/dashboard': return 'Dashboard';
+      case '/app/screener': return 'Screener';
+      case '/app/positions': return 'Positions';
+      case '/app/portfolios': return 'Portfolios';
+      case '/app/exchanges': return 'Exchanges';
+      case '/app/settings': return 'Settings';
+      case '/app/strategies': return 'Strategies';
+      case '/app/brokers': return 'Brokers';
+      case '/app/profile': return 'Profile';
+      case '/app/subscription': return 'Subscription';
       default: return 'Dashboard';
     }
   })();
@@ -98,7 +101,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
             <div className={cn(
               "hidden lg:flex items-center justify-start"
             )} style={{ paddingLeft: '1.25rem' }}>
-              <Link href="/dashboard" title="Dashboard">
+              <Link href="/app/dashboard" title="Dashboard">
                 <img
                   src={sidebarCollapsed ? "/assets/icons/trenddojo-plain-icon.svg" : "/assets/logos/td-logo-s.svg"}
                   alt="TrendDojo"

@@ -3,7 +3,8 @@
   "version": "0.4.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3011",
+    "dev": "next dev --port 3011",
+    "dev:turbo": "next dev --turbopack --port 3011",
     "build": "npx prisma generate && next build",
     "vercel-build": "bash scripts/vercel-build.sh",
     "migrate:setup": "node scripts/secure-migrate.js --setup",

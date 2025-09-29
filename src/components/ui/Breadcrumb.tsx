@@ -20,7 +20,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
     <nav aria-label="Breadcrumb" className={cn("flex items-center gap-2 text-sm", className)}>
       {/* Dashboard/Home Icon */}
       <Link
-        href="/dashboard"
+        href="/app/dashboard"
         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800/50 transition-colors"
         title="Dashboard"
       >

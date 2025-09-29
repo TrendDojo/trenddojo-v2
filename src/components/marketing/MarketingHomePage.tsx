@@ -81,41 +81,32 @@ const testimonials = [
 export default function MarketingHomePage() {
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-screen flex items-center bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
-        <TrendDojoHeader variant="homepage" showLogo={false} showBackButton={false} />
+      {/* Hero Section with Header */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
+        <TrendDojoHeader variant="homepage" showLogo={true} showBackButton={false} />
         <AnimatedPolygonBackground />
-        
-        <div className="relative z-30 container mx-auto px-6 py-40">
+
+        <div className="relative z-30 container mx-auto px-6 py-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex justify-center mb-12"
-            >
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 drop-shadow-lg flex items-center justify-center gap-4">
               <Image
-                src="/assets/logos/td-logo-s.svg"
-                alt="TrendDojo"
-                width={300}
-                height={66}
-                className="h-16 w-auto"
+                src="/assets/icons/trenddojo-plain-icon.svg"
+                alt=""
+                width={60}
+                height={60}
+                className="h-12 md:h-16 w-auto inline-block"
                 priority
               />
-            </motion.div>
-
-            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 drop-shadow-lg">
-              Trade with <span className="text-indigo-400">Discipline</span>
+              Trade with <span className="text-trenddojo-purple-700">Discipline</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-12 drop-shadow-md">
               Professional position sizing, risk management, and trade journaling
-              for <span className="text-indigo-400">swing</span> and <span className="text-indigo-400">trend following</span> traders — whether professional or amateur, part-time or full-time.
+              for <span className="font-bold">Swing Traders</span> and <span className="font-bold">Trend Following Traders</span> — whether professional or amateur, part-time or full-time.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -124,9 +115,9 @@ export default function MarketingHomePage() {
                   Start Free Trial
                 </Button>
               </Link>
-              <Link href="/demo">
+              <Link href="/features">
                 <Button variant="ghost" size="lg" className="border border-white/20 hover:border-white/40 text-white hover:bg-white/10 dark:border-white/20 dark:hover:border-white/40 dark:text-white dark:hover:bg-white/10">
-                  View Demo
+                  View Features
                 </Button>
               </Link>
             </div>
@@ -138,7 +129,7 @@ export default function MarketingHomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                  className="bg-slate-800/50 backdrop-blur-md rounded-lg p-4 border border-slate-600/25"
+                  className="bg-white/10 backdrop-blur-md rounded-lg p-4"
                 >
                   <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">{stat.value}</div>
                   <div className="text-sm text-gray-200">{stat.label}</div>
@@ -150,7 +141,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 bg-slate-950">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -159,16 +150,16 @@ export default function MarketingHomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
               Built for Traders, by Traders
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Every feature is designed to eliminate emotional decisions and enforce 
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Every feature is designed to eliminate emotional decisions and enforce
               systematic trading discipline that separates professionals from amateurs.
             </p>
           </motion.div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -176,11 +167,11 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50 hover:border-indigo-600/50 hover:bg-slate-800/90 transition-all duration-300"
+                className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
               >
-                <feature.icon className="w-12 h-12 text-indigo-600 mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+                <feature.icon className="w-12 h-12 text-trenddojo-purple-700 mb-4" />
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
+                <p className="text-slate-600 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -214,7 +205,7 @@ export default function MarketingHomePage() {
                     viewport={{ once: true }}
                     className="flex items-center text-gray-200"
                   >
-                    <CheckCircle className="w-5 h-5 text-indigo-600 mr-3 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-trenddojo-purple-700 mr-3 flex-shrink-0" />
                     {item}
                   </motion.li>
                 ))}
@@ -276,7 +267,7 @@ export default function MarketingHomePage() {
             </p>
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
@@ -284,7 +275,7 @@ export default function MarketingHomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-slate-200 hover:border-indigo-600/60 hover:shadow-lg transition-all duration-300"
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all duration-300"
               >
                 <p className="text-slate-700 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div>
@@ -298,7 +289,7 @@ export default function MarketingHomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-indigo-600 to-indigo-700">
+      <section className="py-20 bg-gradient-to-r from-trenddojo-primary-600 to-trenddojo-purple-700">
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -314,7 +305,7 @@ export default function MarketingHomePage() {
               systematic risk management and disciplined execution.
             </p>
             <Link href="/signup">
-              <Button variant="secondary" size="lg" className="bg-white hover:bg-gray-100 text-indigo-600 border-0 shadow-lg">
+              <Button variant="secondary" size="lg" className="bg-white hover:bg-gray-100 text-trenddojo-purple-700 border-0 shadow-lg">
                 Get Started Free
               </Button>
             </Link>
