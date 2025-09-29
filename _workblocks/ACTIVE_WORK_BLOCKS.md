@@ -1,10 +1,16 @@
 # TrendDojo Active Work Blocks
 
+> 🚀 **CRITICAL DEPLOYMENT PROCESS**
+> **BEFORE ANY DEPLOYMENT**: READ `/docs/DEPLOYMENT_GUIDE.md`
+> - **MANDATORY**: Complete all 4 phases (Local → Preview → Documentation → Production)
+> - **NEVER** skip steps or push directly to production
+> - **AI ASSISTANT**: You are responsible for the COMPLETE deployment process
+
 ## 🔴 MANDATORY AI CONTEXT REFRESH
 **BEFORE STARTING ANY WORK BLOCK, YOU MUST READ:**
-1. `/CLAUDE.md` - Rules & behavior
+1. `/docs/CLAUDE.md` - Rules & behavior
 2. `/docs/PROJECT_CONTEXT.md` - Project specifics
-3. `/docs/_work/ACTIVE_WORK_BLOCKS.md` - Current work (this file)
+3. `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work (this file)
 
 **AT EACH TOUCHPOINT (session start, context switch, new task), RE-READ ALL THREE FILES**
 

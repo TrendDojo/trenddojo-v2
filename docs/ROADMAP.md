@@ -47,8 +47,8 @@ This roadmap provides a high-level view of planned and completed features. For i
 ### Documentation
 - [Architecture Overview](/docs/architecture/)
 - [Pattern Library](/docs/patterns/)
-- [Work Blocks](/_work/ACTIVE_WORK_BLOCKS.md)
-- [Completed Work](/_work/COMPLETED_WORK_BLOCKS.md)
+- [Work Blocks](/_workblocks/ACTIVE_WORK_BLOCKS.md)
+- [Completed Work](/_workblocks/COMPLETED_WORK_BLOCKS.md)
 - [API Reference](/docs/api/)
 
 ### Key Files
@@ -67,7 +67,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ## 🎯 Active/Planned Features
 
 ### 🛑 Stop Loss Monitoring System
-**Work Block**: [WB-2025-01-26-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-26-001-stop-loss-architecture-monitoring-strategy)
+**Work Block**: [WB-2025-01-26-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-26-001-stop-loss-architecture-monitoring-strategy)
 **Priority**: HIGH
 **Status**: Blocked (Business Decision)
 **Documentation**:
@@ -84,7 +84,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### ✏️ Manual Position Management
-**Work Block**: [WB-2025-01-24-002](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-24-002-manual-position-management)
+**Work Block**: [WB-2025-01-24-002](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-24-002-manual-position-management)
 **Priority**: HIGH
 **Status**: Paused (Depends on Market Data)
 **Documentation**: TBD
@@ -100,7 +100,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### 🔌 Broker Integration - Alpaca
-**Work Block**: [WB-2025-01-20-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-20-001-broker-integration-alpaca-paper-trading)
+**Work Block**: [WB-2025-01-20-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-20-001-broker-integration-alpaca-paper-trading)
 **Priority**: HIGH
 **Status**: Paused
 **Documentation**:
@@ -116,7 +116,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### 🎨 Living Theme System
-**Work Block**: [WB-2025-01-21-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-21-001-living-theme-system-implementation)
+**Work Block**: [WB-2025-01-21-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-21-001-living-theme-system-implementation)
 **Priority**: MEDIUM
 **Status**: Paused
 **Documentation**:
@@ -138,7 +138,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### 📊 Position Status Indicator
-**Work Block**: [WB-2025-01-18-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-18-001-position-indicator-graphic-enhancement)
+**Work Block**: [WB-2025-01-18-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-18-001-position-indicator-graphic-enhancement)
 **Priority**: LOW
 **Status**: Paused
 **Documentation**: Component in `/src/components/positions/PositionStatusBar.tsx`
@@ -159,7 +159,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ## ✅ Completed Features
 
 ### 📊 Market Data Infrastructure
-**Work Block**: [WB-2025-01-25-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-25-001-market-data-infrastructure)
+**Work Block**: [WB-2025-01-25-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-25-001-market-data-infrastructure)
 **Status**: Production Ready (Partial)
 **Documentation**:
 - [Data Refresh Architecture](/docs/architecture/DATA-REFRESH-ARCHITECTURE.md)
@@ -176,7 +176,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### 🎨 UI Enhancement & Trading Modes
-**Work Block**: [WB-2025-01-24-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-01-24-001-ui-enhancement-and-trading-mode-implementation)
+**Work Block**: [WB-2025-01-24-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-01-24-001-ui-enhancement-and-trading-mode-implementation)
 **Status**: Complete
 **Documentation**:
 - [UX Patterns](/docs/patterns/UX-PATTERNS.md)
@@ -193,7 +193,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 ---
 
 ### 🎯 Hierarchical Risk Management System
-**Work Block**: [WB-2025-09-16-001](/_work/ACTIVE_WORK_BLOCKS.md#wb-2025-09-16-001-hierarchical-risk-management-implementation)
+**Work Block**: [WB-2025-09-16-001](/_workblocks/ACTIVE_WORK_BLOCKS.md#wb-2025-09-16-001-hierarchical-risk-management-implementation)
 **Status**: Production Ready
 **Documentation**:
 - [Risk Management Patterns](/docs/patterns/TRADING-PATTERNS.md#risk-management)

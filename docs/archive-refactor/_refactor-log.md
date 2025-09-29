@@ -124,7 +124,7 @@ This log tracks the documentation consolidation effort to reduce 15,000+ lines a
 - `PRODUCTION_READINESS.md` (393 lines)
 - `RELEASE_PROCESS_IMPLEMENTATION.md` (66 lines)
 
-**New Work Blocks:** Added to `docs/_work/ACTIVE_WORK_BLOCKS.md`
+**New Work Blocks:** Added to `/_workblocks/ACTIVE_WORK_BLOCKS.md`
 - `WB-2025-09-28-003: Paper Trading MVP Launch Plan Implementation`
 - `WB-2025-09-28-004: Production Readiness Implementation`
 - `WB-2025-09-28-005: Release Process Standardization`

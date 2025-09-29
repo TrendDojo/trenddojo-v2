@@ -2,6 +2,13 @@
 
 *Last updated: 2025-09-15*
 
+## 🚀 CRITICAL DEPLOYMENT PROCESS - READ BEFORE ANY DEPLOYMENT
+**⚠️ MANDATORY**: Before pushing to dev, staging, preview, or main branches:
+- **READ**: `/docs/DEPLOYMENT_GUIDE.md` - Complete 4-phase deployment process
+- **NEVER** skip phases or push directly to production
+- **ALWAYS** follow: Local → Preview → Documentation → Production
+- The AI assistant is responsible for the COMPLETE deployment process
+
 ## 🚨 MANDATORY RULES (IN ORDER OF PRECEDENCE)
 
 **Universal Rules Version: 2025-09-15** (from _shared-framework/CLAUDE.md)
@@ -197,7 +204,6 @@ GitHub → Staging (automatic) → Production (manual promotion)
 trenddojo-v2/
 ├── docs/
 │   ├── CLAUDE.md                    # This file
-│   ├── _work/                       # Work block tracking
 │   ├── patterns/                    # Design, architecture, UX patterns
 │   ├── reference/                   # Implementation guides
 │   ├── adr/                        # Architecture Decision Records

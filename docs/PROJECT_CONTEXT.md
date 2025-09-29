@@ -65,9 +65,9 @@ WB-* → dev → PR to staging → PR to main
 ## 📁 Directory Structure
 ```
 trenddojo-v2/
+├── _workblocks/                     # Work block tracking (root level)
 ├── docs/
 │   ├── PROJECT_CONTEXT.md           # This file - project specifics
-│   ├── _work/                       # Work block tracking
 │   ├── patterns/                    # Design, architecture, UX patterns
 │   ├── reference/                   # Implementation guides
 │   ├── adr/                        # Architecture Decision Records

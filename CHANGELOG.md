@@ -1,5 +1,10 @@
 # Changelog
 
+> 🚀 **DEPLOYMENT PROCESS**: Before ANY deployment, READ `/docs/DEPLOYMENT_GUIDE.md`
+> - **MANDATORY**: Follow all 4 phases (Local → Preview → Documentation → Production)
+> - **NEVER** push directly to main without following the process
+> - AI assistant MUST complete the entire deployment workflow
+
 All notable changes to TrendDojo V2 will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
