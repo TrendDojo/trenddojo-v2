@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import { Maximize2, TrendingUp, BarChart2, Settings } from 'lucide-react';
+import { TrendingUp, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { ChartControls, getPresetConfig } from './ChartControls';
 import {
   createChart,
   ColorType,
@@ -35,7 +36,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'candles' | 'line'>('candles');
-  const [timeframe, setTimeframe] = useState('1Y');
+  const [selectedPreset, setSelectedPreset] = useState('3M'); // Default to 3 months
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const lastLoadRequestRef = useRef<string | null>(null);
 
@@ -46,17 +47,6 @@ export function LocalChart({ symbol }: { symbol: string }) {
     allData: ChartData[];
   }>({ earliest: null, latest: null, allData: [] });
 
-  const handleFullscreen = () => {
-    if (!containerRef.current) return;
-
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch(err => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  };
 
   // Function to load more data for a specific date range
   const loadMoreData = async (
@@ -75,7 +65,11 @@ export function LocalChart({ symbol }: { symbol: string }) {
       const timeScale = chart.timeScale();
       const currentVisibleRange = timeScale.getVisibleRange();
 
-      const response = await fetch(`/api/market-data/history/${symbol}?from=${fromDate}&to=${toDate}`);
+      // Get the current interval from the preset
+      const preset = getPresetConfig(selectedPreset);
+      const selectedInterval = preset.interval;
+
+      const response = await fetch(`/api/market-data/history/${symbol}?from=${fromDate}&to=${toDate}&interval=${selectedInterval}`);
       if (!response.ok) throw new Error('Failed to fetch additional market data');
 
       const marketData = await response.json();
@@ -174,7 +168,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
     let resizeObserver: ResizeObserver | null = null;
     let visibleRangeHandler: ((range: any) => void) | null = null;
 
-    // Reset loaded data when symbol or timeframe changes
+    // Reset loaded data when symbol, interval or range changes
     loadedDataRef.current = { earliest: null, latest: null, allData: [] };
     lastLoadRequestRef.current = null;
 
@@ -203,39 +197,50 @@ export function LocalChart({ symbol }: { symbol: string }) {
       setError(null);
 
       try {
-        // Calculate date range based on selected timeframe
-        const endDate = new Date(); // Use current date
-        let startDate = new Date();
+        // Get the preset configuration
+        const preset = getPresetConfig(selectedPreset);
+        const selectedRange = preset.range;
+        const selectedInterval = preset.interval;
 
-        switch (timeframe) {
-          case '1M':
+        // Calculate date range based on selected range
+        // Database has data from Sep 2020 to Jan 24, 2025
+        const maxDataDate = new Date('2025-01-24');
+        const minDataDate = new Date('2020-09-25');
+        const today = new Date();
+        const endDate = today > maxDataDate ? maxDataDate : today;
+        let startDate = new Date(endDate); // Create a copy of endDate
+
+        switch (selectedRange) {
+          case '1w':
+            startDate.setDate(endDate.getDate() - 7);
+            break;
+          case '1m':
             startDate.setMonth(endDate.getMonth() - 1);
             break;
-          case '3M':
+          case '3m':
             startDate.setMonth(endDate.getMonth() - 3);
             break;
-          case '6M':
-            startDate.setMonth(endDate.getMonth() - 6);
-            break;
-          case '1Y':
+          case '1y':
             startDate.setFullYear(endDate.getFullYear() - 1);
             break;
-          case '3Y':
-            startDate.setFullYear(endDate.getFullYear() - 3);
-            break;
-          case 'ALL':
-            startDate.setFullYear(endDate.getFullYear() - 10);
+          case 'all':
+            startDate = new Date(minDataDate);
             break;
           default:
-            startDate.setFullYear(endDate.getFullYear() - 1);
+            startDate.setMonth(endDate.getMonth() - 1); // Default to 1 month
+        }
+
+        // Ensure start date isn't before our earliest data
+        if (startDate < minDataDate) {
+          startDate = new Date(minDataDate);
         }
 
         const endDateStr = endDate.toISOString().split('T')[0];
         const startDateStr = startDate.toISOString().split('T')[0];
 
-        console.log(`Fetching data for ${symbol} from ${startDateStr} to ${endDateStr} (${timeframe})`);
+        console.log(`Fetching data for ${symbol} from ${startDateStr} to ${endDateStr} (range: ${selectedRange}, interval: ${selectedInterval})`);
 
-        const response = await fetch(`/api/market-data/history/${symbol}?from=${startDateStr}&to=${endDateStr}`);
+        const response = await fetch(`/api/market-data/history/${symbol}?from=${startDateStr}&to=${endDateStr}&interval=${selectedInterval}`);
         if (!response.ok) {
           console.error(`API returned ${response.status}: ${response.statusText}`);
           const errorText = await response.text();
@@ -244,7 +249,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
         }
 
         const marketData = await response.json();
-        console.log(`Received ${marketData.data?.length || 0} data points for ${timeframe}`);
+        console.log(`Received ${marketData.data?.length || 0} data points for range: ${selectedRange}`);
 
         if (!isSubscribed) return;
 
@@ -255,7 +260,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
         }
 
         // Store the initial loaded data
-        const actualData = marketData.data
+        const chartData = marketData.data
           .map((item: any) => ({
             time: item.time,
             open: item.open,
@@ -266,35 +271,8 @@ export function LocalChart({ symbol }: { symbol: string }) {
           }))
           .sort((a: any, b: any) => a.time.localeCompare(b.time));
 
-        // Add placeholder data points to extend the time scale
-        // This forces the x-axis to show dates beyond the last data point
-        const lastDataPoint = actualData[actualData.length - 1];
-        const extendedData = [...actualData];
-
-        if (lastDataPoint) {
-          const lastDate = new Date(lastDataPoint.time);
-          const maxDate = new Date(); // Use current date
-          const currentDate = new Date(lastDate);
-
-          // Add one data point per week up to the max date
-          // Using NaN values so they don't display on the chart
-          while (currentDate < maxDate) {
-            currentDate.setDate(currentDate.getDate() + 7);
-            if (currentDate <= maxDate) {
-              extendedData.push({
-                time: currentDate.toISOString().split('T')[0],
-                open: NaN,
-                high: NaN,
-                low: NaN,
-                close: NaN,
-                volume: 0
-              });
-            }
-          }
-        }
-
-        loadedDataRef.current.allData = extendedData;
-        const sortedDates = actualData.map((d: any) => d.time).sort();
+        loadedDataRef.current.allData = chartData;
+        const sortedDates = chartData.map((d: any) => d.time).sort();
         loadedDataRef.current.earliest = sortedDates[0];
         loadedDataRef.current.latest = sortedDates[sortedDates.length - 1];
 
@@ -582,7 +560,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
       isSubscribed = false;
       cleanupChart();
     };
-  }, [symbol, chartType, timeframe]);
+  }, [symbol, chartType, selectedPreset]);
 
   if (error) {
     return (
@@ -604,66 +582,39 @@ export function LocalChart({ symbol }: { symbol: string }) {
   return (
     <div ref={containerRef} className="w-full">
       {/* Chart Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-2">
-        {/* Left side - Timeframe buttons */}
-        <div className="flex items-center gap-1">
-          {['1M', '3M', '6M', '1Y', '3Y', 'ALL'].map((tf) => (
-            <Button
-              key={tf}
-              variant={timeframe === tf ? 'primary' : 'ghost'}
-              size="sm"
-              onClick={() => setTimeframe(tf)}
-              className="px-2 py-1 min-w-[36px]"
-            >
-              {tf}
-            </Button>
-          ))}
-        </div>
+      <div className="flex items-center gap-4 mb-3 px-2">
+        {/* Preset controls */}
+        <ChartControls
+          selectedPreset={selectedPreset}
+          onPresetChange={setSelectedPreset}
+          className=""
+        />
 
-        {/* Right side - Chart controls */}
-        <div className="flex items-center gap-1">
-          {/* Chart type toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setChartType(chartType === 'candles' ? 'line' : 'candles')}
-            className="flex items-center gap-1 px-2 py-1"
-            title={`Switch to ${chartType === 'candles' ? 'line' : 'candlestick'} chart`}
-          >
-            {chartType === 'candles' ? (
-              <>
-                <BarChart2 className="w-4 h-4" />
-                <span className="text-xs hidden sm:inline">Candles</span>
-              </>
-            ) : (
-              <>
-                <TrendingUp className="w-4 h-4" />
-                <span className="text-xs hidden sm:inline">Line</span>
-              </>
-            )}
-          </Button>
+        {/* Divider with padding */}
+        <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2" />
 
-          {/* Settings button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="p-1.5"
-            title="Chart settings"
-          >
-            <Settings className="w-4 h-4" />
-          </Button>
-
-          {/* Fullscreen button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleFullscreen}
-            className="p-1.5"
-            title="Toggle fullscreen"
-          >
-            <Maximize2 className="w-4 h-4" />
-          </Button>
-        </div>
+        {/* Chart type toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setChartType(chartType === 'candles' ? 'line' : 'candles')}
+          className="flex items-center gap-1.5 px-3 py-1"
+          title={`Switch to ${chartType === 'candles' ? 'line' : 'candlestick'} chart`}
+        >
+          {chartType === 'candles' ? (
+            <>
+              <BarChart2 className="w-4 h-4" />
+              <span className="text-xs">
+                Candles ({getPresetConfig(selectedPreset).intervalText})
+              </span>
+            </>
+          ) : (
+            <>
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-xs">Line</span>
+            </>
+          )}
+        </Button>
       </div>
 
       {/* Chart Container */}
