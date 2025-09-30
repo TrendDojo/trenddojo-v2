@@ -216,13 +216,13 @@ export default function StockPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Chart */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-4" id="chart-container">
+            <Card className="p-4">
               <LocalChart symbol={symbolData.symbol} />
             </Card>
           </div>
 
           {/* Right Column - Stock Details */}
-          <div className="space-y-6" id="right-column">
+          <div className="space-y-6">
             {/* Key Stats */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">Key Statistics</h3>

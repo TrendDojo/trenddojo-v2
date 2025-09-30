@@ -47,20 +47,41 @@ export async function GET(request: NextRequest) {
 
     // For production, query PostgreSQL
     if (process.env.NODE_ENV === 'production') {
-      const data = await prisma.$queryRaw`
-        SELECT
-          symbol,
-          date,
-          open,
-          high,
-          low,
-          close,
-          volume
-        FROM market.price_data
-        ${range !== 'all' ? prisma.Prisma.sql`WHERE date >= CURRENT_DATE - INTERVAL '${range === '1y' ? '1 year' : range === '90d' ? '90 days' : '30 days'}'` : prisma.Prisma.empty}
-        ORDER BY symbol, date
-        LIMIT 100000
-      `;
+      let query = '';
+      if (range === 'all') {
+        query = `
+          SELECT symbol, date, open, high, low, close, volume
+          FROM market.price_data
+          ORDER BY symbol, date
+          LIMIT 100000
+        `;
+      } else if (range === '1y') {
+        query = `
+          SELECT symbol, date, open, high, low, close, volume
+          FROM market.price_data
+          WHERE date >= CURRENT_DATE - INTERVAL '1 year'
+          ORDER BY symbol, date
+          LIMIT 100000
+        `;
+      } else if (range === '90d') {
+        query = `
+          SELECT symbol, date, open, high, low, close, volume
+          FROM market.price_data
+          WHERE date >= CURRENT_DATE - INTERVAL '90 days'
+          ORDER BY symbol, date
+          LIMIT 100000
+        `;
+      } else {
+        query = `
+          SELECT symbol, date, open, high, low, close, volume
+          FROM market.price_data
+          WHERE date >= CURRENT_DATE - INTERVAL '30 days'
+          ORDER BY symbol, date
+          LIMIT 100000
+        `;
+      }
+
+      const data = await prisma.$queryRawUnsafe(query) as any[];
 
       // Stream as JSON for efficient transfer
       return NextResponse.json({
@@ -71,34 +92,15 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // For development, return from local SQLite if available
-    try {
-      const { MarketDatabase } = await import('@/lib/market-data/database/MarketDatabase');
-      const db = new MarketDatabase();
-      await db.initialize();
-
-      const prices = db.getPrices({
-        ...dateFilter,
-        limit: 100000
-      });
-
-      db.close();
-
-      return NextResponse.json({
-        success: true,
-        range,
-        count: prices.length,
-        data: prices
-      });
-    } catch (error) {
-      // If local database not available, return empty
-      return NextResponse.json({
-        success: true,
-        range,
-        count: 0,
-        data: []
-      });
-    }
+    // For development, return empty data
+    // (In development, use the sync script to populate local database)
+    return NextResponse.json({
+      success: true,
+      range,
+      count: 0,
+      data: [],
+      message: 'This endpoint only returns data in production. Use npm run data:sync for local development.'
+    });
 
   } catch (error) {
     console.error('Export error:', error);
