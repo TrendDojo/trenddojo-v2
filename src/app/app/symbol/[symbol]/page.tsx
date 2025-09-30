@@ -16,6 +16,10 @@ export default function StockPage() {
   const params = useParams();
   const symbol = params.symbol as string;
 
+  // State for symbol validation
+  const [isValidSymbol, setIsValidSymbol] = useState<boolean | null>(null);
+  const [suggestedSymbols] = useState(['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'BRK.B']);
+
   // State for symbol data
   const [symbolData, setSymbolData] = useState<any>({
     symbol: symbol?.toUpperCase() || 'LOADING',
@@ -51,9 +55,28 @@ export default function StockPage() {
 
   const [showNewPositionModal, setShowNewPositionModal] = useState(false);
 
+  // Validate symbol first
+  const validateSymbol = async () => {
+    if (!symbol) return;
+
+    try {
+      const response = await fetch(`/api/market-data/validate/${symbol.toUpperCase()}`);
+      if (response.ok) {
+        setIsValidSymbol(true);
+      } else {
+        setIsValidSymbol(false);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Error validating symbol:', err);
+      setIsValidSymbol(false);
+      setLoading(false);
+    }
+  };
+
   // Define fetchData function outside useEffect so it can be reused
   const fetchData = async () => {
-    if (!symbol) return;
+    if (!symbol || isValidSymbol === false) return;
 
     try {
       setLoading(true);
@@ -75,9 +98,15 @@ export default function StockPage() {
     }
   };
 
-  // Integrate with refresh coordinator
+  // Validate symbol on mount
   useEffect(() => {
     if (!symbol) return;
+    validateSymbol();
+  }, [symbol]);
+
+  // Integrate with refresh coordinator
+  useEffect(() => {
+    if (!symbol || isValidSymbol !== true) return;
 
     // Initial load
     fetchData();
@@ -89,7 +118,7 @@ export default function StockPage() {
     });
 
     return unsubscribe;
-  }, [symbol]);
+  }, [symbol, isValidSymbol]);
 
   const formatNumber = (num: number | undefined) => {
     if (num === undefined || num === null) return '–';
@@ -110,8 +139,68 @@ export default function StockPage() {
     return `${percent.toFixed(2)}%`;
   };
 
+  // Show invalid symbol message
+  if (isValidSymbol === false) {
+    return (
+      <PageContent>
+        <div className="min-h-[70vh] flex items-center justify-center">
+          <div className="text-center space-y-6 max-w-md">
+            <div className="text-6xl mb-4">📊</div>
+            <h2 className="text-2xl font-bold dark:text-white text-gray-900">
+              Symbol Not Found
+            </h2>
+            <p className="text-lg dark:text-gray-400 text-gray-600">
+              '{symbol?.toUpperCase()}' is not available in our database.
+            </p>
+            <p className="text-sm dark:text-gray-500 text-gray-500">
+              We currently track S&P 500 symbols with historical data from September 2020.
+            </p>
+            <div className="pt-4">
+              <p className="text-sm font-medium dark:text-gray-400 text-gray-600 mb-3">
+                Try one of these symbols:
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {suggestedSymbols.map(s => (
+                  <Link
+                    key={s}
+                    href={`/app/symbol/${s}`}
+                    className="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors font-medium"
+                  >
+                    {s}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="pt-4">
+              <Link
+                href="/app/screener"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                ← Back to Screener
+              </Link>
+            </div>
+          </div>
+        </div>
+      </PageContent>
+    );
+  }
+
+  // Show loading while validating
+  if (isValidSymbol === null) {
+    return (
+      <PageContent>
+        <div className="min-h-[70vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+            <p className="text-sm dark:text-gray-400 text-gray-600">Validating symbol...</p>
+          </div>
+        </div>
+      </PageContent>
+    );
+  }
+
   return (
-    
+
       <PageContent>
         {/* Breadcrumb */}
         <div className="mb-6">

@@ -203,7 +203,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
         const selectedInterval = preset.interval;
 
         // Calculate date range based on selected range
-        // Database has data from Sep 2020 to Jan 24, 2025
+        // Database has data from Sep 25, 2020 to Jan 24, 2025
         const maxDataDate = new Date('2025-01-24');
         const minDataDate = new Date('2020-09-25');
         const today = new Date();
@@ -230,8 +230,10 @@ export function LocalChart({ symbol }: { symbol: string }) {
             startDate.setMonth(endDate.getMonth() - 1); // Default to 1 month
         }
 
-        // Ensure start date isn't before our earliest data
+        // CRITICAL: Ensure start date isn't before our earliest data
+        // This prevents 404 errors when requesting data before Sept 25, 2020
         if (startDate < minDataDate) {
+          console.log(`Adjusting start date from ${startDate.toISOString().split('T')[0]} to ${minDataDate.toISOString().split('T')[0]} (earliest available data)`);
           startDate = new Date(minDataDate);
         }
 
@@ -245,7 +247,20 @@ export function LocalChart({ symbol }: { symbol: string }) {
           console.error(`API returned ${response.status}: ${response.statusText}`);
           const errorText = await response.text();
           console.error('Error response:', errorText);
-          throw new Error(`Failed to fetch market data: ${response.status}`);
+
+          // Provide specific error message for common issues
+          if (response.status === 404) {
+            // Check if it's a date range issue
+            if (startDateStr < '2020-09-25') {
+              throw new Error(`No data available before September 25, 2020. Please select a more recent date range.`);
+            } else if (endDateStr > '2025-01-24') {
+              throw new Error(`No data available after January 24, 2025. Please select an earlier date range.`);
+            } else {
+              throw new Error(`No data available for ${symbol} in the selected date range (${startDateStr} to ${endDateStr})`);
+            }
+          } else {
+            throw new Error(`Failed to fetch market data: ${response.status}`);
+          }
         }
 
         const marketData = await response.json();

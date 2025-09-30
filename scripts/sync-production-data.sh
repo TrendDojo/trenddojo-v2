@@ -72,7 +72,7 @@ sync_via_api() {
     echo -e "\n${BLUE}→${NC} Syncing via production API..."
 
     # Production API endpoints
-    API_URL="https://www.trenddojo.com/api/market-data"
+    API_URL="https://trenddojo-v2-lvrzq6dif-traderclicks.vercel.app/api/market-data"
 
     if [ "$FULL_SYNC" = true ]; then
         ENDPOINT="${API_URL}/export?range=all"
