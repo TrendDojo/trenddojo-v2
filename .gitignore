@@ -40,6 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# market data (should not be in repo)
+data/market/
+*.db
+*.sqlite
+*.sqlite3
+
 /src/generated/prisma
 
 # Temporary files and development artifacts

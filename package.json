@@ -69,7 +69,10 @@
     "cache:update-once": "tsx src/lib/market-data/cache/cache-updater.ts --once",
     "cache:status": "curl http://localhost:3011/api/market-data/cache-status",
     "theme:scan": "./scripts/theme-compliance-scanner.sh",
-    "audit": "./scripts/theme-compliance-scanner.sh"
+    "audit": "./scripts/theme-compliance-scanner.sh",
+    "data:sync": "./scripts/sync-production-data.sh",
+    "data:sync:full": "./scripts/sync-production-data.sh --full",
+    "data:sync:daily": "./scripts/sync-production-data.sh"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Home, ChevronRight } from 'lucide-react';
+import { Gauge, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BreadcrumbItem {
@@ -24,7 +24,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800/50 transition-colors"
         title="Dashboard"
       >
-        <Home className="w-4 h-4 dark:text-gray-400 text-gray-600" />
+        <Gauge className="w-5 h-5 dark:text-gray-400 text-gray-600" strokeWidth={2.5} />
       </Link>
 
       {/* Breadcrumb Items */}

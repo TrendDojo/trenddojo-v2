@@ -55,7 +55,7 @@ export default function PositionDetailPage() {
         <div className="mb-8">
           <Breadcrumb
             items={[
-              { label: "Positions", href: "/positions" },
+              { label: "Positions", href: "/app/positions" },
               { label: position.symbol }
             ]}
           />

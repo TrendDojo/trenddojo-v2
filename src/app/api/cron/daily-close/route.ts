@@ -139,18 +139,40 @@ async function getAllActiveSymbols(): Promise<string[]> {
 }
 
 async function fetchDailyBars(symbols: string[], date: string): Promise<any[]> {
-  // TODO: Integrate with Polygon API or DataRouter
-  // For now, return mock data
-  return symbols.map(symbol => ({
-    symbol,
-    date,
-    open: 100 + Math.random() * 50,
-    high: 150 + Math.random() * 50,
-    low: 90 + Math.random() * 30,
-    close: 100 + Math.random() * 50,
-    volume: Math.floor(Math.random() * 10000000),
-    vwap: 100 + Math.random() * 50
-  }));
+  // Import the Polygon provider
+  const { PolygonProvider } = await import('@/lib/market-data/providers/PolygonProvider');
+  const provider = new PolygonProvider();
+
+  const dailyBars: any[] = [];
+  const batchSize = 10; // Process in batches to avoid overwhelming the API
+
+  for (let i = 0; i < symbols.length; i += batchSize) {
+    const batch = symbols.slice(i, i + batchSize);
+
+    // Fetch daily bars in parallel for this batch
+    const batchPromises = batch.map(async (symbol) => {
+      try {
+        // Get the daily bar for this symbol
+        const bars = await provider.getDailyBars(symbol, date, date);
+        if (bars && bars.length > 0) {
+          return bars[0]; // Return the single day's data
+        }
+      } catch (error) {
+        console.error(`Failed to fetch data for ${symbol}:`, error);
+      }
+      return null;
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    dailyBars.push(...batchResults.filter(bar => bar !== null));
+
+    // Small delay between batches to be respectful to the API
+    if (i + batchSize < symbols.length) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  return dailyBars;
 }
 
 async function cleanupOldIntradayData(): Promise<void> {

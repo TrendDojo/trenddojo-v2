@@ -117,7 +117,7 @@ export default function StockPage() {
         <div className="mb-6">
           <Breadcrumb
             items={[
-              { label: "Screener", href: "/screener" },
+              { label: "Screener", href: "/app/screener" },
               { label: symbolData.symbol }
             ]}
           />
@@ -189,9 +189,9 @@ export default function StockPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-danger/10 border border-danger/20 rounded-lg">
-            <p className="text-danger font-medium">{error}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg">
+            <p className="text-red-700 dark:text-red-400 font-medium">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400/70 mt-1">
               Using cached or placeholder data. Please try refreshing the page.
             </p>
           </div>
@@ -216,13 +216,13 @@ export default function StockPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Chart */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-4">
+            <Card className="p-4" id="chart-container">
               <LocalChart symbol={symbolData.symbol} />
             </Card>
           </div>
 
           {/* Right Column - Stock Details */}
-          <div className="space-y-6">
+          <div className="space-y-6" id="right-column">
             {/* Key Stats */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">Key Statistics</h3>
