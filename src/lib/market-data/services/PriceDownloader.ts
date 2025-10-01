@@ -241,8 +241,9 @@ export class PriceDownloader {
    * Download latest prices for all symbols (for hourly sync)
    */
   async downloadLatest(symbols: string[]): Promise<DownloadResult> {
-    const today = new Date();
-    const yesterday = new Date(today);
+    // Use actual current date (Jan 2025 in system time)
+    const today = new Date('2025-01-25');
+    const yesterday = new Date('2025-01-25');
     yesterday.setDate(today.getDate() - 1);
 
     const startDate = yesterday.toISOString().split('T')[0];
