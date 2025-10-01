@@ -1,64 +1,74 @@
 # Active Work Blocks - TrendDojo
 
-## WB-2025-01-30-004: Fix Symbol Validation and Chart 404 Errors
-**State**: completed
+## WB-2025-01-31-001: Implement Universal Symbol Support
+**State**: confirmed
 **Timeframe**: NOW
-**Created**: 2025-01-30 23:00
-**Completed**: 2025-01-30 23:45
+**Created**: 2025-01-31 00:00
 **Dependencies**: None
-**Tags**: #charts #api #error-handling #data-validation
+**Tags**: #market-data #api #core-feature
 
 ### Goal
-Fix 404 errors when accessing invalid symbols and ensure charts only request data within available date ranges to prevent console errors.
+Remove artificial symbol limitations. Support ANY valid US stock ticker that trades on NYSE/NASDAQ. If it trades, we support it.
 
 ### Problem
-1. User navigated to `/app/symbol/BQ` (invalid symbol)
-2. Multiple 404 errors in console:
-   - Chart trying to fetch data for non-existent symbol
-   - API endpoints returning 404s
-   - Poor user experience with technical errors
+- Currently limited to 100 pre-loaded S&P 500 symbols
+- User searches "BQ" → Gets "Symbol Not Found"
+- This is wrong - BQ is a valid ticker (Boqii Holding Limited)
+- We're artificially limiting what users can trade
 
-### Solution Implemented
+### Solution
 
-#### 1. Chart Date Range Protection (LocalChart.tsx)
-- Added data availability bounds: Sept 25, 2020 to Jan 24, 2025
-- Auto-adjust date ranges to stay within bounds
-- Clear error messages for out-of-range requests
+#### Phase 1: Fix Symbol Validation (IMMEDIATE)
+- [ ] Update `/api/market-data/validate/[symbol]` to check Polygon API
+- [ ] Remove dependency on local database for validation
+- [ ] Return company info even without historical data
 
-#### 2. Symbol Validation (symbol/[symbol]/page.tsx)
-- Added pre-validation before attempting to load data
-- Show user-friendly "Symbol Not Found" page for invalid symbols
-- Provide suggested valid symbols (AAPL, MSFT, GOOGL, etc.)
-- Clean navigation back to screener
+#### Phase 2: On-Demand Data Fetching (TODAY)
+- [ ] Implement Polygon data fetching when symbol not in cache
+- [ ] Add to `/api/market-data/history/[symbol]` endpoint
+- [ ] Cache fetched data in SQLite for future use
+- [ ] Show loading state while fetching
 
-#### 3. API Validation Working
-- `/api/market-data/validate/[symbol]` checks actual database
-- Returns 200 + `{valid: true}` for valid symbols
-- Returns 404 + `{valid: false}` for invalid symbols
+#### Phase 3: Symbol Search (THIS WEEK)
+- [ ] Create `/api/market-data/search` endpoint
+- [ ] Search ALL available symbols via Polygon
+- [ ] Add autocomplete component to UI
+- [ ] Show which symbols have cached data
 
-### Files Modified
-- `src/components/charts/LocalChart.tsx` (lines 205-264)
-- `src/app/app/symbol/[symbol]/page.tsx` (added validation flow)
-- Already working: `src/app/api/market-data/validate/[symbol]/route.ts`
+### Technical Implementation
 
-### Testing Completed
-- ✅ Valid symbol (AAPL): Shows chart and data
-- ✅ Invalid symbol (BQ): Shows friendly error page
-- ✅ No console errors for invalid symbols
-- ✅ Date ranges auto-adjust to available data
-- ✅ API validation returns correct status codes
+```typescript
+// New validation approach
+async function validateSymbol(symbol: string) {
+  // First check cache
+  const cached = await db.hasSymbol(symbol);
+  if (cached) return { valid: true, source: 'cache' };
 
-### Database Status
-- 100 S&P 500 symbols loaded
-- 107,657 total records
-- Date range: 2020-09-25 to 2025-01-24
-- Database: `data/market/historical_prices.db`
+  // Not cached? Check Polygon
+  try {
+    const details = await polygon.reference.tickerDetails(symbol);
+    return {
+      valid: true,
+      source: 'polygon',
+      details
+    };
+  } catch {
+    return { valid: false };
+  }
+}
+```
 
-### Success Metrics
-- Zero console errors for normal user actions
-- Clean error handling for invalid symbols
-- Proper date range handling prevents 404s
-- User-friendly recovery with symbol suggestions
+### Success Criteria
+- [ ] ANY valid ticker works (test with BQ, NVDA, random symbols)
+- [ ] No "Symbol Not Found" for valid tickers
+- [ ] Data fetches on-demand from Polygon
+- [ ] Cached data loads instantly
+- [ ] Search returns all available symbols
+
+### Notes
+- Keep the 100 S&P 500 symbols as pre-cached "hot" data
+- Everything else fetches on demand
+- This aligns with our mission: no artificial limitations
 
 ---
 
