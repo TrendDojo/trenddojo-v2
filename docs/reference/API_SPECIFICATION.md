@@ -355,9 +355,71 @@ handleWebhook: procedure
 
 ## Market Data Router (`marketDataRouter`)
 
+### Symbol Coverage Philosophy
+
+**TrendDojo supports ANY valid US stock ticker** that trades on NYSE/NASDAQ. No artificial limitations - if it trades, we support it.
+
+**Implementation Strategy:**
+1. **Hot Cache**: 100 S&P 500 symbols pre-loaded with full history
+2. **On-Demand**: All other symbols fetched from Polygon when requested
+3. **Smart Caching**: Frequently accessed symbols cached locally
+
+### Validate Symbol
+
+Validates any ticker symbol against Polygon's database.
+
+```typescript
+validateSymbol: procedure
+  .input(z.object({
+    symbol: z.string().toUpperCase()
+  }))
+  .query(async ({ input }) => {
+    // Check cache first, then Polygon API
+    // Returns validation status and company details
+  })
+```
+
+**Response:**
+```typescript
+{
+  valid: boolean;
+  symbol?: string;
+  name?: string;
+  exchange?: string;
+  type?: string;
+  source: 'cache' | 'polygon';
+}
+```
+
+### Search Symbols
+
+Search ALL available symbols via Polygon API.
+
+```typescript
+searchSymbols: procedure
+  .input(z.object({
+    query: z.string().min(1),
+    limit: z.number().default(20)
+  }))
+  .query(async ({ input }) => {
+    // Search Polygon's entire ticker database
+  })
+```
+
+**Response:**
+```typescript
+Array<{
+  symbol: string;
+  name: string;
+  exchange: string;
+  type: string;
+  hasLocalData: boolean;
+}>
+```
+
 ### Get Price History
 
-Retrieves historical price data for charting with caching.
+Retrieves historical price data with on-demand fetching.
 
 ```typescript
 getPriceHistory: procedure
@@ -371,10 +433,10 @@ getPriceHistory: procedure
   })
 ```
 
-**Caching Strategy:**
-1. Check database cache first
-2. Fetch from provider if needed
-3. Store in cache for future requests
+**Data Strategy:**
+1. Check local SQLite cache first
+2. If not cached, fetch from Polygon API
+3. Store fetched data for future use
 4. Return standardized OHLCV format
 
 **Response:**
@@ -408,6 +470,19 @@ updateTechnicals: procedure
 - ATR 20-day
 - 52-week high/low percentages
 - Volume averages
+
+### Data Management Scripts
+
+**Development Scripts:**
+- `npm run polygon-download` - Download market data from Polygon
+- `npm run polygon-2h` - Download 2-hour aggregated data
+- `npm run market-backup` - Backup SQLite database
+- `npm run market-vacuum` - Optimize database file size
+- `npm run cache:updater` - Update market data cache
+
+**Production Sync:**
+- `./scripts/sync-production-data.sh` - Sync from production to local
+- `./scripts/sync-production-data.sh --full` - Full historical sync
 
 ## Error Handling
 
