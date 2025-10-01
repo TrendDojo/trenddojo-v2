@@ -72,7 +72,10 @@
     "audit": "./scripts/theme-compliance-scanner.sh",
     "data:sync": "./scripts/sync-production-data.sh",
     "data:sync:full": "./scripts/sync-production-data.sh --full",
-    "data:sync:daily": "./scripts/sync-production-data.sh"
+    "data:sync:daily": "./scripts/sync-production-data.sh",
+    "market:test": "tsx scripts/test-market-sync.ts",
+    "market:sync": "curl -X POST http://localhost:3002/api/cron/market-data-sync",
+    "market:sync:prod": "curl -X POST https://www.trenddojo.com/api/cron/market-data-sync -H 'Authorization: Bearer $CRON_SECRET'"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
