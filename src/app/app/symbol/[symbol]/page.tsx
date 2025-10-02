@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
 import { LocalChart } from "@/components/charts/LocalChart";  // Using lightweight-charts v5 local dependency
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
+import { SearchX } from "lucide-react";
 
 export default function StockPage() {
   const params = useParams();
@@ -145,39 +146,36 @@ export default function StockPage() {
       <PageContent>
         <div className="min-h-[70vh] flex items-center justify-center">
           <div className="text-center space-y-6 max-w-md">
-            <div className="text-6xl mb-4">📊</div>
+            <div className="flex justify-center mb-4">
+              <SearchX className="w-16 h-16 text-gray-400 dark:text-gray-600" />
+            </div>
             <h2 className="text-2xl font-bold dark:text-white text-gray-900">
-              Symbol Not Found
+              {symbol?.toUpperCase()} Not Found
             </h2>
-            <p className="text-lg dark:text-gray-400 text-gray-600">
-              '{symbol?.toUpperCase()}' is not available in our database.
-            </p>
-            <p className="text-sm dark:text-gray-500 text-gray-500">
-              We currently track S&P 500 symbols with historical data from September 2020.
-            </p>
             <div className="pt-4">
               <p className="text-sm font-medium dark:text-gray-400 text-gray-600 mb-3">
                 Try one of these symbols:
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {suggestedSymbols.map(s => (
-                  <Link
+                  <Button
                     key={s}
-                    href={`/app/symbol/${s}`}
-                    className="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors font-medium"
+                    variant="ghost"
+                    asChild
                   >
-                    {s}
-                  </Link>
+                    <Link href={`/app/symbol/${s}`}>
+                      {s}
+                    </Link>
+                  </Button>
                 ))}
               </div>
             </div>
             <div className="pt-4">
-              <Link
-                href="/app/screener"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                ← Back to Screener
-              </Link>
+              <Button variant="primary" asChild>
+                <Link href="/app/screener">
+                  ← Back to Screener
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

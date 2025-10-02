@@ -125,7 +125,7 @@ export const alertStyles = {
   // Content styles
   content: {
     container: "flex-1",
-    title: "font-semibold mb-1",
+    title: "font-semibold mb-2",
     body: "text-sm",
     bodyWithTitle: "dark:text-gray-300 text-gray-700",
   },

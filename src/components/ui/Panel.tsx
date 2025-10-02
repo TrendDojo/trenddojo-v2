@@ -126,13 +126,13 @@ export function Alert({
       )}
       <div className={alertStyles.content.container}>
         {title && (
-          <h3 className={cn(alertStyles.content.title, getAlertIconClasses(intent))}>
+          <h3 className={cn(alertStyles.content.title, alertStyles.icon.colors[intent])}>
             {title}
           </h3>
         )}
         <div className={cn(
           alertStyles.content.body,
-          alertStyles.content.bodyWithTitle
+          title && alertStyles.content.bodyWithTitle
         )}>
           {children}
         </div>
