@@ -32,7 +32,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Invalid email or password. For development, use any email with password 'password123'");
       } else if (result?.ok) {
-        router.push("/dashboard");
+        router.push("/app/dashboard");
       }
     } catch (err) {
       setError("An error occurred during sign in");
