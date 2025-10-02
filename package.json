@@ -79,6 +79,7 @@
     "alpaca:test": "tsx scripts/test-alpaca-trade.ts"
   },
   "dependencies": {
+    "@alpacahq/alpaca-trade-api": "^3.1.3",
     "@auth/prisma-adapter": "^2.10.0",
     "@prisma/client": "^6.15.0",
     "@radix-ui/react-slot": "^1.2.3",

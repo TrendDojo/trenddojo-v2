@@ -1194,6 +1194,7 @@ Implement a basic working stock screener that filters stocks based on price, vol
 **State**: doing
 **Timeframe**: NOW
 **Created**: 2025-10-02 16:00
+**Updated**: 2025-10-02 18:30
 **Dependencies**: None
 **Tags**: #positions #api #ui #feedback #paper-trading
 
@@ -1209,26 +1210,32 @@ Implement complete position creation flow with API endpoint, database storage, v
 - No redirect or data refresh
 
 ### Tasks
-- [ ] Create API endpoint `/api/positions/create`
-  - [ ] Accept position data from modal
-  - [ ] Validate all required fields
-  - [ ] Store position in database (positions table)
-  - [ ] Create initial execution record
-  - [ ] Link to strategy if provided
-  - [ ] Handle paper vs live trading mode
-- [ ] Integrate with Alpaca API when source is alpaca_paper
-  - [ ] Place actual order with Alpaca
-  - [ ] Get order confirmation
-  - [ ] Store broker order ID
-- [ ] Add visual feedback to modal
-  - [ ] Loading spinner during submission
-  - [ ] Success toast/notification
-  - [ ] Error handling with clear messages
-  - [ ] Close modal on success
-- [ ] Update positions page after creation
-  - [ ] Refresh positions list
+- [x] Install Alpaca SDK (@alpacahq/alpaca-trade-api)
+- [x] Create API endpoint `/api/positions/create`
+  - [x] Accept position data from modal
+  - [x] Validate all required fields
+  - [x] Store position in database (positions table)
+  - [x] Create initial execution record
+  - [x] Link to strategy if provided
+  - [x] Handle paper vs live trading mode
+- [x] Integrate with Alpaca API when source is alpaca_paper
+  - [x] Place actual order with Alpaca
+  - [x] Get order confirmation
+  - [x] Store broker order ID
+- [x] Fix TypeScript compilation errors
+  - [x] Auth session typing
+  - [x] Schema field mappings (position_notes)
+  - [x] Button component Link compatibility
+- [x] Add visual feedback to modal
+  - [x] Loading spinner during submission (existing in modal)
+  - [x] Error handling with clear messages (alert())
+  - [x] Close modal on success
+- [x] Update positions page after creation
+  - [x] Refresh positions list (window.location.reload())
+- [ ] Improve visual feedback (NEXT)
+  - [ ] Replace alert() with toast notifications
+  - [ ] Add success animation
   - [ ] Highlight newly created position
-  - [ ] Optional: redirect to position detail
 - [ ] Test complete flow
   - [ ] Manual entry positions
   - [ ] Alpaca paper trading positions
@@ -1243,10 +1250,19 @@ Implement complete position creation flow with API endpoint, database storage, v
 - Modal closes and positions list refreshes
 - No silent failures
 
+### Technical Details
+- **API Route**: `/src/app/api/positions/create/route.ts`
+- **Schema Changes**: Uses existing positions/executions/position_notes tables
+- **Alpaca Integration**: Full order placement with status tracking
+- **Auth**: Uses NextAuth session for user identification
+- **Notes**: Stored in separate `position_notes` table with noteType='entry'
+
 ### Notes
 - Currently discovered during testing - modal has no actual functionality
 - High priority for user trust and paper trading proof of concept
 - Should work for both manual entry and broker execution
+- Modal already has isSubmitting state and loading UI
+- Error handling uses browser alert() (should upgrade to toast)
 
 ## WB-2025-01-29-001: UI Component Living Theme Harmonization
 **State**: pending

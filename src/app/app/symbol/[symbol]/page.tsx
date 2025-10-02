@@ -158,24 +158,20 @@ export default function StockPage() {
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {suggestedSymbols.map(s => (
-                  <Button
-                    key={s}
-                    variant="ghost"
-                    asChild
-                  >
-                    <Link href={`/app/symbol/${s}`}>
+                  <Link key={s} href={`/app/symbol/${s}`}>
+                    <Button variant="ghost">
                       {s}
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 ))}
               </div>
             </div>
             <div className="pt-4">
-              <Button variant="primary" asChild>
-                <Link href="/app/screener">
+              <Link href="/app/screener">
+                <Button variant="primary">
                   ← Back to Screener
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -425,11 +421,35 @@ export default function StockPage() {
           accountType="paper" // Default to paper, in production would check user's settings
           prefilledSymbol={symbolData.symbol}
           onSubmit={async (positionData: NewPositionData) => {
-            // In production, this would submit to API
-    // DEBUG: console.log("Creating position:", positionData);
-            // Mock success
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // Could navigate to positions page or show success toast
+            try {
+              const response = await fetch('/api/positions/create', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(positionData),
+              });
+
+              if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create position');
+              }
+
+              const result = await response.json();
+
+              // Success - could show toast notification here
+              console.log('Position created:', result.position);
+
+              // Close modal
+              setShowNewPositionModal(false);
+
+              // Could navigate to positions page
+              // window.location.href = '/app/positions';
+            } catch (error) {
+              console.error('Error creating position:', error);
+              alert(error instanceof Error ? error.message : 'Failed to create position');
+              throw error; // Let modal handle the error state
+            }
           }}
         />
       </PageContent>

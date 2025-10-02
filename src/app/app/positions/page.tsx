@@ -1427,11 +1427,35 @@ export default function PositionsPage() {
           onClose={() => setShowNewPositionModal(false)}
           accountType={activeAccountType === "live" ? "live" : activeAccountType === "paper" ? "paper" : "dev"}
           onSubmit={async (positionData: NewPositionData) => {
-            // In production, this would submit to API
-    // DEBUG: console.log("Creating position:", positionData);
-            // Mock success
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // Refresh positions or add optimistically
+            try {
+              const response = await fetch('/api/positions/create', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(positionData),
+              });
+
+              if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create position');
+              }
+
+              const result = await response.json();
+
+              // Success - could show toast notification here
+              console.log('Position created:', result.position);
+
+              // Close modal
+              setShowNewPositionModal(false);
+
+              // Refresh positions list
+              window.location.reload();
+            } catch (error) {
+              console.error('Error creating position:', error);
+              alert(error instanceof Error ? error.message : 'Failed to create position');
+              throw error; // Let modal handle the error state
+            }
           }}
         />
         </>
