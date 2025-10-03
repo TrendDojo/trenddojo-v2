@@ -9,7 +9,6 @@ import { Sidebar } from "./Sidebar";
 import { Button } from "@/components/ui/Button";
 import { UserDropdown } from "./UserDropdown";
 import { DevDropdown } from "./DevDropdown";
-import { GlobalRefreshIndicator } from "@/components/ui/GlobalRefreshIndicator";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface AppLayoutProps {
@@ -145,8 +144,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 <div className="flex items-center gap-2">
                   {/* Dev features - development only, desktop only */}
                   {process.env.NODE_ENV === 'development' && (
-                    <div className="hidden lg:flex items-center gap-2">
-                      <GlobalRefreshIndicator variant="dev" />
+                    <div className="hidden lg:flex items-center">
                       <DevDropdown />
                     </div>
                   )}

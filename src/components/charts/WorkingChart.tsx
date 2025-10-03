@@ -33,33 +33,39 @@ export function WorkingChart({ symbol }: { symbol: string }) {
           existingCanvas.remove();
         }
 
-        // Create the chart
+        // Create the chart with candle width constraints
         chart = LightweightCharts.createChart(chartContainerRef.current!, {
           width: chartContainerRef.current!.clientWidth,
           height: 400,
           layout: {
-            background: { type: LightweightCharts.ColorType.Solid, color: 'transparent' },
+            background: { type: LightweightCharts.ColorType.Solid, color: 'transparent' }, // Keep transparent to avoid double background
             textColor: '#9CA3AF',
           },
           grid: {
             vertLines: { color: 'rgba(156, 163, 175, 0.1)' },
             horzLines: { color: 'rgba(156, 163, 175, 0.1)' },
           },
+          timeScale: {
+            barSpacing: 12,        // Default spacing between candles
+            minBarSpacing: 6,      // Minimum spacing (prevents overcrowding)
+            maxBarSpacing: 16,     // Maximum spacing (prevents spreading too far)
+            rightOffset: 80,       // Space on the right side
+          },
         });
 
     // DEBUG: console.log('Chart created:', chart);
 
-        // Add price series based on chart type
+        // Import our theme configuration
+        const { getCandlestickConfig, getLineSeriesConfig, getHistogramConfig, chartTheme } = await import('@/lib/chartStyles');
+
+        // Detect dark mode
+        const isDarkMode = document.documentElement.classList.contains('dark');
+
+        // Add price series based on chart type with theme colors
         let priceSeries: any;
         if (chartType === 'candles') {
-          priceSeries = chart.addCandlestickSeries({
-            upColor: '#10B981',
-            downColor: '#EF4444',
-            borderUpColor: '#10B981',
-            borderDownColor: '#EF4444',
-            wickUpColor: '#10B981',
-            wickDownColor: '#EF4444',
-          });
+          const candlestickConfig = getCandlestickConfig(isDarkMode);
+          priceSeries = chart.addCandlestickSeries(candlestickConfig);
 
           // Set sample data
           const candleData = [
@@ -71,10 +77,8 @@ export function WorkingChart({ symbol }: { symbol: string }) {
           ];
           priceSeries.setData(candleData);
         } else {
-          priceSeries = chart.addLineSeries({
-            color: '#6366F1',
-            lineWidth: 2,
-          });
+          const lineConfig = getLineSeriesConfig(isDarkMode, 'neutral');
+          priceSeries = chart.addLineSeries(lineConfig);
 
           // Set sample data
           const lineData = [
@@ -87,12 +91,10 @@ export function WorkingChart({ symbol }: { symbol: string }) {
           priceSeries.setData(lineData);
         }
 
-        // Add volume
+        // Add volume with theme colors
+        const volumeConfig = getHistogramConfig(isDarkMode);
         const volumeSeries = chart.addHistogramSeries({
-          color: '#6366F1',
-          priceFormat: {
-            type: 'volume',
-          },
+          ...volumeConfig,
           priceScaleId: 'volume',
         });
 
@@ -104,15 +106,15 @@ export function WorkingChart({ symbol }: { symbol: string }) {
         });
 
         const volumeData = [
-          { time: '2024-01-01', value: 1000000, color: '#10B98120' },
-          { time: '2024-01-02', value: 1500000, color: '#10B98120' },
-          { time: '2024-01-03', value: 1200000, color: '#10B98120' },
-          { time: '2024-01-04', value: 1800000, color: '#10B98120' },
-          { time: '2024-01-05', value: 2000000, color: '#10B98120' },
+          { time: '2024-01-01', value: 1000000, color: volumeConfig.upColor },
+          { time: '2024-01-02', value: 1500000, color: volumeConfig.upColor },
+          { time: '2024-01-03', value: 1200000, color: volumeConfig.upColor },
+          { time: '2024-01-04', value: 1800000, color: volumeConfig.upColor },
+          { time: '2024-01-05', value: 2000000, color: volumeConfig.upColor },
         ];
         volumeSeries.setData(volumeData);
 
-        chart.timeScale().fitContent();
+        // Don't call fitContent() as it resets rightOffset
         setLoading(false);
       } catch (err) {
         console.error('Chart error:', err);
@@ -189,7 +191,7 @@ export function WorkingChart({ symbol }: { symbol: string }) {
       </div>
 
       {/* Chart container */}
-      <div className="relative rounded-lg dark:bg-slate-900 bg-white border dark:border-slate-700 border-gray-200">
+      <div className="relative">
         {loading ? (
           <div className="flex items-center justify-center h-[400px]">
             <div className="text-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +18,7 @@ import { Info, AlertTriangle, XCircle, CheckCircle, Gauge, ArrowUpWideNarrow, Ma
 import { Tabs } from "@/components/ui/Tabs";
 import { GlobalRefreshIndicator } from "@/components/ui/GlobalRefreshIndicator";
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
+import { ThemeChart } from "./ThemeChart";
 
 // Table Components Section
 function TablesSection() {
@@ -1931,6 +1932,123 @@ function AppFunctionsSection() {
   );
 }
 
+// Charts Section
+function ChartsSection() {
+  return (
+    <div className="space-y-8">
+      {/* Main Chart with Theme System */}
+      <ThemeChart />
+
+      {/* Color Documentation */}
+      <Card>
+        <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">
+          Chart Color System
+        </h2>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <h3 className="font-medium mb-3">Bullish/Buy Colors</h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-8 bg-teal-500 rounded"></div>
+                <span className="text-sm">
+                  <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">teal-500</code>
+                  <span className="text-gray-500 dark:text-gray-400 ml-2">#14b8a6</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-8 bg-teal-500 bg-opacity-40 rounded"></div>
+                <span className="text-sm">
+                  <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">volume up</code>
+                  <span className="text-gray-500 dark:text-gray-400 ml-2">40% opacity</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-3">Bearish/Sell Colors</h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-8 bg-rose-500 rounded"></div>
+                <span className="text-sm">
+                  <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">rose-500</code>
+                  <span className="text-gray-500 dark:text-gray-400 ml-2">#f43f5e</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-8 bg-rose-500 bg-opacity-40 rounded"></div>
+                <span className="text-sm">
+                  <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">volume down</code>
+                  <span className="text-gray-500 dark:text-gray-400 ml-2">40% opacity</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Implementation Notes */}
+      <Card>
+        <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">
+          Implementation Guide
+        </h2>
+
+        <div className="space-y-4">
+          <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm">
+            <div className="text-green-400">// Import chart styles</div>
+            <div>import {"{ getCandlestickConfig, getChartConfig }"} from '@/lib/chartStyles';</div>
+            <div className="mt-3 text-green-400">// Get theme configuration</div>
+            <div>const isDarkMode = document.documentElement.classList.contains('dark');</div>
+            <div>const candlestickConfig = getCandlestickConfig(isDarkMode);</div>
+            <div>const chartConfig = getChartConfig(isDarkMode, '#9CA3AF');</div>
+            <div className="mt-3 text-green-400">// Apply to chart</div>
+            <div>const candlestickSeries = chart.addCandlestickSeries(candlestickConfig);</div>
+          </div>
+
+          <div className="text-sm dark:text-gray-400 text-gray-600">
+            <p className="mb-2">All chart components should:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Import configuration from <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">/src/lib/chartStyles.ts</code></li>
+              <li>Detect dark mode using <code className="px-1 py-0.5 bg-gray-100 dark:bg-slate-800 rounded text-xs">document.documentElement.classList.contains('dark')</code></li>
+              <li>Apply theme configuration to all series types</li>
+              <li>Use dynamic imports to avoid SSR issues</li>
+            </ul>
+          </div>
+        </div>
+      </Card>
+
+      {/* Chart Types */}
+      <Card>
+        <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">
+          Supported Chart Types
+        </h2>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="p-4 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <h3 className="font-medium mb-2">Candlestick Charts</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Primary chart type for price action with OHLC data
+            </p>
+          </div>
+          <div className="p-4 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <h3 className="font-medium mb-2">Line Charts</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Simple line series for trends and indicators
+            </p>
+          </div>
+          <div className="p-4 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <h3 className="font-medium mb-2">Volume Histograms</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Bar charts for volume with color coding
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 export default function ThemePage() {
   const [activeTab, setActiveTab] = useState("text-icons");
 
@@ -1942,6 +2060,7 @@ export default function ThemePage() {
     { id: "tables", label: "Tables" },
     { id: "alerts", label: "Alerts" },
     { id: "forms", label: "Forms" },
+    { id: "charts", label: "Charts" },
     { id: "app-functions", label: "App Functions" }
   ];
 
@@ -1966,6 +2085,7 @@ export default function ThemePage() {
         {activeTab === "tables" && <TablesSection />}
         {activeTab === "alerts" && <AlertsSection />}
         {activeTab === "forms" && <FormsSection />}
+        {activeTab === "charts" && <ChartsSection />}
         {activeTab === "app-functions" && <AppFunctionsSection />}
       </PageContent>
     </AppLayout>

@@ -7,11 +7,18 @@ export default function ChartContent({ symbol }: { symbol: string }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    const loadChart = async () => {
+      if (!chartContainerRef.current) return;
 
-    // DEBUG: console.log('LightweightCharts module:', LightweightCharts);
+      // Import our theme configuration
+      const { getCandlestickConfig, getHistogramConfig } = await import('@/lib/chartStyles');
 
-    const chart = LightweightCharts.createChart(chartContainerRef.current, {
+      // Detect dark mode
+      const isDarkMode = document.documentElement.classList.contains('dark');
+
+      // DEBUG: console.log('LightweightCharts module:', LightweightCharts);
+
+      const chart = LightweightCharts.createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 400,
       layout: {
@@ -22,17 +29,17 @@ export default function ChartContent({ symbol }: { symbol: string }) {
         vertLines: { color: 'rgba(156, 163, 175, 0.1)' },
         horzLines: { color: 'rgba(156, 163, 175, 0.1)' },
       },
+      timeScale: {
+        barSpacing: 12,        // Default spacing between candles
+        minBarSpacing: 6,      // Minimum spacing (prevents overcrowding)
+        maxBarSpacing: 16,     // Maximum spacing (prevents spreading too far)
+        rightOffset: 80,       // Space on the right side
+      },
     });
 
-    // Add candlestick series
-    const candlestickSeries = (chart as any).addCandlestickSeries({
-      upColor: '#10B981',
-      downColor: '#EF4444',
-      borderUpColor: '#10B981',
-      borderDownColor: '#EF4444',
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
-    });
+    // Add candlestick series with theme colors
+    const candlestickConfig = getCandlestickConfig(isDarkMode);
+    const candlestickSeries = (chart as any).addCandlestickSeries(candlestickConfig);
 
     // Sample data
     const data = [
@@ -50,12 +57,10 @@ export default function ChartContent({ symbol }: { symbol: string }) {
 
     candlestickSeries.setData(data);
 
-    // Add volume
+    // Add volume with theme colors
+    const volumeConfig = getHistogramConfig(isDarkMode);
     const volumeSeries = (chart as any).addHistogramSeries({
-      color: '#6366F1',
-      priceFormat: {
-        type: 'volume',
-      },
+      ...volumeConfig,
       priceScaleId: 'volume',
     });
 
@@ -69,12 +74,12 @@ export default function ChartContent({ symbol }: { symbol: string }) {
     const volumeData = data.map((d, i) => ({
       time: d.time,
       value: Math.random() * 1000000 + 500000,
-      color: d.close >= d.open ? '#10B98120' : '#EF444420',
+      color: d.close >= d.open ? volumeConfig.upColor : volumeConfig.downColor,
     }));
 
     volumeSeries.setData(volumeData);
 
-    (chart as any).timeScale().fitContent();
+    // Don't call fitContent() as it resets rightOffset
 
     // Handle resize
     const handleResize = () => {
@@ -89,6 +94,9 @@ export default function ChartContent({ symbol }: { symbol: string }) {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
+    };
+
+    loadChart();
   }, [symbol]);
 
   return (

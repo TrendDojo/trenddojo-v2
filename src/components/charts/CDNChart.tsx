@@ -419,6 +419,10 @@ export function CDNChart({ symbol }: { symbol: string }) {
             borderColor: themeColors.borderColor,
             timeVisible: true,
             secondsVisible: false,
+            // Candle width constraints
+            barSpacing: 12,        // Default spacing between candles
+            minBarSpacing: 6,      // Minimum spacing (prevents overcrowding)
+            maxBarSpacing: 16,     // Maximum spacing (prevents spreading too far)
           },
         });
 
@@ -495,19 +499,10 @@ export function CDNChart({ symbol }: { symbol: string }) {
           volumeSeries.setData(volumeData);
         }
 
-        // Fit content and adjust time scale
+        // Apply rightOffset - don't call fitContent() as it resets rightOffset
         chart.timeScale().applyOptions({
-          timeVisible: true,
-          secondsVisible: false,
-          rightOffset: 2,
-          barSpacing: 6,
-          minBarSpacing: 2,
-          fixLeftEdge: false,
-          fixRightEdge: false,
+          rightOffset: 80,
         });
-
-        // Ensure the chart uses full width
-        chart.timeScale().fitContent();
 
         // Volume series is already defined above and available here
 
@@ -560,7 +555,7 @@ export function CDNChart({ symbol }: { symbol: string }) {
             const newWidth = chartContainerRef.current.clientWidth;
     // DEBUG: console.log(`Resizing chart to ${newWidth}px`);
             chart.applyOptions({ width: newWidth });
-            chart.timeScale().fitContent();
+            // Don't call fitContent() as it resets rightOffset
           }
         };
 
@@ -574,7 +569,7 @@ export function CDNChart({ symbol }: { symbol: string }) {
                 const newWidth = entry.contentRect.width;
     // DEBUG: console.log(`Container resized to ${newWidth}px`);
                 chart.applyOptions({ width: newWidth });
-                chart.timeScale().fitContent();
+                // Don't call fitContent() as it resets rightOffset
               }
             }
           });

@@ -445,9 +445,10 @@ export function LocalChart({ symbol }: { symbol: string }) {
 
         // Configure time scale
         chart.timeScale().applyOptions({
-          rightOffset: 20,  // Even more space on the right to show future dates
-          barSpacing: 6,
-          minBarSpacing: 2,
+          rightOffset: 80,   // More space on the right side from edge to last candle
+          barSpacing: 12,    // Default spacing between candles
+          minBarSpacing: 6,  // Minimum spacing (prevents overcrowding)
+          maxBarSpacing: 16, // Maximum spacing (prevents spreading too far)
           fixLeftEdge: false,
           fixRightEdge: false,
           lockVisibleTimeRangeOnResize: true,
@@ -471,9 +472,8 @@ export function LocalChart({ symbol }: { symbol: string }) {
             from: firstTimestamp as Time,
             to: extendedTimestamp as Time,
           });
-        } else {
-          chart.timeScale().fitContent();
         }
+        // Don't call fitContent() here as it resets rightOffset
 
         // Handle scrolling to load more data
         visibleRangeHandler = (range: any) => {
@@ -553,7 +553,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
               if (entry.target === chartContainerRef.current && chart) {
                 const newWidth = entry.contentRect.width;
                 chart.applyOptions({ width: newWidth });
-                chart.timeScale().fitContent();
+                // Don't call fitContent() on resize to preserve rightOffset
               }
             }
           });
@@ -608,28 +608,33 @@ export function LocalChart({ symbol }: { symbol: string }) {
         {/* Divider with padding */}
         <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2" />
 
-        {/* Chart type toggle */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setChartType(chartType === 'candles' ? 'line' : 'candles')}
-          className="flex items-center gap-1.5 px-3 py-1"
-          title={`Switch to ${chartType === 'candles' ? 'line' : 'candlestick'} chart`}
-        >
-          {chartType === 'candles' ? (
-            <>
-              <BarChart2 className="w-4 h-4" />
-              <span className="text-xs">
-                Candles ({getPresetConfig(selectedPreset).intervalText})
-              </span>
-            </>
-          ) : (
-            <>
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-xs">Line</span>
-            </>
-          )}
-        </Button>
+        {/* Chart type toggle buttons */}
+        <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
+          <button
+            onClick={() => setChartType('candles')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              chartType === 'candles'
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+            title="Candlestick chart"
+          >
+            <BarChart2 className="w-4 h-4" />
+            <span>Candles</span>
+          </button>
+          <button
+            onClick={() => setChartType('line')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              chartType === 'line'
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+            title="Line chart"
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span>Line</span>
+          </button>
+        </div>
       </div>
 
       {/* Chart Container */}

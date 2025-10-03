@@ -1,0 +1,14 @@
+#!/bin/bash
+# Main pre-commit hook that runs all checks
+
+# Run documentation structure check
+.githooks/pre-commit-docs-check
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+# Add other pre-commit checks here as needed
+# Example: .githooks/pre-commit-tests
+# Example: .githooks/pre-commit-lint
+
+exit 0
