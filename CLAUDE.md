@@ -131,7 +131,7 @@ This separation ensures:
 **AI Auto-Triggers (do without being asked):**
 - User says "where are we at?" **(or similar)** → Run verification & update PROJECT_CONTEXT.md
 - User says "what's next?" **(or similar)** → Check ROADMAP & suggest from active work blocks
-- User says "tidy" or "audit" **(or cleanup)** → Execute `/docs/TIDY-PROTOCOL.md` (code + docs + theme compliance)
+- User says "tidy" or "audit" **(or cleanup)** → Execute `/docs/operations/TIDY-PROTOCOL.md` (code + docs + theme compliance)
 - User says "done"/"ship it" **(or similar)** → Move work block to COMPLETED, update ROADMAP
 - AI runs `npm install` → Update tech stack in PROJECT_CONTEXT.md
 - AI creates pattern doc → Update pattern list in PROJECT_CONTEXT.md

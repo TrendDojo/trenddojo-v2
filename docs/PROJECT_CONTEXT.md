@@ -45,17 +45,17 @@ WB-* → dev → PR to staging → PR to main
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns
 - **Trading Patterns**: `/docs/patterns/TRADING-PATTERNS.md` - Risk management, position sizing, strategy implementation
-- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - Alpaca, IBKR integration patterns
-- **Market Data System**: `/docs/MARKET_DATA_SYSTEM.md` - Complete market data architecture and implementation guide
+- **Broker Integration**: `/docs/brokers/BROKER_INTEGRATION.md` - Alpaca, IBKR integration patterns
+- **Market Data System**: `/docs/data/MARKET_DATA_SYSTEM.md` - Complete market data architecture and implementation guide
 
 ### Technical Documentation
 - **Architecture**: `/docs/reference/ARCHITECTURE.md` - System architecture and tech stack
 - **Data Models**: `/docs/reference/DATA_MODELS.md` - Database schemas and data structures
 - **API Specification**: `/docs/reference/API_SPECIFICATION.md` - API endpoints and request/response formats
 - **UI Components**: `/docs/reference/UI_COMPONENTS.md` - Component specifications and patterns
-- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - External broker API integrations
-- **Database Plan**: `/docs/DATABASE-PLAN.md` - Database schema and deployment
-- **Trading Philosophy**: `/docs/TRADING-PHILOSOPHY.md` - What we support and DON'T support
+- **Broker Integration**: `/docs/brokers/BROKER_INTEGRATION.md` - External broker API integrations
+- **Database Plan**: `/docs/data/DATABASE-PLAN.md` - Database schema and deployment
+- **Trading Philosophy**: `/docs/features/TRADING-PHILOSOPHY.md` - What we support and DON'T support
 
 ### Work Management
 - **Work Tracking**: `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work context

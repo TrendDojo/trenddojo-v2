@@ -104,7 +104,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 **Priority**: HIGH
 **Status**: Paused
 **Documentation**:
-- [Broker Integration Guide](/docs/BROKER_INTEGRATION.md)
+- [Broker Integration Guide](/docs/brokers/BROKER_INTEGRATION.md)
 
 **Planned Features**:
 - Alpaca paper trading connection
@@ -120,7 +120,7 @@ This roadmap provides a high-level view of planned and completed features. For i
 **Priority**: MEDIUM
 **Status**: Paused
 **Documentation**:
-- [Design System](/docs/DESIGN_SYSTEM.md)
+- [Design System](/docs/features/DESIGN_SYSTEM.md)
 - Theme page at `/dev/theme`
 
 **Planned Features**:

@@ -1,7 +1,7 @@
 # TrendDojo Active Work Blocks
 
 > 🚀 **CRITICAL DEPLOYMENT PROCESS**
-> **BEFORE ANY DEPLOYMENT**: READ `/docs/DEPLOYMENT_GUIDE.md`
+> **BEFORE ANY DEPLOYMENT**: READ `/docs/deployment/DEPLOYMENT_GUIDE.md`
 > - **STANDARD**: Complete all 4 phases (Local → Preview → Documentation → Production)
 > - **EMERGENCY**: Hotfix procedure for critical issues - branch must contain ONLY the fix
 > - **DOCUMENTATION**: All hotfixes must be logged in `/_workblocks/INCIDENTS.md`
@@ -349,7 +349,7 @@ function getUpdateFrequency(symbol: string): number {
 - **EXPANSION READY**: Architecture supports growth from 100 to 8000+ symbols
 - **COST CONSCIOUS**: Users can bring their own data subscriptions
 - **PERFORMANCE**: Partitioning and indexing strategy maintains <10ms queries at scale
-- See `/docs/MARKET_DATA_SYSTEM.md` for detailed design
+- See `/docs/data/MARKET_DATA_SYSTEM.md` for detailed design
 
 ### Implementation Strategy
 1. **Phase 1**: Polygon historical + Alpaca live when connected

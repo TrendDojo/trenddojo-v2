@@ -4,7 +4,7 @@
 
 ## 🚀 CRITICAL DEPLOYMENT PROCESS - READ BEFORE ANY DEPLOYMENT
 **⚠️ MANDATORY**: Before pushing to dev, staging, preview, or main branches:
-- **READ**: `/docs/DEPLOYMENT_GUIDE.md` - Complete deployment process
+- **READ**: `/docs/deployment/DEPLOYMENT_GUIDE.md` - Complete deployment process
 - **STANDARD**: Follow 4-phase process (Local → Preview → Documentation → Production)
 - **EMERGENCY**: Hotfix procedure ONLY for critical production issues
 - **RULE**: Emergency fixes must contain ONLY the fix, nothing else
@@ -108,13 +108,13 @@
 
 ### RULE #12: [UNIVERSAL] Design System Consistency (For UI Projects)
 **IF project has UI components, check for design system:**
-- [x] Does `/docs/DESIGN_SYSTEM.md` exist? **YES - READ IT FIRST**
+- [x] Does `/docs/features/DESIGN_SYSTEM.md` exist? **YES - READ IT FIRST**
 - [x] Does `/app/theme/page.tsx` exist? **YES - Check before ANY UI work**
 - [x] Are there shared UI components in `/components/ui/`? **YES - ALWAYS use them**
 - [x] **NEVER change visual appearance without user permission** - colors, layouts, themes, etc.
 
 **Design consistency enforcement:**
-- Follow DESIGN_SYSTEM.md exactly, no exceptions
+- Follow features/DESIGN_SYSTEM.md exactly, no exceptions
 - Theme page is single source of truth for UI
 - Shared components prevent inconsistency - use them always
 - Alerts have NO borders (TrendDojo specific rule)
@@ -175,7 +175,7 @@ GitHub → Staging (automatic) → Production (manual promotion)
 ## 📚 Key Reference Documents
 
 ### Pattern Documentation (CHECK BEFORE BUILDING)
-- **🚨 Design System**: `/docs/DESIGN_SYSTEM.md` - MANDATORY: Read this FIRST for all UI work
+- **🚨 Design System**: `/docs/features/DESIGN_SYSTEM.md` - MANDATORY: Read this FIRST for all UI work
 - **Design Patterns**: `/docs/patterns/DESIGN-PATTERNS.md` - UI components, colors, trading-specific styling
 - **Architecture Patterns**: `/docs/patterns/ARCHITECTURE-PATTERNS.md` - tRPC, Next.js, financial data handling
 - **UX Patterns**: `/docs/patterns/UX-PATTERNS.md` - Trading forms, real-time updates, mobile patterns
@@ -186,8 +186,8 @@ GitHub → Staging (automatic) → Production (manual promotion)
 - **Data Models**: `/docs/reference/DATA_MODELS.md` - Database schemas and data structures
 - **API Specification**: `/docs/reference/API_SPECIFICATION.md` - API endpoints and request/response formats
 - **UI Components**: `/docs/reference/UI_COMPONENTS.md` - Component specifications and patterns
-- **Broker Integration**: `/docs/BROKER_INTEGRATION.md` - External broker API integrations
-- **Database Plan**: `/docs/DATABASE-PLAN.md` - Database schema and deployment
+- **Broker Integration**: `/docs/brokers/BROKER_INTEGRATION.md` - External broker API integrations
+- **Database Plan**: `/docs/data/DATABASE-PLAN.md` - Database schema and deployment
 
 ### Work Management
 - **Work Tracking**: `/_workblocks/ACTIVE_WORK_BLOCKS.md` - Current work context
