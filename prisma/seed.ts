@@ -18,12 +18,25 @@ async function main() {
   await prisma.portfolios.deleteMany()
   await prisma.users.deleteMany()
 
-  // Create test users
+  // Create test users with passwords
+  // Password for all test accounts: password123
+  const hashedPassword = await hash('password123', 12)
+
   const users = await Promise.all([
+    prisma.users.create({
+      data: withIdAndTimestamps({
+        email: 'test@example.com',
+        name: 'Test User',
+        passwordHash: hashedPassword,
+        subscriptionTier: 'free',
+        subscriptionStatus: 'active',
+      }),
+    }),
     prisma.users.create({
       data: withIdAndTimestamps({
         email: 'pro@trader.com',
         name: 'Pro Trader',
+        passwordHash: hashedPassword,
         subscriptionTier: 'pro',
         subscriptionStatus: 'active',
       }),
@@ -32,13 +45,14 @@ async function main() {
       data: withIdAndTimestamps({
         email: 'swing@trader.com',
         name: 'Swing Trader',
+        passwordHash: hashedPassword,
         subscriptionTier: 'basic',
         subscriptionStatus: 'active',
       }),
     }),
   ])
 
-  const [proUser, swingUser] = users
+  const [testUser, proUser, swingUser] = users
 
   // Create portfolios
   const proPortfolio = await prisma.portfolios.create({

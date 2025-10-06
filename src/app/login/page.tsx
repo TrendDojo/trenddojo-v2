@@ -80,7 +80,7 @@ export default function LoginPage() {
         <Panel variant="default" padding="xl" rounded="xl">
           {/* Development Mode Notice */}
           <Alert intent="info" className="mb-6">
-            <strong>Development Mode:</strong> Sign in with any email and password "password123"
+            <strong>Development Mode:</strong> Use test@example.com with password "password123"
           </Alert>
 
           {error && (

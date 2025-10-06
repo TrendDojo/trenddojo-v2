@@ -80,55 +80,7 @@ export const authConfig = {
 
           const { email, password } = parsed.data
 
-          // In development mode, create a user on the fly for any email
-          if (process.env.NODE_ENV === 'development' && password === 'password123') {
-            // Try to find existing user first
-            let user = await prisma.users.findUnique({
-              where: { email: email.toLowerCase() },
-              include: {
-                portfolios: true,
-                risk_settings: true
-              }
-            })
-
-            // If user doesn't exist in dev mode, create one
-            if (!user) {
-    // DEBUG: console.log("[AUTH] Creating development user:", email)
-              user = await prisma.users.create({
-                data: {
-                  id: crypto.randomUUID(),
-                  email: email.toLowerCase(),
-                  name: email.split('@')[0],
-                  subscriptionTier: 'free',
-                  createdAt: new Date(),
-                  updatedAt: new Date()
-                },
-                include: {
-                  portfolios: true,
-                  risk_settings: true
-                }
-              })
-            }
-
-            // @business-critical: Trading permission calculation affects real money access
-            // MUST have unit tests before deployment
-            const subscriptionTier = user.subscriptionTier || 'free'
-            const tradingUser = {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: 'user',
-              subscriptionTier,
-              tradingEnabled: true,
-              paperTradingEnabled: true,
-              realTradingEnabled: false // Never allow real trading in dev mode
-            }
-
-    // DEBUG: console.log(`[AUTH] Dev user logged in: ${email} (${subscriptionTier})`)
-            return tradingUser
-          }
-
-          // Production mode - strict user lookup
+          // Look up user in database (both dev and production)
           const user = await prisma.users.findUnique({
             where: { email: email.toLowerCase() },
             include: {
