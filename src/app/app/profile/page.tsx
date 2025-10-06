@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
@@ -8,42 +9,54 @@ import { FormSection, FormGroup, FormField } from "@/components/layout/FormSecti
 import { User, Mail, Phone, Globe, Shield, Bell, Smartphone, AlertTriangle, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Mock user data
-const userData = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  timezone: "America/New_York",
-  language: "English",
-  avatar: null,
-  joinedDate: new Date("2023-06-15"),
-
-  // Preferences
-  emailNotifications: {
-    tradeExecutions: true,
-    dailySummary: false,
-    weeklyReport: true,
-    productUpdates: false,
-    marketAlerts: true,
-  },
-
-  // Security
-  twoFactorEnabled: false,
-  lastPasswordChange: new Date("2023-12-01"),
-
-  // Trading preferences
-  defaultPortfolio: "Main Portfolio",
-  defaultTimeframe: "1D",
-  confirmTrades: true,
-  showPnlInPercent: false,
-};
-
 export default function ProfilePage() {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState("general");
-  const [formData, setFormData] = useState(userData);
   const [isSaving, setIsSaving] = useState(false);
   const [changesSaved, setChangesSaved] = useState(false);
+
+  // Initialize form data from session, with defaults
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "+1 (555) 123-4567",
+    timezone: "America/New_York",
+    language: "English",
+    avatar: null,
+    joinedDate: new Date(),
+
+    // Preferences
+    emailNotifications: {
+      tradeExecutions: true,
+      dailySummary: false,
+      weeklyReport: true,
+      productUpdates: false,
+      marketAlerts: true,
+    },
+
+    // Security
+    twoFactorEnabled: false,
+    lastPasswordChange: new Date(),
+
+    // Trading preferences
+    defaultPortfolio: "Main Portfolio",
+    defaultTimeframe: "1D",
+    confirmTrades: true,
+    showPnlInPercent: false,
+  });
+
+  // Update form data when session loads
+  useEffect(() => {
+    if (session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        email: session.user.email || "",
+        firstName: session.user.name?.split(' ')[0] || "",
+        lastName: session.user.name?.split(' ')[1] || "",
+      }));
+    }
+  }, [session]);
 
   const tabItems = [
     { id: "general", label: "General" },
@@ -90,7 +103,7 @@ export default function ProfilePage() {
                 {formData.email}
               </p>
               <p className="text-sm dark:text-gray-400 text-gray-600 mt-1">
-                Member since {userData.joinedDate.toLocaleDateString()}
+                Member since {formData.joinedDate.toLocaleDateString()}
               </p>
             </div>
             <Button variant="secondary" size="sm">
@@ -303,7 +316,7 @@ export default function ProfilePage() {
                   <div>
                     <p className="font-medium dark:text-white text-gray-900">Password</p>
                     <p className="text-sm dark:text-gray-400 text-gray-600">
-                      Last changed {userData.lastPasswordChange.toLocaleDateString()}
+                      Last changed {formData.lastPasswordChange.toLocaleDateString()}
                     </p>
                   </div>
                   <Button variant="secondary" size="sm">

@@ -53,6 +53,8 @@ export async function GET() {
           const brokerClient = brokerManager.getBroker(conn.broker as SupportedBroker);
 
           let accountInfo = null;
+          let connectionStatus = 'connected';
+
           if (brokerClient) {
             try {
               accountInfo = await brokerClient.getAccountInfo();
@@ -60,9 +62,13 @@ export async function GET() {
               //   accountId: accountInfo?.accountId,
               //   balance: accountInfo?.balance
               // });
-            } catch (error) {
+            } catch (error: any) {
               console.error(`Failed to get account info for ${conn.broker}:`, error);
-              // Still connected, but couldn't fetch account details
+              // If we can't fetch account info, credentials are likely invalid
+              if (error.message?.includes('401') || error.message?.includes('unauthorized')) {
+                connectionStatus = 'error';
+                console.log(`→ Credentials appear invalid (401)`);
+              }
             }
           }
 
@@ -71,7 +77,7 @@ export async function GET() {
             isPaper: conn.isPaper,
             accountInfo,
             lastSync: conn.lastSync,
-            status: 'connected'
+            status: connectionStatus
           };
         } catch (error) {
           console.error(`Failed to reconnect to ${conn.broker}:`, error);
