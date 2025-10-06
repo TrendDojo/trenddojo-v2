@@ -60,6 +60,8 @@ export const authConfig = {
     strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  // Explicitly set the base URL to prevent port confusion
+  url: process.env.NEXTAUTH_URL || 'http://localhost:3002',
   providers: [
     CredentialsProvider({
       name: "credentials",
