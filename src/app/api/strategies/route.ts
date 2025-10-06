@@ -24,16 +24,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const portfolioId = searchParams.get('portfolioId')
-    
-    if (!portfolioId) {
-      return NextResponse.json(
-        { error: 'Portfolio ID required' },
-        { status: 400 }
-      )
-    }
+
+    // If no portfolioId provided, return all active strategies (simplified for position creation)
+    const where = portfolioId
+      ? { portfolioId, status: { not: 'closed' } }
+      : { status: { not: 'closed' } };
 
     const strategies = await prisma.strategies.findMany({
-      where: { portfolioId },
+      where,
       include: {
         positions: {
           where: { status: 'open' },

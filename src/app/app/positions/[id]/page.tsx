@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
@@ -9,44 +9,108 @@ import { ChevronLeft, TrendingUp, TrendingDown, DollarSign, Activity, Calendar, 
 import { cn } from "@/lib/utils";
 import { tableStyles, getTableRow } from "@/lib/tableStyles";
 
-// Mock data for a single position
-const mockPosition = {
-  id: "1",
-  symbol: "AAPL",
-  name: "Apple Inc.",
-  strategy: "Momentum Strategy",
-  direction: "long",
-  status: "open",
-  currentQuantity: 100,
-  avgEntryPrice: 175.50,
-  currentPrice: 182.45,
-  stopLoss: 170.00,
-  takeProfit: 190.00,
-  unrealizedPnl: 695.00,
-  unrealizedPnlPercent: 3.96,
-  realizedPnl: 0,
-  totalFees: 12.50,
-  openedAt: new Date("2024-01-15"),
-  lastExecutionAt: new Date("2024-01-16"),
-  holdingDays: 8,
-  maxGainPercent: 5.2,
-  maxLossPercent: -2.1,
-  rMultiple: 1.8,
-  executions: [
-    { date: new Date("2024-01-15"), type: "buy", quantity: 50, price: 174.00, fees: 6.25 },
-    { date: new Date("2024-01-16"), type: "buy", quantity: 50, price: 177.00, fees: 6.25 },
-  ],
-  notes: [
-    { date: new Date("2024-01-15"), content: "Initial entry on breakout above resistance" },
-    { date: new Date("2024-01-17"), content: "Strong momentum, considering adding to position" },
-  ]
-};
+interface Position {
+  id: string;
+  symbol: string;
+  name: string | null;
+  strategy: string;
+  strategyId: string | null;
+  direction: string;
+  status: string;
+  currentQuantity: number;
+  avgEntryPrice: number;
+  currentPrice: number;
+  stopLoss: number | null;
+  takeProfit: number | null;
+  unrealizedPnl: number;
+  unrealizedPnlPercent: number;
+  realizedPnl: number;
+  totalFees: number;
+  openedAt: Date;
+  closedAt: Date | null;
+  lastExecutionAt: Date;
+  holdingDays: number;
+  maxGainPercent: number;
+  maxLossPercent: number;
+  rMultiple: number;
+  source: string;
+  brokerAccountId: string | null;
+  executions: Array<{
+    id: string;
+    date: Date;
+    type: string;
+    quantity: number;
+    price: number;
+    fees: number;
+    notes: string | null;
+    brokerOrderId: string | null;
+  }>;
+  notes: Array<{
+    id: string;
+    date: Date;
+    content: string;
+    noteType: string;
+  }>;
+}
 
 export default function PositionDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const [position, setPosition] = useState<Position | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const position = mockPosition; // In real app, fetch based on params.id
+  useEffect(() => {
+    async function fetchPosition() {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/positions/${params.id}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch position');
+        }
+
+        const data = await response.json();
+        setPosition(data);
+      } catch (err) {
+        console.error('Error fetching position:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load position');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (params.id) {
+      fetchPosition();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <PageContent>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+            <p className="dark:text-gray-400 text-gray-600">Loading position...</p>
+          </div>
+        </div>
+      </PageContent>
+    );
+  }
+
+  if (error || !position) {
+    return (
+      <PageContent>
+        <div className="flex flex-col items-center justify-center h-64">
+          <AlertTriangle className="w-12 h-12 text-danger mb-4" />
+          <p className="text-danger text-lg mb-4">{error || 'Position not found'}</p>
+          <Button onClick={() => router.push('/app/positions')}>
+            Back to Positions
+          </Button>
+        </div>
+      </PageContent>
+    );
+  }
 
   return (
     
@@ -144,13 +208,13 @@ export default function PositionDetailPage() {
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Stop Loss</span>
                 <span className="font-medium text-danger">
-                  ${position.stopLoss.toFixed(2)}
+                  {position.stopLoss ? `$${position.stopLoss.toFixed(2)}` : '—'}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="dark:text-gray-400 text-gray-600">Take Profit</span>
                 <span className="font-medium text-success">
-                  ${position.takeProfit.toFixed(2)}
+                  {position.takeProfit ? `$${position.takeProfit.toFixed(2)}` : '—'}
                 </span>
               </div>
               <div className="flex justify-between">

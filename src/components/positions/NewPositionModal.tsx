@@ -35,13 +35,12 @@ export interface NewPositionData {
   notes?: string;
 }
 
-// Mock strategies - in production, these would come from your API
-const mockStrategies = [
-  { id: '1', name: 'Breakout-2R', status: 'active' },
-  { id: '2', name: 'Pullback-MA', status: 'active' },
-  { id: '3', name: 'Manual-2R', status: 'active' },
-  { id: '4', name: 'Swing-Momentum', status: 'paused' },
-];
+interface Strategy {
+  id: string;
+  name: string;
+  status: string;
+  type?: string;
+}
 
 // Popular symbols for quick access
 const recentSymbols = ['AAPL', 'MSFT', 'TSLA']; // Placeholder - will get from user history
@@ -61,6 +60,8 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
   const [symbolSearch, setSymbolSearch] = useState(prefilledSymbol || '');
   const [showSymbolSuggestions, setShowSymbolSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [strategies, setStrategies] = useState<Strategy[]>([]);
+  const [strategiesLoading, setStrategiesLoading] = useState(true);
 
   // Use real market data hooks
   const { query: searchQuery, setQuery: setSearchQuery, results: searchResults, loading: searchLoading } = useSymbolSearch();
@@ -94,6 +95,23 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
     alpaca_live: false, // Not connected for safety in demo
     alpaca_paper: true, // Connected for testing
   };
+
+  // Fetch strategies when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setStrategiesLoading(true);
+      fetch('/api/strategies')
+        .then(res => res.json())
+        .then(data => {
+          setStrategies(data);
+          setStrategiesLoading(false);
+        })
+        .catch(err => {
+          console.error('Failed to fetch strategies:', err);
+          setStrategiesLoading(false);
+        });
+    }
+  }, [isOpen]);
 
   // Update symbol search when modal opens with prefilled symbol
   useEffect(() => {
@@ -588,16 +606,29 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                   onChange={(e) => setFormData({ ...formData, strategyId: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700 bg-white dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
+                  disabled={strategiesLoading}
                 >
-                  <option value="">Select a strategy...</option>
-                  {mockStrategies
-                    .filter(s => s.status === 'active')
+                  <option value="">
+                    {strategiesLoading ? 'Loading strategies...' : strategies.length === 0 ? 'No strategies available' : 'Select a strategy...'}
+                  </option>
+                  {strategies
+                    .filter(s => s.status !== 'closed')
                     .map(strategy => (
                       <option key={strategy.id} value={strategy.id}>
                         {strategy.name}
                       </option>
                     ))}
                 </select>
+
+                {!strategiesLoading && strategies.length === 0 && (
+                  <div className={cn(alertStyles.base, alertStyles.warning, "mt-2")}>
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-medium">No strategies found</p>
+                      <p className="text-xs mt-1 opacity-90">You need to create a strategy before adding positions. Visit the Strategies page to create one.</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Target Entry and Exit Prices */}

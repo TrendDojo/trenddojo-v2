@@ -133,8 +133,15 @@ export async function POST(request: NextRequest) {
         fillPrice = order.filled_avg_price ? parseFloat(order.filled_avg_price) : null;
       } catch (error: any) {
         console.error('Alpaca order error:', error);
+
+        // Provide helpful error messages
+        let errorMessage = `Failed to place order with Alpaca: ${error.message}`;
+        if (error.message.includes('401') || error.message.includes('unauthorized')) {
+          errorMessage = 'Alpaca credentials are invalid. Paper trading keys should start with "PK...". Visit /app/brokers to update your credentials, or use "External Broker" to test without Alpaca.';
+        }
+
         return NextResponse.json(
-          { error: `Failed to place order with Alpaca: ${error.message}` },
+          { error: errorMessage },
           { status: 500 }
         );
       }
