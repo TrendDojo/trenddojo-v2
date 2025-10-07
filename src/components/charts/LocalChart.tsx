@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TrendingUp, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
 import { ChartControls, getPresetConfig } from './ChartControls';
 import {
   chartControlStyles,
@@ -645,16 +646,13 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
         <div ref={chartContainerRef} className="w-full h-full rounded-lg overflow-hidden">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto mb-2"></div>
-                <p className="text-sm dark:text-gray-400 text-gray-600">Loading chart data...</p>
-              </div>
+              <Spinner size="md" text="Loading chart data..." />
             </div>
           )}
         </div>
         {isLoadingMore && (
           <div className="absolute top-2 left-2 z-10 bg-white/90 dark:bg-gray-800/90 rounded px-2 py-1 flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-500"></div>
+            <Spinner size="xs" centered={false} />
             <span className="text-xs dark:text-gray-400 text-gray-600">Loading more data...</span>
           </div>
         )}
