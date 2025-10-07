@@ -208,43 +208,8 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full h-[85vh] overflow-hidden flex flex-col lg:flex-row">
         {/* Left Side - Chart Area (2/3 on desktop, full width on mobile) */}
         <div className="w-full lg:w-2/3 p-6 border-b lg:border-b-0 lg:border-r dark:border-slate-700 border-gray-200 flex flex-col">
-          {formData.symbol ? (
-            <LocalChart
-              symbol={formData.symbol}
-              fullHeight={true}
-              stopLoss={formData.stopLoss}
-              takeProfit={formData.takeProfit}
-              onStopLossChange={(price) => setFormData({ ...formData, stopLoss: price })}
-              onTakeProfitChange={(price) => setFormData({ ...formData, takeProfit: price })}
-            />
-          ) : (
-            <div
-              className="flex-1 min-h-[400px] flex items-center justify-center rounded-lg"
-              style={{
-                backgroundColor: typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
-                  ? 'rgba(148, 163, 184, 0.03)' // Light tint in dark mode (same as chart)
-                  : 'rgba(15, 23, 42, 0.03)' // Dark tint in light mode (same as chart)
-              }}
-            >
-              <div className="text-center">
-                <svg className="w-20 h-20 mx-auto mb-4 dark:text-gray-600 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <p className="text-lg font-medium dark:text-white text-gray-900 mb-2">
-                  Select a Symbol
-                </p>
-                <p className="text-sm dark:text-gray-400 text-gray-600">
-                  Chart will appear once you select a symbol
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Side - Form (1/3 on desktop, full width on mobile) */}
-        <div className="w-full lg:w-1/3 p-6 flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          {/* Header with title and close button */}
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold dark:text-white text-gray-900">
               New Position
             </h2>
@@ -286,6 +251,41 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
             </div>
           </div>
 
+          {formData.symbol ? (
+            <LocalChart
+              symbol={formData.symbol}
+              fullHeight={true}
+              stopLoss={formData.stopLoss}
+              takeProfit={formData.takeProfit}
+              onStopLossChange={(price) => setFormData({ ...formData, stopLoss: price })}
+              onTakeProfitChange={(price) => setFormData({ ...formData, takeProfit: price })}
+            />
+          ) : (
+            <div
+              className="flex-1 min-h-[400px] flex items-center justify-center rounded-lg"
+              style={{
+                backgroundColor: typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
+                  ? 'rgba(148, 163, 184, 0.03)' // Light tint in dark mode (same as chart)
+                  : 'rgba(15, 23, 42, 0.03)' // Dark tint in light mode (same as chart)
+              }}
+            >
+              <div className="text-center">
+                <svg className="w-20 h-20 mx-auto mb-4 dark:text-gray-600 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p className="text-lg font-medium dark:text-white text-gray-900 mb-2">
+                  Select a Symbol
+                </p>
+                <p className="text-sm dark:text-gray-400 text-gray-600">
+                  Chart will appear once you select a symbol
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Side - Form (1/3 on desktop, full width on mobile) */}
+        <div className="w-full lg:w-1/3 p-6 flex flex-col">
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-y-auto">
           <div className="flex-1 overflow-y-auto">
             {/* Step 1: Source, Symbol, and Strategy */}

@@ -507,12 +507,23 @@ export function LocalChart({
               // Convert YYYY-MM-DD string to Unix timestamp
               const [year, month, day] = item.time.split('-').map(Number);
               const timestamp = Math.floor(new Date(year, month - 1, day).getTime() / 1000) as Time;
+
+              // Use indigo for volume in line mode, buy/sell colors in candle mode
+              let volumeColor: string;
+              if (chartType === 'line') {
+                // Use same indigo as the line (with 40% opacity)
+                volumeColor = isDarkMode ? '#818cf866' : '#6366f166';
+              } else {
+                // Use buy/sell colors for candle mode
+                volumeColor = item.close >= item.open
+                  ? chartColors.volume.up
+                  : chartColors.volume.down;
+              }
+
               return {
                 time: timestamp,
                 value: item.volume || 0,
-                color: item.close >= item.open
-                  ? chartColors.volume.up
-                  : chartColors.volume.down
+                color: volumeColor
               };
             });
 

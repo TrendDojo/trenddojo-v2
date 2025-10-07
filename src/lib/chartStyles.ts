@@ -94,8 +94,8 @@ export function getCandlestickConfig(isDarkMode: boolean) {
  * Get line series configuration
  */
 export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 'neutral' = 'neutral') {
-  // Use primary color (indigo) for line charts
-  const primaryColor = isDarkMode ? '#6366f1' : '#4f46e5'; // indigo-500 : indigo-600
+  // Use brighter primary color (indigo) for line charts
+  const primaryColor = isDarkMode ? '#818cf8' : '#6366f1'; // indigo-400 : indigo-500 (brighter)
 
   let color: string;
   let topColor: string;
@@ -103,22 +103,22 @@ export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 
 
   if (type === 'buy') {
     color = isDarkMode ? chartColors.buy.dark : chartColors.buy.light;
-    topColor = `${color}66`; // 40% opacity
+    topColor = `${color}33`; // 20% opacity (fainter)
     bottomColor = `${color}00`; // 0% opacity (transparent)
   } else if (type === 'sell') {
     color = isDarkMode ? chartColors.sell.dark : chartColors.sell.light;
-    topColor = `${color}66`;
+    topColor = `${color}33`; // 20% opacity (fainter)
     bottomColor = `${color}00`;
   } else {
-    // Use primary color for neutral/default line charts
+    // Use brighter primary color for neutral/default line charts
     color = primaryColor;
-    topColor = isDarkMode ? '#6366f166' : '#4f46e566'; // indigo with 40% opacity
-    bottomColor = isDarkMode ? '#6366f100' : '#4f46e500'; // transparent
+    topColor = isDarkMode ? '#818cf833' : '#6366f133'; // indigo with 20% opacity (fainter)
+    bottomColor = isDarkMode ? '#818cf800' : '#6366f100'; // transparent
   }
 
   return {
     lineColor: color,       // AreaSeries uses lineColor, not color
-    lineWidth: 2 as const,
+    lineWidth: 3 as const,  // Wider line (2 → 3)
     // Area fill configuration
     topColor,
     bottomColor,
