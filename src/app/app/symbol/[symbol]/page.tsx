@@ -258,7 +258,7 @@ export default function StockPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="sm"
                 onClick={() => setShowNewPositionModal(true)}
                 disabled={loading}
               >

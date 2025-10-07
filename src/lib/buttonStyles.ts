@@ -28,7 +28,6 @@ export const buttonStyles = {
   size: {
     sm: "px-4 py-2 text-sm",
     md: "px-6 py-3",
-    lg: "px-8 py-4 text-lg",
   },
 
   // State styles
@@ -39,7 +38,6 @@ export const buttonStyles = {
   iconOnly: {
     sm: "p-2",
     md: "p-3",
-    lg: "p-4",
   },
 
   // Loading spinner
