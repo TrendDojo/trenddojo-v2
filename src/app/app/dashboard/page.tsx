@@ -128,10 +128,10 @@ export default function DashboardPage() {
                 
                 {/* Action Buttons */}
                 <div className="flex gap-3 mt-4">
-                  <Button variant="secondary" onClick={() => router.push("/positions")}>
+                  <Button variant="secondary" onClick={() => router.push("/app/positions")}>
                     View Positions
                   </Button>
-                  <Button variant="primary" onClick={() => router.push("/screener")}>
+                  <Button variant="primary" onClick={() => router.push("/app/screener")}>
                     Open Screener
                   </Button>
                 </div>
