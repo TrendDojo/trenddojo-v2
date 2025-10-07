@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import crypto from 'crypto'
+import { auth } from '@/lib/auth'
 
 const prisma = new PrismaClient()
 
@@ -18,24 +19,43 @@ const CreatePositionSchema = z.object({
 // GET /api/positions - List positions
 export async function GET(request: NextRequest) {
   try {
+    // Get authenticated user
+    const session: any = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+
     const { searchParams } = new URL(request.url)
     const strategyId = searchParams.get('strategyId')
     const status = searchParams.get('status')
     const portfolioId = searchParams.get('portfolioId')
 
-    const where: Record<string, any> = {}
-    
+    // Build where clause with user filtering
+    const where: Record<string, any> = {
+      strategies: {
+        portfolios: {
+          userId: userId
+        }
+      }
+    }
+
     if (strategyId) {
       where.strategyId = strategyId
     }
-    
+
     if (status) {
       where.status = status
     }
-    
+
     if (portfolioId) {
-      where.strategy = {
-        portfolioId,
+      where.strategies = {
+        ...where.strategies,
+        portfolioId: portfolioId,
       }
     }
 

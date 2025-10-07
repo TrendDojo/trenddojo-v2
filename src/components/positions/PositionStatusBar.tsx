@@ -4,13 +4,42 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
-// MINIMAL CONFIGURATION - Just the essentials
+// SIZE CONFIGURATIONS
 // ============================================================================
-const CONFIG = {
-  containerWidth: 120,
-  minStopWidth: 15,
-  minSegmentWidth: 8,
-};
+const SIZE_CONFIGS = {
+  sm: {
+    containerWidth: 120,
+    minStopWidth: 15,
+    symbolSize: 9,
+    fontSize: 'text-[11px]',
+    currentPriceHeight: 'h-2',
+    segmentHeight: 'h-2',
+    indicatorSize: 'w-2 h-2',
+    verticalLineHeight: 21,
+  },
+  md: {
+    containerWidth: 180,
+    minStopWidth: 22,
+    symbolSize: 13,
+    fontSize: 'text-xs',
+    currentPriceHeight: 'h-3',
+    segmentHeight: 'h-3',
+    indicatorSize: 'w-3 h-3',
+    verticalLineHeight: 28,
+  },
+  lg: {
+    containerWidth: 240,
+    minStopWidth: 30,
+    symbolSize: 17,
+    fontSize: 'text-sm',
+    currentPriceHeight: 'h-4',
+    segmentHeight: 'h-4',
+    indicatorSize: 'w-4 h-4',
+    verticalLineHeight: 36,
+  },
+} as const;
+
+type SizeVariant = keyof typeof SIZE_CONFIGS;
 
 // ============================================================================
 // TYPES
@@ -35,6 +64,7 @@ interface PositionStatusBarProps {
   status?: "active" | "pending" | "closed";
   exitReason?: "stop_loss" | "take_profit" | "manual" | "partial";
   pnl?: number;
+  size?: SizeVariant;
 }
 
 // ============================================================================
@@ -133,8 +163,12 @@ export function PositionStatusBar({
   scalingLevels,
   status = "active",
   exitReason,
-  pnl = 0
+  pnl = 0,
+  size = 'sm'
 }: PositionStatusBarProps) {
+
+  // Get size config
+  const CONFIG = SIZE_CONFIGS[size];
 
   // Determine colors
   const stopColor = side === "long" ? "red" : "green";
@@ -179,13 +213,13 @@ export function PositionStatusBar({
         style={{ width: CONFIG.containerWidth }}
       >
         {/* Top row - Current Price */}
-        <div className="h-2 flex items-center relative mb-[10px]">
+        <div className={cn(CONFIG.currentPriceHeight, "flex items-center relative mb-[10px]")}>
           {currentPrice && status === "active" && (
             <div className="absolute flex flex-col items-center" style={{ left: getCurrentPricePosition(), transform: 'translateX(-50%)' }}>
-              <span className="relative px-0.5 text-[11px] font-mono text-white bg-indigo-700 dark:bg-indigo-600 whitespace-nowrap">
+              <span className={cn("relative px-0.5 font-mono text-white bg-indigo-700 dark:bg-indigo-600 whitespace-nowrap", CONFIG.fontSize)}>
                 ${currentPrice.toFixed(0)}
                 {/* Vertical line starting from top of this span and extending down */}
-                <div className="absolute left-0 top-0 w-[1.5px] h-[21px] bg-indigo-700 dark:bg-indigo-600" />
+                <div className="absolute left-0 top-0 w-[1.5px] bg-indigo-700 dark:bg-indigo-600" style={{ height: `${CONFIG.verticalLineHeight}px` }} />
               </span>
             </div>
           )}
@@ -198,14 +232,15 @@ export function PositionStatusBar({
           {stopLoss && entryPrice && (
             <div
               className={cn(
-                "h-2 rounded-full flex-shrink-0",
+                CONFIG.segmentHeight,
+                "rounded-full flex-shrink-0",
                 exitReason === "stop_loss"
                   ? (stopColor === "green" ? "bg-success" : "bg-danger")
                   : isClosedPosition
                   ? "bg-gray-300 dark:bg-gray-700"
                   : `border ${stopColor === "green" ? "border-success" : "border-danger"}`
               )}
-              style={{ width: `${CONFIG.minStopWidth + 9}px` }} // Extended to cover stop square (9px)
+              style={{ width: `${CONFIG.minStopWidth + CONFIG.symbolSize}px` }} // Extended to cover stop square
             />
           )}
 
@@ -219,7 +254,8 @@ export function PositionStatusBar({
                   return (
                     <div
                       className={cn(
-                        "h-2 flex-grow",
+                        CONFIG.segmentHeight,
+                        "flex-grow",
                         needsOpenEndedSegment
                           ? `rounded-l-full border-t border-b border-l ${targetColor === "green" ? "border-success" : "border-danger"}`
                           : "rounded-full",
@@ -281,7 +317,8 @@ export function PositionStatusBar({
                   <div
                     key={index}
                     className={cn(
-                      "h-2 rounded-full", // All segments have fully rounded ends
+                      CONFIG.segmentHeight,
+                      "rounded-full", // All segments have fully rounded ends
                       segment.executed
                         ? (targetColor === "green" ? "bg-success" : "bg-danger")
                         : `border ${targetColor === "green" ? "border-success" : "border-danger"}`
@@ -302,13 +339,13 @@ export function PositionStatusBar({
         <div className="flex items-center gap-1 justify-end" style={{ minWidth: '50px' }}>
           {stopLoss && (
             <>
-              <span className="text-[11px] font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
+              <span className={cn("font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap", CONFIG.fontSize)}>
                 ${stopLoss.toFixed(0)}
               </span>
               <StopSquare color={stopColor} />
             </>
           )}
-          {!stopLoss && <div className="w-[9px]" />} {/* Placeholder if no stop */}
+          {!stopLoss && <div style={{ width: `${CONFIG.symbolSize}px` }} />} {/* Placeholder if no stop */}
         </div>
 
         {/* Fixed width container for entry price */}
@@ -316,7 +353,7 @@ export function PositionStatusBar({
           {entryPrice && (
             <div className="flex items-center gap-1">
               <PlaySymbol color={targetColor} />
-              <span className="text-[11px] font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
+              <span className={cn("font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap", CONFIG.fontSize)}>
                 ${entryPrice.toFixed(0)}
               </span>
             </div>
@@ -328,14 +365,14 @@ export function PositionStatusBar({
           {targetPrice ? (
             <>
               <Bullseye filled={isClosedPosition} color={targetColor} />
-              <span className="text-[11px] font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
+              <span className={cn("font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap", CONFIG.fontSize)}>
                 ${targetPrice.toFixed(0)}
               </span>
             </>
           ) : (
             <>
-              <div className="w-[9px] h-[9px]" /> {/* Placeholder for bullseye width */}
-              <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              <div style={{ width: `${CONFIG.symbolSize}px`, height: `${CONFIG.symbolSize}px` }} /> {/* Placeholder for bullseye width */}
+              <span className={cn("font-mono text-gray-500 dark:text-gray-400 whitespace-nowrap", CONFIG.fontSize)}>
                 –
               </span>
             </>

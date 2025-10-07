@@ -44,7 +44,7 @@ export async function GET() {
           }
 
           // Connect to broker temporarily to get account info
-          await brokerManager.connectBroker(
+          const connected = await brokerManager.connectBroker(
             conn.broker as SupportedBroker,
             decryptedConfig,
             false // Don't set as primary
@@ -53,15 +53,17 @@ export async function GET() {
           const brokerClient = brokerManager.getBroker(conn.broker as SupportedBroker);
 
           let accountInfo = null;
-          let connectionStatus = 'connected';
+          let connectionStatus: 'connected' | 'error' = connected ? 'connected' : 'error';
 
-          if (brokerClient) {
+          // Only fetch account info if connection succeeded
+          if (connected && brokerClient) {
             try {
               accountInfo = await brokerClient.getAccountInfo();
-              // DEBUG: console.log(`Successfully fetched account info for ${conn.broker}:`, {
-              //   accountId: accountInfo?.accountId,
-              //   balance: accountInfo?.balance
-              // });
+              console.log(`[BROKER API] Successfully fetched account info for ${conn.broker}:`, {
+                accountId: accountInfo?.accountId,
+                balance: accountInfo?.balance,
+                fullAccountInfo: accountInfo
+              });
             } catch (error: any) {
               console.error(`Failed to get account info for ${conn.broker}:`, error);
               // If we can't fetch account info, credentials are likely invalid
@@ -149,6 +151,24 @@ export async function POST(request: Request) {
     // Add paperTrading flag to config for Alpaca
     if (broker === 'alpaca_paper' || broker === 'alpaca_live') {
       config.paperTrading = broker === 'alpaca_paper';
+    }
+
+    // Clean up conflicting Alpaca connections (old "alpaca" vs new "alpaca_paper"/"alpaca_live")
+    if (broker === 'alpaca_paper' || broker === 'alpaca_live') {
+      await prisma.broker_connections.updateMany({
+        where: {
+          userId: (session as any).user.id,
+          broker: {
+            in: ['alpaca', 'alpaca_paper', 'alpaca_live']
+          },
+          NOT: {
+            broker: broker // Keep the one we're about to create/update
+          }
+        },
+        data: {
+          isActive: false
+        }
+      });
     }
 
     // Store or update broker connection

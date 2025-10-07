@@ -6,6 +6,17 @@
 export type OrderSide = 'buy' | 'sell';
 export type OrderType = 'market' | 'limit' | 'stop' | 'stop_limit';
 export type OrderStatus = 'pending' | 'submitted' | 'filled' | 'partial' | 'cancelled' | 'rejected';
+
+// Enhanced order status for tracking (normalized across brokers)
+export enum NormalizedOrderStatus {
+  SUBMITTED = 'submitted',   // We sent it to broker
+  ACCEPTED = 'accepted',     // Broker confirmed receipt
+  FILLING = 'filling',       // Partial fill in progress
+  FILLED = 'filled',         // Completely filled
+  REJECTED = 'rejected',     // Broker rejected
+  CANCELED = 'canceled',     // User or system canceled
+  EXPIRED = 'expired'        // Time limit reached
+}
 export type PositionSide = 'long' | 'short';
 
 export interface BrokerConfig {
@@ -153,4 +164,66 @@ export interface CommissionStructure {
   minimum?: number;
   maximum?: number;
   description?: string;
+}
+
+// Enhanced order tracking types (normalized across brokers)
+
+export interface NormalizedOrder {
+  orderId: string;
+  symbol: string;
+  side: OrderSide;
+  quantity: number;
+  orderType: OrderType;
+  status: NormalizedOrderStatus;
+  timeInForce: 'day' | 'gtc' | 'ioc' | 'fok';
+  limitPrice?: number;
+  stopPrice?: number;
+  filledQuantity?: number;
+  filledAvgPrice?: number;
+  submittedAt: Date;
+  acceptedAt?: Date;
+  filledAt?: Date;
+  canceledAt?: Date;
+  rejectedAt?: Date;
+  rejectReason?: string;
+  rawBrokerData?: any; // Store original broker response for debugging
+}
+
+export interface NormalizedPosition {
+  symbol: string;
+  quantity: number;
+  avgEntryPrice: number;
+  currentPrice: number;
+  unrealizedPnl: number;
+  realizedPnl?: number;
+  side: PositionSide;
+  assetType?: string;
+  marketValue?: number;
+}
+
+export interface NormalizedAccount {
+  accountId: string;
+  balance: number;
+  buyingPower: number;
+  currency: string;
+  marginUsed?: number;
+  availableMargin?: number;
+  positions: NormalizedPosition[];
+  unrealizedPnL?: number;
+  realizedPnL?: number;
+}
+
+// Broker adapter interface (extends existing BrokerClient)
+export interface IBrokerAdapter extends BrokerClient {
+  // Enhanced order tracking methods
+  submitOrderTracked(params: OrderRequest): Promise<NormalizedOrder>;
+  getOrderTracked(orderId: string): Promise<NormalizedOrder>;
+  getOrdersTracked(params?: { status?: string; symbols?: string[] }): Promise<NormalizedOrder[]>;
+
+  // Enhanced position methods
+  getPositionsNormalized(): Promise<NormalizedPosition[]>;
+  getPositionNormalized(symbol: string): Promise<NormalizedPosition | null>;
+
+  // Enhanced account method
+  getAccountNormalized(): Promise<NormalizedAccount>;
 }

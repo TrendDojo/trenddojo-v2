@@ -3,19 +3,24 @@
  * @business-critical: Handles Alpaca broker integration for US/Canada markets
  */
 
-import { 
-  BrokerClient, 
-  BrokerConfig, 
-  AccountInfo, 
-  Position, 
-  OrderRequest, 
+import {
+  BrokerClient,
+  BrokerConfig,
+  AccountInfo,
+  Position,
+  OrderRequest,
   OrderResponse,
   MarketData,
   BrokerError,
   OrderStatus,
   OrderType,
   OrderSide,
-  PositionSide
+  PositionSide,
+  IBrokerAdapter,
+  NormalizedOrder,
+  NormalizedOrderStatus,
+  NormalizedPosition,
+  NormalizedAccount
 } from '../types';
 
 export interface AlpacaConfig extends BrokerConfig {
@@ -25,7 +30,7 @@ export interface AlpacaConfig extends BrokerConfig {
   dataFeed?: 'iex' | 'sip'; // IEX for free tier, SIP for paid
 }
 
-export class AlpacaClient implements BrokerClient {
+export class AlpacaClient implements IBrokerAdapter {
   name = 'Alpaca';
   private config: AlpacaConfig;
   private baseUrl: string;
@@ -429,8 +434,218 @@ export class AlpacaClient implements BrokerClient {
     const params = new URLSearchParams();
     if (start) params.append('start', start.toISOString().split('T')[0]);
     if (end) params.append('end', end.toISOString().split('T')[0]);
-    
+
     const response = await this.makeRequest(`/v2/calendar?${params}`);
     return response;
+  }
+
+  // ========================================
+  // IBrokerAdapter Implementation
+  // ========================================
+
+  /**
+   * Map Alpaca order status to normalized status
+   */
+  private mapToNormalizedStatus(alpacaStatus: string): NormalizedOrderStatus {
+    const statusMap: Record<string, NormalizedOrderStatus> = {
+      new: NormalizedOrderStatus.ACCEPTED,
+      accepted: NormalizedOrderStatus.ACCEPTED,
+      pending_new: NormalizedOrderStatus.SUBMITTED,
+      partially_filled: NormalizedOrderStatus.FILLING,
+      filled: NormalizedOrderStatus.FILLED,
+      canceled: NormalizedOrderStatus.CANCELED,
+      expired: NormalizedOrderStatus.EXPIRED,
+      rejected: NormalizedOrderStatus.REJECTED,
+      replaced: NormalizedOrderStatus.SUBMITTED,
+      pending_cancel: NormalizedOrderStatus.ACCEPTED,
+      pending_replace: NormalizedOrderStatus.ACCEPTED,
+      accepted_for_bidding: NormalizedOrderStatus.ACCEPTED,
+      stopped: NormalizedOrderStatus.CANCELED,
+      suspended: NormalizedOrderStatus.CANCELED,
+      calculated: NormalizedOrderStatus.ACCEPTED,
+      done_for_day: NormalizedOrderStatus.EXPIRED,
+    };
+    return statusMap[alpacaStatus] || NormalizedOrderStatus.SUBMITTED;
+  }
+
+  /**
+   * Submit order with tracking
+   */
+  async submitOrderTracked(params: OrderRequest): Promise<NormalizedOrder> {
+    const alpacaOrder = {
+      symbol: params.symbol,
+      qty: params.quantity,
+      side: params.side,
+      type: this.mapOrderType(params.type),
+      time_in_force: params.timeInForce || 'day',
+      limit_price: params.price,
+      stop_price: params.stopPrice,
+      extended_hours: false,
+    };
+
+    const response = await this.makeRequest('/v2/orders', 'POST', alpacaOrder);
+
+    return {
+      orderId: response.id,
+      symbol: response.symbol,
+      side: response.side as OrderSide,
+      quantity: parseFloat(response.qty),
+      orderType: this.reverseMapOrderType(response.order_type),
+      status: this.mapToNormalizedStatus(response.status),
+      timeInForce: response.time_in_force,
+      limitPrice: response.limit_price ? parseFloat(response.limit_price) : undefined,
+      stopPrice: response.stop_price ? parseFloat(response.stop_price) : undefined,
+      filledQuantity: response.filled_qty ? parseFloat(response.filled_qty) : undefined,
+      filledAvgPrice: response.filled_avg_price ? parseFloat(response.filled_avg_price) : undefined,
+      submittedAt: new Date(response.submitted_at || response.created_at),
+      acceptedAt: response.status === 'accepted' ? new Date() : undefined,
+      filledAt: response.status === 'filled' ? new Date(response.filled_at || new Date()) : undefined,
+      rawBrokerData: response,
+    };
+  }
+
+  /**
+   * Get order status with tracking
+   */
+  async getOrderTracked(orderId: string): Promise<NormalizedOrder> {
+    const response = await this.makeRequest(`/v2/orders/${orderId}`);
+
+    return {
+      orderId: response.id,
+      symbol: response.symbol,
+      side: response.side as OrderSide,
+      quantity: parseFloat(response.qty),
+      orderType: this.reverseMapOrderType(response.order_type),
+      status: this.mapToNormalizedStatus(response.status),
+      timeInForce: response.time_in_force,
+      limitPrice: response.limit_price ? parseFloat(response.limit_price) : undefined,
+      stopPrice: response.stop_price ? parseFloat(response.stop_price) : undefined,
+      filledQuantity: response.filled_qty ? parseFloat(response.filled_qty) : undefined,
+      filledAvgPrice: response.filled_avg_price ? parseFloat(response.filled_avg_price) : undefined,
+      submittedAt: new Date(response.submitted_at || response.created_at),
+      acceptedAt: ['accepted', 'new', 'partially_filled', 'filled'].includes(response.status)
+        ? new Date(response.created_at)
+        : undefined,
+      filledAt: response.status === 'filled' && response.filled_at
+        ? new Date(response.filled_at)
+        : undefined,
+      canceledAt: response.status === 'canceled' && response.canceled_at
+        ? new Date(response.canceled_at)
+        : undefined,
+      rejectedAt: response.status === 'rejected'
+        ? new Date()
+        : undefined,
+      rejectReason: response.status === 'rejected'
+        ? response.reject_reason || 'Order rejected by broker'
+        : undefined,
+      rawBrokerData: response,
+    };
+  }
+
+  /**
+   * Get multiple orders with tracking
+   */
+  async getOrdersTracked(params?: { status?: string; symbols?: string[] }): Promise<NormalizedOrder[]> {
+    const queryParams = new URLSearchParams();
+    if (params?.status) queryParams.append('status', params.status);
+    // Note: Alpaca doesn't support filtering by symbols in /v2/orders
+
+    const endpoint = `/v2/orders${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await this.makeRequest(endpoint);
+
+    let orders = response;
+
+    // Filter by symbols if provided
+    if (params?.symbols && params.symbols.length > 0) {
+      orders = orders.filter((order: any) => params.symbols!.includes(order.symbol));
+    }
+
+    return orders.map((order: any) => ({
+      orderId: order.id,
+      symbol: order.symbol,
+      side: order.side as OrderSide,
+      quantity: parseFloat(order.qty),
+      orderType: this.reverseMapOrderType(order.order_type),
+      status: this.mapToNormalizedStatus(order.status),
+      timeInForce: order.time_in_force,
+      limitPrice: order.limit_price ? parseFloat(order.limit_price) : undefined,
+      stopPrice: order.stop_price ? parseFloat(order.stop_price) : undefined,
+      filledQuantity: order.filled_qty ? parseFloat(order.filled_qty) : undefined,
+      filledAvgPrice: order.filled_avg_price ? parseFloat(order.filled_avg_price) : undefined,
+      submittedAt: new Date(order.submitted_at || order.created_at),
+      acceptedAt: ['accepted', 'new', 'partially_filled', 'filled'].includes(order.status)
+        ? new Date(order.created_at)
+        : undefined,
+      filledAt: order.status === 'filled' && order.filled_at
+        ? new Date(order.filled_at)
+        : undefined,
+      canceledAt: order.status === 'canceled' && order.canceled_at
+        ? new Date(order.canceled_at)
+        : undefined,
+      rawBrokerData: order,
+    }));
+  }
+
+  /**
+   * Get positions in normalized format
+   */
+  async getPositionsNormalized(): Promise<NormalizedPosition[]> {
+    const response = await this.makeRequest('/v2/positions');
+
+    return response.map((position: any) => ({
+      symbol: position.symbol,
+      quantity: parseFloat(position.qty),
+      avgEntryPrice: parseFloat(position.avg_entry_price),
+      currentPrice: parseFloat(position.current_price || position.market_value / position.qty),
+      unrealizedPnl: parseFloat(position.unrealized_pl),
+      realizedPnl: parseFloat(position.realized_pl || 0),
+      side: parseFloat(position.qty) > 0 ? 'long' : 'short' as PositionSide,
+      assetType: position.asset_class,
+      marketValue: parseFloat(position.market_value),
+    }));
+  }
+
+  /**
+   * Get single position in normalized format
+   */
+  async getPositionNormalized(symbol: string): Promise<NormalizedPosition | null> {
+    try {
+      const response = await this.makeRequest(`/v2/positions/${symbol}`);
+
+      return {
+        symbol: response.symbol,
+        quantity: parseFloat(response.qty),
+        avgEntryPrice: parseFloat(response.avg_entry_price),
+        currentPrice: parseFloat(response.current_price || response.market_value / response.qty),
+        unrealizedPnl: parseFloat(response.unrealized_pl),
+        realizedPnl: parseFloat(response.realized_pl || 0),
+        side: parseFloat(response.qty) > 0 ? 'long' : 'short' as PositionSide,
+        assetType: response.asset_class,
+        marketValue: parseFloat(response.market_value),
+      };
+    } catch (error) {
+      // Position not found
+      return null;
+    }
+  }
+
+  /**
+   * Get account info in normalized format
+   */
+  async getAccountNormalized(): Promise<NormalizedAccount> {
+    const response = await this.makeRequest('/v2/account');
+    const positions = await this.getPositionsNormalized();
+
+    return {
+      accountId: response.account_number,
+      balance: parseFloat(response.cash),
+      buyingPower: parseFloat(response.buying_power),
+      currency: response.currency,
+      marginUsed: parseFloat(response.cash) - parseFloat(response.cash_withdrawable || response.cash),
+      availableMargin: parseFloat(response.buying_power),
+      positions,
+      unrealizedPnL: parseFloat(response.unrealized_pl || 0),
+      realizedPnL: parseFloat(response.realized_pl || 0),
+    };
   }
 }

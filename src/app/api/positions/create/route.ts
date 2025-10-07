@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import Alpaca from '@alpacahq/alpaca-trade-api';
+import { getEncryption } from '@/lib/security/encryption';
+import { AlpacaClient } from '@/lib/brokers/alpaca/AlpacaClient';
+import { orderTracker } from '@/lib/services/OrderTracker';
 import crypto from 'crypto';
 
 interface CreatePositionRequest {
@@ -66,11 +68,11 @@ export async function POST(request: NextRequest) {
 
     // Handle Alpaca execution
     if (data.source === 'alpaca_live' || data.source === 'alpaca_paper') {
-      // Get broker connection
+      // Get broker connection - use the specific source type
       const brokerConnection = await prisma.broker_connections.findFirst({
         where: {
           userId: userId,
-          broker: 'alpaca',
+          broker: data.source, // Use 'alpaca_paper' or 'alpaca_live' from request
           isActive: true
         }
       });
@@ -82,55 +84,98 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Parse credentials
+      // Decrypt and parse credentials
+      const encryption = getEncryption();
       let credentials;
       try {
-        credentials = JSON.parse(brokerConnection.credentials);
-      } catch {
-        const parts = brokerConnection.credentials.split(':');
-        if (parts.length >= 2) {
-          credentials = {
-            apiKeyId: parts[0],
-            secretKey: parts[1]
-          };
-        } else {
-          return NextResponse.json(
-            { error: 'Invalid Alpaca credentials format' },
-            { status: 400 }
-          );
-        }
+        credentials = encryption.decryptObject(brokerConnection.credentials);
+      } catch (error) {
+        console.error('Failed to decrypt Alpaca credentials:', error);
+        return NextResponse.json(
+          { error: 'Failed to decrypt broker credentials' },
+          { status: 500 }
+        );
       }
 
-      // Initialize Alpaca client
-      const alpaca = new Alpaca({
-        keyId: credentials.apiKeyId,
+      // Initialize Alpaca client with adapter
+      const alpacaClient = new AlpacaClient({
+        apiKeyId: credentials.apiKeyId,
         secretKey: credentials.secretKey,
-        paper: data.source === 'alpaca_paper',
-        usePolygon: false
+        paperTrading: data.source === 'alpaca_paper'
       });
 
       try {
-        // Place order with Alpaca
-        const orderParams: any = {
+        // Connect to broker
+        await alpacaClient.connect();
+
+        // Submit order using adapter (normalized interface)
+        const orderRequest = {
           symbol: data.symbol,
-          qty: data.quantity,
+          quantity: data.quantity,
           side: data.side,
           type: data.orderType,
-          time_in_force: data.timeInForce
+          timeInForce: data.timeInForce,
+          price: data.limitPrice,
+          stopPrice: data.stopPrice
         };
 
-        if (data.orderType === 'limit' || data.orderType === 'stop_limit') {
-          orderParams.limit_price = data.limitPrice;
-        }
+        // Log submission attempt
+        const submissionId = crypto.randomUUID();
+        await prisma.order_submissions.create({
+          data: {
+            id: submissionId,
+            userId: userId,
+            broker: data.source,
+            symbol: data.symbol,
+            side: data.side,
+            qty: data.quantity,
+            orderType: data.orderType,
+            submittedAt: new Date(),
+            requestPayload: orderRequest,
+            success: false // Will update after submission
+          }
+        });
 
-        if (data.orderType === 'stop' || data.orderType === 'stop_limit') {
-          orderParams.stop_price = data.stopPrice;
-        }
+        // Submit order and get normalized response
+        const normalizedOrder = await alpacaClient.submitOrderTracked(orderRequest);
 
-        const order = await alpaca.createOrder(orderParams);
-        brokerOrderId = order.id;
-        status = order.status === 'filled' ? 'open' : 'pending';
-        fillPrice = order.filled_avg_price ? parseFloat(order.filled_avg_price) : null;
+        console.log('[CREATE POSITION] Order submitted:', {
+          orderId: normalizedOrder.orderId,
+          status: normalizedOrder.status,
+          filledAvgPrice: normalizedOrder.filledAvgPrice,
+          filledQty: normalizedOrder.filledQuantity
+        });
+
+        // Update submission record with success
+        await prisma.order_submissions.update({
+          where: { id: submissionId },
+          data: {
+            success: true,
+            brokerOrderId: normalizedOrder.orderId,
+            brokerResponse: normalizedOrder.rawBrokerData
+          }
+        });
+
+        brokerOrderId = normalizedOrder.orderId;
+
+        // Start tracking this order
+        orderTracker.trackOrder(
+          alpacaClient,
+          normalizedOrder.orderId,
+          userId,
+          data.orderType
+        ).catch(error => {
+          console.error('[OrderTracker] Failed to start tracking:', error);
+        });
+
+        // Set initial status based on order status
+        if (normalizedOrder.status === 'filled') {
+          status = 'open';
+          fillPrice = normalizedOrder.filledAvgPrice || null;
+        } else {
+          status = 'pending';
+          fillPrice = null;
+        }
       } catch (error: any) {
         console.error('Alpaca order error:', error);
 
@@ -160,7 +205,7 @@ export async function POST(request: NextRequest) {
         assetType: 'stock',
         direction: data.side === 'buy' ? 'long' : 'short',
         status: status,
-        currentQuantity: data.quantity,
+        currentQuantity: status === 'open' ? data.quantity : 0,
         avgEntryPrice: fillPrice || data.limitPrice || 0,
         stopLoss: data.stopLoss,
         takeProfit: data.takeProfit,
@@ -168,7 +213,10 @@ export async function POST(request: NextRequest) {
         unrealizedPnl: 0,
         totalFees: 0,
         netPnl: 0,
-        openedAt: new Date()
+        openedAt: new Date(),
+        broker: data.source === 'external' ? data.externalBroker : data.source,
+        brokerPositionId: brokerOrderId,
+        lastSyncedAt: status === 'open' ? new Date() : null
       }
     });
 

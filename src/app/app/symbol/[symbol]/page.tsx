@@ -7,6 +7,7 @@ import { PageContent } from "@/components/layout/PageContent";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import { NewPositionModal, type NewPositionData } from "@/components/positions/NewPositionModal";
 import { LocalChart } from "@/components/charts/LocalChart";  // Using lightweight-charts v5 local dependency
@@ -184,10 +185,7 @@ export default function StockPage() {
     return (
       <PageContent>
         <div className="min-h-[70vh] flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-            <p className="text-sm dark:text-gray-400 text-gray-600">Validating symbol...</p>
-          </div>
+          <Spinner text="Validating symbol..." />
         </div>
       </PageContent>
     );

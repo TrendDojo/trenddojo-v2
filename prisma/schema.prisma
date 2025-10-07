@@ -94,37 +94,41 @@ model position_notes {
 }
 
 model positions {
-  id              String           @id
-  strategyId      String
-  symbol          String
-  assetType       String           @default("stock")
-  direction       String           @default("long")
-  status          String           @default("open")
-  currentQuantity Decimal          @default(0) @db.Decimal(15, 6)
-  avgEntryPrice   Decimal?         @db.Decimal(15, 6)
-  avgExitPrice    Decimal?         @db.Decimal(15, 6)
-  stopLoss        Decimal?         @db.Decimal(15, 6)
-  takeProfit      Decimal?         @db.Decimal(15, 6)
-  trailingStop    Decimal?         @db.Decimal(15, 6)
-  realizedPnl     Decimal          @default(0) @db.Decimal(15, 2)
-  unrealizedPnl   Decimal          @default(0) @db.Decimal(15, 2)
-  totalFees       Decimal          @default(0) @db.Decimal(15, 2)
-  netPnl          Decimal          @default(0) @db.Decimal(15, 2)
-  maxGainPercent  Decimal?         @db.Decimal(5, 2)
-  maxLossPercent  Decimal?         @db.Decimal(5, 2)
-  holdingDays     Int?
-  rMultiple       Decimal?         @db.Decimal(5, 2)
-  openedAt        DateTime         @default(now())
-  closedAt        DateTime?
-  lastExecutionAt DateTime?
-  executions      executions[]
-  position_notes  position_notes[]
-  strategies      strategies       @relation(fields: [strategyId], references: [id], onDelete: Cascade)
-  trade_plans     trade_plans[]
+  id                String           @id
+  strategyId        String
+  symbol            String
+  assetType         String           @default("stock")
+  direction         String           @default("long")
+  status            String           @default("open")
+  currentQuantity   Decimal          @default(0) @db.Decimal(15, 6)
+  avgEntryPrice     Decimal?         @db.Decimal(15, 6)
+  avgExitPrice      Decimal?         @db.Decimal(15, 6)
+  stopLoss          Decimal?         @db.Decimal(15, 6)
+  takeProfit        Decimal?         @db.Decimal(15, 6)
+  trailingStop      Decimal?         @db.Decimal(15, 6)
+  realizedPnl       Decimal          @default(0) @db.Decimal(15, 2)
+  unrealizedPnl     Decimal          @default(0) @db.Decimal(15, 2)
+  totalFees         Decimal          @default(0) @db.Decimal(15, 2)
+  netPnl            Decimal          @default(0) @db.Decimal(15, 2)
+  maxGainPercent    Decimal?         @db.Decimal(5, 2)
+  maxLossPercent    Decimal?         @db.Decimal(5, 2)
+  holdingDays       Int?
+  rMultiple         Decimal?         @db.Decimal(5, 2)
+  openedAt          DateTime         @default(now())
+  closedAt          DateTime?
+  lastExecutionAt   DateTime?
+  brokerPositionId  String?
+  broker            String?
+  lastSyncedAt      DateTime?
+  executions        executions[]
+  position_notes    position_notes[]
+  strategies        strategies       @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  trade_plans       trade_plans[]
 
   @@index([status])
   @@index([strategyId])
   @@index([symbol])
+  @@index([broker, symbol])
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -310,4 +314,57 @@ model users {
   portfolios               portfolios[]
   risk_settings            risk_settings[]
   trade_checklist_items    trade_checklist_items[]
+  broker_orders            broker_orders[]
+  order_submissions        order_submissions[]
+}
+
+/// Tracks actual order state from broker (synced via polling/webhooks)
+model broker_orders {
+  id              String    @id
+  userId          String
+  broker          String
+  brokerOrderId   String    @unique
+  symbol          String
+  side            String
+  qty             Decimal   @db.Decimal(15, 6)
+  orderType       String
+  status          String
+  limitPrice      Decimal?  @db.Decimal(15, 6)
+  stopPrice       Decimal?  @db.Decimal(15, 6)
+  filledQty       Decimal?  @db.Decimal(15, 6)
+  filledAvgPrice  Decimal?  @db.Decimal(15, 6)
+  submittedAt     DateTime
+  acceptedAt      DateTime?
+  filledAt        DateTime?
+  canceledAt      DateTime?
+  lastSyncedAt    DateTime  @default(now())
+  rawData         Json?
+  users           users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([brokerOrderId])
+  @@index([status])
+  @@index([submittedAt])
+}
+
+/// Audit log of order submission attempts (what we sent to broker)
+model order_submissions {
+  id              String    @id
+  userId          String
+  broker          String
+  symbol          String
+  side            String
+  qty             Decimal   @db.Decimal(15, 6)
+  orderType       String
+  submittedAt     DateTime  @default(now())
+  requestPayload  Json
+  brokerResponse  Json?
+  brokerOrderId   String?
+  success         Boolean   @default(false)
+  errorMessage    String?
+  users           users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([submittedAt])
+  @@index([brokerOrderId])
 }

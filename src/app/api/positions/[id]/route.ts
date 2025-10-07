@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 
 const prisma = new PrismaClient()
 
@@ -11,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session: any = await auth()
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -20,9 +19,16 @@ export async function GET(
       )
     }
 
-    const position = await prisma.positions.findUnique({
+    const userId = session.user.id
+
+    const position = await prisma.positions.findFirst({
       where: {
         id: params.id,
+        strategies: {
+          portfolios: {
+            userId: userId,
+          },
+        },
       },
       include: {
         strategies: {
@@ -47,17 +53,30 @@ export async function GET(
 
     if (!position) {
       return NextResponse.json(
-        { error: 'Position not found' },
+        { error: 'Position not found or access denied' },
         { status: 404 }
       )
     }
 
     // Calculate current metrics
-    const currentPrice = position.currentPrice || position.avgEntryPrice
-    const currentValue = currentPrice * position.currentQuantity
-    const costBasis = position.avgEntryPrice * position.currentQuantity
-    const unrealizedPnl = currentValue - costBasis
-    const unrealizedPnlPercent = (unrealizedPnl / costBasis) * 100
+    const avgEntry = Number(position.avgEntryPrice || 0)
+    const quantity = Number(position.currentQuantity || 0)
+    const unrealizedPnl = Number(position.unrealizedPnl || 0)
+
+    // Calculate current price from unrealized P&L if available, otherwise use entry price
+    let currentPrice = avgEntry
+    if (quantity > 0 && unrealizedPnl !== 0) {
+      // Reverse calculate: currentPrice = avgEntry + (unrealizedPnl / quantity)
+      if (position.direction === 'long') {
+        currentPrice = avgEntry + (unrealizedPnl / quantity)
+      } else {
+        currentPrice = avgEntry - (unrealizedPnl / quantity)
+      }
+    }
+
+    const currentValue = currentPrice * quantity
+    const costBasis = avgEntry * quantity
+    const unrealizedPnlPercent = costBasis > 0 ? (unrealizedPnl / costBasis) * 100 : 0
 
     // Calculate holding days
     const holdingDays = Math.floor(
@@ -68,37 +87,37 @@ export async function GET(
     const response = {
       id: position.id,
       symbol: position.symbol,
-      name: position.name,
+      name: position.symbol, // Use symbol as name if name doesn't exist
       strategy: position.strategies?.name || 'Manual Entry',
       strategyId: position.strategyId,
       direction: position.direction,
       status: position.status,
-      currentQuantity: position.currentQuantity,
-      avgEntryPrice: position.avgEntryPrice,
+      currentQuantity: Number(position.currentQuantity),
+      avgEntryPrice: avgEntry,
       currentPrice: currentPrice,
-      stopLoss: position.stopLoss,
-      takeProfit: position.takeProfit,
+      stopLoss: position.stopLoss ? Number(position.stopLoss) : null,
+      takeProfit: position.takeProfit ? Number(position.takeProfit) : null,
       unrealizedPnl: unrealizedPnl,
       unrealizedPnlPercent: unrealizedPnlPercent,
-      realizedPnl: position.realizedPnl || 0,
-      totalFees: position.totalFees || 0,
+      realizedPnl: Number(position.realizedPnl || 0),
+      totalFees: Number(position.totalFees || 0),
       openedAt: position.openedAt,
       closedAt: position.closedAt,
       lastExecutionAt: position.executions?.[0]?.executedAt || position.openedAt,
       holdingDays: holdingDays,
-      maxGainPercent: position.maxGain || 0,
-      maxLossPercent: position.maxLoss || 0,
-      rMultiple: position.riskRewardRatio || 0,
-      source: position.source,
-      brokerAccountId: position.brokerAccountId,
+      maxGainPercent: position.maxGainPercent ? Number(position.maxGainPercent) : 0,
+      maxLossPercent: position.maxLossPercent ? Number(position.maxLossPercent) : 0,
+      rMultiple: position.rMultiple ? Number(position.rMultiple) : 0,
+      source: position.broker || 'manual',
+      brokerAccountId: position.brokerPositionId || null,
       executions: position.executions.map(exec => ({
         id: exec.id,
         date: exec.executedAt,
-        type: exec.executionType,
-        quantity: exec.quantity,
-        price: exec.price,
-        fees: exec.fees || 0,
-        notes: exec.notes,
+        type: exec.type, // Field is 'type' not 'executionType'
+        quantity: Number(exec.quantity),
+        price: Number(exec.price),
+        fees: Number(exec.totalFees || 0), // Field is 'totalFees' not 'fees'
+        notes: null, // Notes are in position_notes table
         brokerOrderId: exec.brokerOrderId,
       })),
       notes: position.position_notes.map(note => ({

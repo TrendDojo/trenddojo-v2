@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Atom, Edit3, Building2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns } from "lucide-react";
@@ -8,6 +8,7 @@ import { NewPositionModal, type NewPositionData } from "@/components/positions/N
 import { PageContent } from "@/components/layout/PageContent";
 import { Card } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { tableStyles, filterStyles, getFilterButton, getTableCell, getTableRow } from "@/lib/tableStyles";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { PositionStatusBar, ClosedPositionStatusBar } from "@/components/positions/PositionStatusBar";
@@ -133,6 +134,9 @@ export default function PositionsPage() {
   });
   const [showIndicatorKey, setShowIndicatorKey] = useState(false);
   const [showNewPositionModal, setShowNewPositionModal] = useState(false);
+  const [realPositions, setRealPositions] = useState<Position[]>([]);
+  const [isLoadingPositions, setIsLoadingPositions] = useState(false);
+  const [isLoadingBroker, setIsLoadingBroker] = useState(true);
 
   // Hide risk and value columns when viewing closed positions
   const effectiveVisibleColumns = {
@@ -169,12 +173,82 @@ export default function PositionsPage() {
     return remainingRisk - profitsTaken;
   };
   
-  // Mock broker connection status (in real app, would come from API/context)
+  // Broker connection status (fetched from API)
   const [hasBrokerConnection, setHasBrokerConnection] = useState({
     live: false,
     paper: false,
     dev: true // Dev always has mock data
   });
+
+  // Load broker connection status on mount
+  useEffect(() => {
+    async function loadBrokerStatus() {
+      try {
+        const response = await fetch('/api/brokers/connect');
+        if (response.ok) {
+          const data = await response.json();
+          setHasBrokerConnection({
+            live: data.connections.some((c: any) => c.broker === 'alpaca_live' && c.status === 'connected'),
+            paper: data.connections.some((c: any) => c.broker === 'alpaca_paper' && c.status === 'connected'),
+            dev: true
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load broker status:', error);
+      } finally {
+        setIsLoadingBroker(false);
+      }
+    }
+    loadBrokerStatus();
+  }, []);
+
+  // Load positions when account type changes
+  useEffect(() => {
+    async function loadPositions() {
+      if (activeAccountType === 'dev') {
+        // Dev mode uses mock data
+        return;
+      }
+
+      setIsLoadingPositions(true);
+      try {
+        const response = await fetch('/api/positions');
+        if (response.ok) {
+          const positions = await response.json();
+          console.log('[POSITIONS PAGE] Loaded positions:', positions);
+          // Map API response to Position interface
+          setRealPositions(positions.map((p: any) => ({
+            id: p.id,
+            symbol: p.symbol,
+            name: p.symbol, // API doesn't return company name yet
+            side: p.direction === 'long' ? 'long' : 'short',
+            quantity: parseFloat(p.currentQuantity),
+            originalQuantity: parseFloat(p.currentQuantity), // TODO: Track original
+            entryPrice: parseFloat(p.avgEntryPrice),
+            currentPrice: parseFloat(p.avgEntryPrice), // TODO: Get live price
+            stopLoss: p.stopLoss ? parseFloat(p.stopLoss) : undefined,
+            takeProfit: p.takeProfit ? parseFloat(p.takeProfit) : undefined,
+            pnl: parseFloat(p.unrealizedPnl || 0),
+            pnlPercent: 0, // TODO: Calculate
+            value: parseFloat(p.avgEntryPrice) * parseFloat(p.currentQuantity),
+            openDate: p.openedAt,
+            closedDate: p.closedAt,
+            strategy: p.strategies?.name || 'Unknown',
+            strategyId: p.strategyId,
+            status: p.status as "active" | "pending" | "closed",
+            broker: 'alpaca_paper', // TODO: Get from executions
+            tradingMode: 'paper',
+            source: 'broker_api'
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to load positions:', error);
+      } finally {
+        setIsLoadingPositions(false);
+      }
+    }
+    loadPositions();
+  }, [activeAccountType]);
 
   // Get positions based on account type
   const getPositionsForAccount = (): Position[] => {
@@ -188,8 +262,8 @@ export default function PositionsPage() {
       // No paper broker connected
       return [];
     }
-    // Would fetch real positions from API here
-    return [];
+    // Return real positions from API
+    return realPositions;
   };
 
   // Mock positions data for dev mode
@@ -199,20 +273,34 @@ export default function PositionsPage() {
       symbol: "AAPL",
       name: "Apple Inc.",
       side: "long",
+      direction: "long",
       quantity: 100,
+      currentQuantity: 100,
       originalQuantity: 100,
       entryPrice: 175.50,
+      avgEntryPrice: 175.50,
       currentPrice: 182.30,
       stopLoss: 170.00,
       takeProfit: 190.00,
       targetPrice: 195.00,
       pnl: 680.00,
+      unrealizedPnl: 680.00,
+      realizedPnl: 0,
+      netPnl: 680.00,
       pnlPercent: 3.87,
       value: 18230.00,
+      totalFees: 0,
+      maxGainPercent: 3.87,
+      maxLossPercent: 0,
+      holdingDays: 23,
+      rMultiple: 1.23,
       openDate: "2024-01-15",
+      openedAt: "2024-01-15T09:30:00Z",
+      lastExecutionAt: "2024-01-15T09:30:00Z",
       strategy: "Momentum",
       strategyId: "1",
       status: "active",
+      assetType: "stock",
       broker: "alpaca_paper",
       tradingMode: "paper",
       source: "broker_api"
@@ -704,6 +792,10 @@ export default function PositionsPage() {
 
   const positions = getPositionsForAccount();
 
+  // Calculate counts for tabs
+  const activeCount = positions.filter(p => p.status === "active").length;
+  const pendingCount = positions.filter(p => p.status === "pending").length;
+
   const filteredPositions = positions.filter(p => {
     const statusMatch = p.status === filterView;
     const strategyMatch = filterStrategy === "all" || p.strategy === filterStrategy;
@@ -766,13 +858,50 @@ export default function PositionsPage() {
             <PositionRulesTab />
           ) : (
             <>
+          {/* Summary Cards */}
+          <div className="flex flex-wrap gap-16">
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Positions</p>
+              <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
+                {filteredPositions.length === 0 ? '–' : filteredPositions.length}
+              </p>
+            </Card>
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Total Value</p>
+              <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
+                {totalValue === 0 ? '–' : `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              </p>
+            </Card>
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Combined Risk</p>
+              <p className="text-2xl font-bold mt-1 text-warning">
+                {totalRisk === 0 ? '–' : `$${totalRisk.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                {totalRisk > 0 && totalValue > 0 && (
+                  <span className="text-base font-normal ml-2">({((totalRisk / totalValue) * 100).toFixed(1)}%)</span>
+                )}
+              </p>
+            </Card>
+            <Card>
+              <p className="text-sm dark:text-gray-400 text-gray-600">Active P&L</p>
+              <p className={cn(
+                "text-2xl font-bold mt-1",
+                totalPnL >= 0 ? "text-success" : "text-danger"
+              )}>
+                {totalPnL === 0 ? '–' : `${totalPnL >= 0 ? "+" : ""}$${Math.abs(totalPnL).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              </p>
+            </Card>
+          </div>
+
+          {/* Spacer for better visual separation */}
+          <div className="pt-2"></div>
+
           {/* Status Filters and New Position Button */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <Tabs
                 tabs={[
-                  { id: "active", label: "Active" },
-                  { id: "pending", label: "Pending" },
+                  { id: "active", label: `Active${activeCount > 0 ? ` (${activeCount})` : ''}` },
+                  { id: "pending", label: `Pending${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
                   { id: "closed", label: "Closed" }
                 ]}
                 activeTab={filterView}
@@ -816,47 +945,6 @@ export default function PositionsPage() {
               New Position
             </Button>
           </div>
-
-          {/* Summary Cards */}
-          <div className="flex flex-wrap gap-16">
-            <Card>
-              <p className="text-sm dark:text-gray-400 text-gray-600">Positions</p>
-              <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
-                {filteredPositions.length}
-              </p>
-            </Card>
-            <Card>
-              <p className="text-sm dark:text-gray-400 text-gray-600">Total Value</p>
-              <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
-                ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </p>
-            </Card>
-            <Card>
-              <p className="text-sm dark:text-gray-400 text-gray-600">Combined Risk</p>
-              <p className="text-2xl font-bold mt-1 text-warning">
-                ${totalRisk.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                <span className="text-base font-normal ml-2">({totalValue > 0 ? `${((totalRisk / totalValue) * 100).toFixed(1)}%` : '0%'})</span>
-              </p>
-            </Card>
-            <Card>
-              <p className="text-sm dark:text-gray-400 text-gray-600">Active P&L</p>
-              <p className={cn(
-                "text-2xl font-bold mt-1",
-                totalPnL >= 0 ? "text-success" : "text-danger"
-              )}>
-                {totalPnL >= 0 ? "+" : ""}${Math.abs(totalPnL).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </p>
-            </Card>
-            <Card>
-              <p className="text-sm dark:text-gray-400 text-gray-600">Win Rate</p>
-              <p className="text-2xl font-bold dark:text-white text-gray-900 mt-1">
-                {((filteredPositions.filter(p => p.pnl > 0).length / filteredPositions.length) * 100).toFixed(0)}%
-              </p>
-            </Card>
-          </div>
-
-          {/* Spacer for better visual separation */}
-          <div className="pt-2"></div>
 
           {/* Filter and Actions Bar */}
           <div className="flex items-center justify-between relative">
@@ -1131,11 +1219,13 @@ export default function PositionsPage() {
                 <tbody className={tableStyles.tbody}>
                   {paginatedPositions.length === 0 ? (
                     <tr>
-                      <td colSpan={Object.values(effectiveVisibleColumns).filter(v => v).length} className="px-4 py-12 text-center">
-                        <div className="max-w-md mx-auto">
-                          {((activeAccountType === "live" && !hasBrokerConnection.live) ||
+                      <td colSpan={Object.values(effectiveVisibleColumns).filter(v => v).length} className="px-4 text-center">
+                        <div className="min-h-[50vh] flex items-center justify-center">
+                          {isLoadingBroker || isLoadingPositions ? (
+                            <Spinner text="Loading positions..." />
+                          ) : ((activeAccountType === "live" && !hasBrokerConnection.live) ||
                             (activeAccountType === "paper" && !hasBrokerConnection.paper)) ? (
-                            <>
+                            <div className="max-w-md mx-auto">
                               <svg className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
@@ -1150,9 +1240,9 @@ export default function PositionsPage() {
                                   Connect Broker
                                 </Button>
                               </Link>
-                            </>
+                            </div>
                           ) : (
-                            <>
+                            <div className="max-w-md mx-auto">
                               <svg className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                               </svg>
@@ -1169,7 +1259,7 @@ export default function PositionsPage() {
                               >
                                 Create Position
                               </Button>
-                            </>
+                            </div>
                           )}
                         </div>
                       </td>
@@ -1182,7 +1272,7 @@ export default function PositionsPage() {
                         getTableRow(index, index === 0),
                         selectedPositions.includes(position.id) && "bg-indigo-50 dark:bg-indigo-950/20"
                       )}
-                      onClick={index === 0 ? () => router.push(`/positions/${position.id}`) : undefined}
+                      onClick={index === 0 ? () => router.push(`/app/positions/${position.id}`) : undefined}
                     >
                       {effectiveVisibleColumns.symbol && (
                         <td className={tableStyles.td}>
@@ -1190,7 +1280,7 @@ export default function PositionsPage() {
                             <div className="flex items-center gap-2">
                               {index === 0 ? (
                                 <Link
-                                  href={`/positions/${position.id}`}
+                                  href={`/app/positions/${position.id}`}
                                   className="text-lg font-bold dark:text-white text-gray-900 hover:text-indigo-600 dark:hover:text-indigo-400"
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1380,7 +1470,7 @@ export default function PositionsPage() {
                               <div className="py-2">
                                 <button
                                   onClick={() => {
-                                    router.push(`/positions/${position.id}`);
+                                    router.push(`/app/positions/${position.id}`);
                                     setActionDropdownOpen(null);
                                   }}
                                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors dark:text-gray-300 text-gray-700"
@@ -1450,7 +1540,33 @@ export default function PositionsPage() {
               setShowNewPositionModal(false);
 
               // Refresh positions list
-              window.location.reload();
+              const positionsResponse = await fetch('/api/positions');
+              if (positionsResponse.ok) {
+                const positions = await positionsResponse.json();
+                setRealPositions(positions.map((p: any) => ({
+                  id: p.id,
+                  symbol: p.symbol,
+                  name: p.symbol,
+                  side: p.direction === 'long' ? 'long' : 'short',
+                  quantity: parseFloat(p.currentQuantity),
+                  originalQuantity: parseFloat(p.currentQuantity),
+                  entryPrice: parseFloat(p.avgEntryPrice),
+                  currentPrice: parseFloat(p.avgEntryPrice),
+                  stopLoss: p.stopLoss ? parseFloat(p.stopLoss) : undefined,
+                  takeProfit: p.takeProfit ? parseFloat(p.takeProfit) : undefined,
+                  pnl: parseFloat(p.unrealizedPnl || 0),
+                  pnlPercent: 0,
+                  value: parseFloat(p.avgEntryPrice) * parseFloat(p.currentQuantity),
+                  openDate: p.openedAt,
+                  closedDate: p.closedAt,
+                  strategy: p.strategies?.name || 'Unknown',
+                  strategyId: p.strategyId,
+                  status: p.status as "active" | "pending" | "closed",
+                  broker: 'alpaca_paper',
+                  tradingMode: 'paper',
+                  source: 'broker_api'
+                })));
+              }
             } catch (error) {
               console.error('Error creating position:', error);
               alert(error instanceof Error ? error.message : 'Failed to create position');

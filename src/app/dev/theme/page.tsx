@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageContent } from "@/components/layout/PageContent";
 import { Button } from "@/components/ui/Button";
+import { Spinner, PageSpinner, SectionSpinner, InlineSpinner, ButtonSpinner } from "@/components/ui/Spinner";
 import { Card, Alert, Panel } from "@/components/ui/Panel";
 import { Modal, ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Textarea, Select, Checkbox, Radio } from "@/components/ui/FormField";
@@ -14,7 +15,7 @@ import { panelStyles, alertStyles } from "@/lib/panelStyles";
 import { checkboxStyles, radioStyles } from "@/lib/formStyles";
 import { ChevronDown, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, Filter, Columns, Download as DownloadIcon, RefreshCw, MoreVertical } from "lucide-react";
 // Icon system - using Lucide icons directly with Tailwind sizing
-import { Info, AlertTriangle, XCircle, CheckCircle, Gauge, ArrowUpWideNarrow, MapPin, Atom, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, CreditCard, Plus, Edit, Trash, Download, Save, Eye, Copy, Share2 } from "lucide-react";
+import { Info, AlertTriangle, XCircle, CheckCircle, Gauge, ArrowUpWideNarrow, MapPin, Atom, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, CreditCard, Plus, Edit, Trash, Download, Save, Eye, Copy, Share2, Activity, Zap } from "lucide-react";
 import { Tabs } from "@/components/ui/Tabs";
 import { GlobalRefreshIndicator } from "@/components/ui/GlobalRefreshIndicator";
 import { refreshCoordinator } from "@/lib/refresh/RefreshCoordinator";
@@ -933,6 +934,101 @@ function AlertsSection() {
   );
 }
 
+// Spinners Section
+function SpinnersSection() {
+  return (
+    <Card>
+      <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Spinners (Loading Indicators)</h2>
+
+      <div className="space-y-6">
+        <div>
+          <p className="text-sm dark:text-gray-500 text-gray-500 mb-4">Sizes (using spinnerStyles.ts)</p>
+          <div className="flex items-end gap-6">
+            <div className="text-center">
+              <Spinner size="xs" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">xs</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="sm" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">sm</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="md" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">md</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="lg" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">lg</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="xl" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">xl</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm dark:text-gray-500 text-gray-500 mb-4">Colors</p>
+          <div className="flex items-end gap-6">
+            <div className="text-center">
+              <Spinner size="md" color="primary" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">primary</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="md" color="secondary" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">secondary</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="md" color="success" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">success</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="md" color="warning" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">warning</p>
+            </div>
+            <div className="text-center">
+              <Spinner size="md" color="danger" centered={false} />
+              <p className="text-xs text-gray-500 mt-2">danger</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm dark:text-gray-500 text-gray-500 mb-4">With Text</p>
+          <div className="space-y-4">
+            <Spinner size="lg" text="Loading..." />
+            <Spinner size="md" color="secondary" text="Processing your request..." />
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm dark:text-gray-500 text-gray-500 mb-4">Convenience Components</p>
+          <div className="space-y-4">
+            <div className="border dark:border-gray-700 rounded-lg p-4">
+              <p className="text-xs text-gray-500 mb-3">PageSpinner</p>
+              <PageSpinner text="Loading page..." />
+            </div>
+            <div className="border dark:border-gray-700 rounded-lg p-4">
+              <p className="text-xs text-gray-500 mb-3">SectionSpinner</p>
+              <SectionSpinner text="Loading section..." />
+            </div>
+            <div className="border dark:border-gray-700 rounded-lg p-4 flex items-center gap-3">
+              <p className="text-xs text-gray-500">InlineSpinner:</p>
+              <InlineSpinner />
+            </div>
+            <div className="border dark:border-gray-700 rounded-lg p-4">
+              <Button variant="primary" className="inline-flex items-center gap-2">
+                <ButtonSpinner />
+                Loading...
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 // Buttons & Badges Section
 function ButtonsBadgesSection() {
   return (
@@ -945,37 +1041,65 @@ function ButtonsBadgesSection() {
           <div>
             <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Variants (using buttonStyles.ts)</p>
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary">Primary Button</Button>
-              <Button variant="secondary">Secondary Button</Button>
-              <Button variant="success">Success Button</Button>
-              <Button variant="danger">Danger Button</Button>
-              <Button variant="ghost">Ghost Button</Button>
+              <Button variant="primary">
+                <Plus className="w-4 h-4 mr-2 inline" />
+                Primary Button
+              </Button>
+              <Button variant="secondary">
+                <Activity className="w-4 h-4 mr-2 inline" />
+                Secondary Button
+              </Button>
+              <Button variant="success">
+                <CheckCircle className="w-4 h-4 mr-2 inline" />
+                Success Button
+              </Button>
+              <Button variant="danger">
+                <XCircle className="w-4 h-4 mr-2 inline" />
+                Danger Button
+              </Button>
+              <Button variant="ghost">
+                <Eye className="w-4 h-4 mr-2 inline" />
+                Ghost Button
+              </Button>
             </div>
           </div>
 
           <div>
             <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Sizes</p>
             <div className="flex flex-wrap items-center gap-3">
-              <Button variant="primary" size="sm">Small</Button>
-              <Button variant="primary" size="md">Medium</Button>
-              <Button variant="primary" size="lg">Large</Button>
+              <Button variant="primary" size="sm">
+                <Zap className="w-3 h-3 mr-1.5 inline" />
+                Small
+              </Button>
+              <Button variant="primary" size="md">
+                <Zap className="w-4 h-4 mr-2 inline" />
+                Medium
+              </Button>
+              <Button variant="primary" size="lg">
+                <Zap className="w-5 h-5 mr-2 inline" />
+                Large
+              </Button>
             </div>
           </div>
 
           <div>
-            <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">With Icons</p>
+            <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">Common Actions</p>
             <div className="flex flex-wrap gap-3">
               <Button variant="primary">
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4 mr-2 inline" />
                 Add New
               </Button>
               <Button variant="success">
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="w-4 h-4 mr-2 inline" />
                 Save Changes
               </Button>
               <Button variant="danger">
-                <Trash className="w-4 h-4 mr-2" />
+                <Trash className="w-4 h-4 mr-2 inline" />
                 Delete
+              </Button>
+              <Button variant="secondary">
+                <ChevronLeft className="w-4 h-4 mr-2 inline" />
+                Back
               </Button>
             </div>
           </div>
@@ -983,9 +1107,13 @@ function ButtonsBadgesSection() {
           <div>
             <p className="text-sm dark:text-gray-500 text-gray-500 mb-3">States</p>
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary" disabled>Disabled</Button>
-              <button className={cn(buttonStyles.base, buttonStyles.variant.primary, buttonStyles.size.md, "opacity-50 cursor-wait")}>
-                Loading...
+              <Button variant="primary" disabled>
+                <Plus className="w-4 h-4 mr-2 inline" />
+                Disabled
+              </Button>
+              <button className={cn(buttonStyles.base, buttonStyles.variant.primary, buttonStyles.size.md, "inline-flex items-center")}>
+                <ButtonSpinner />
+                <span className="ml-2">Loading...</span>
               </button>
             </div>
           </div>
@@ -2055,6 +2183,7 @@ export default function ThemePage() {
   const tabs = [
     { id: "text-icons", label: "Text & Icons" },
     { id: "colors", label: "Colors" },
+    { id: "spinners", label: "Spinners" },
     { id: "buttons-badges", label: "Buttons & Badges" },
     { id: "panels-borders", label: "Panels & Borders" },
     { id: "tables", label: "Tables" },
@@ -2080,6 +2209,7 @@ export default function ThemePage() {
         {/* Tab Content */}
         {activeTab === "text-icons" && <TextIconsSection />}
         {activeTab === "colors" && <ColorsSection />}
+        {activeTab === "spinners" && <SpinnersSection />}
         {activeTab === "buttons-badges" && <ButtonsBadgesSection />}
         {activeTab === "panels-borders" && <PanelsBordersSection />}
         {activeTab === "tables" && <TablesSection />}

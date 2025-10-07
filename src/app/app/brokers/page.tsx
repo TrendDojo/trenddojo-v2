@@ -183,6 +183,7 @@ export default function BrokersPage() {
         const response = await fetch('/api/brokers/connect');
         if (response.ok) {
           const data = await response.json();
+          console.log('[BROKERS PAGE] Loaded connections:', data.connections);
 
           // Update broker states based on database connections
           setBrokers(prev => prev.map(broker => {
@@ -191,6 +192,12 @@ export default function BrokersPage() {
             );
 
             if (connection) {
+              console.log(`[BROKERS PAGE] Found connection for ${broker.id}:`, {
+                status: connection.status,
+                accountInfo: connection.accountInfo,
+                accountId: connection.accountInfo?.accountId,
+                balance: connection.accountInfo?.balance
+              });
               return {
                 ...broker,
                 status: connection.status as ConnectionStatus,
