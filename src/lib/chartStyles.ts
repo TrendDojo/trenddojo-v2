@@ -3,6 +3,10 @@
  *
  * This file defines all chart styles and colors in one place.
  * Changes here will automatically update all charts across the app.
+ *
+ * Chart Controls:
+ * - Use chartControlStyles for timeframe buttons and chart type toggles
+ * - Maintains consistent styling across all chart instances
  */
 
 // ============================================
@@ -199,3 +203,31 @@ export function getChartConfig(isDarkMode: boolean, textColor: string) {
     },
   };
 }
+
+// ============================================
+// CHART CONTROL STYLES
+// ============================================
+
+export const chartControlStyles = {
+  // Container for all controls
+  toolbar: "flex items-center gap-4 mb-3 px-2",
+
+  // Divider between control groups
+  divider: "h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2",
+
+  // Timeframe preset buttons
+  presetButton: {
+    base: "px-2 py-1 min-w-[35px] text-xs",
+    active: "bg-indigo-600 hover:bg-indigo-700 text-white",
+    inactive: "bg-transparent hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300",
+  },
+
+  // Chart type toggle (candles/line)
+  chartTypeToggle: {
+    container: "flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-lg p-1",
+    button: "flex items-center justify-center p-2 rounded-md transition-all",
+    active: "bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm",
+    inactive: "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white",
+    icon: "w-4 h-4",
+  },
+} as const;

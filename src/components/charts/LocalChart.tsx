@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { TrendingUp, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ChartControls, getPresetConfig } from './ChartControls';
+import { chartControlStyles } from '@/lib/chartStyles';
+import { cn } from '@/lib/utils';
 import {
   createChart,
   ColorType,
@@ -597,7 +599,7 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
   return (
     <div ref={containerRef} className={`w-full ${fullHeight ? 'h-full flex flex-col' : ''}`}>
       {/* Chart Toolbar */}
-      <div className="flex items-center gap-4 mb-3 px-2">
+      <div className={chartControlStyles.toolbar}>
         {/* Preset controls */}
         <ChartControls
           selectedPreset={selectedPreset}
@@ -605,34 +607,34 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
           className=""
         />
 
-        {/* Divider with padding */}
-        <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2" />
+        {/* Divider */}
+        <div className={chartControlStyles.divider} />
 
         {/* Chart type toggle buttons */}
-        <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
+        <div className={chartControlStyles.chartTypeToggle.container}>
           <button
             onClick={() => setChartType('candles')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={cn(
+              chartControlStyles.chartTypeToggle.button,
               chartType === 'candles'
-                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }`}
+                ? chartControlStyles.chartTypeToggle.active
+                : chartControlStyles.chartTypeToggle.inactive
+            )}
             title="Candlestick chart"
           >
-            <BarChart2 className="w-4 h-4" />
-            <span>Candles</span>
+            <BarChart2 className={chartControlStyles.chartTypeToggle.icon} />
           </button>
           <button
             onClick={() => setChartType('line')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={cn(
+              chartControlStyles.chartTypeToggle.button,
               chartType === 'line'
-                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }`}
+                ? chartControlStyles.chartTypeToggle.active
+                : chartControlStyles.chartTypeToggle.inactive
+            )}
             title="Line chart"
           >
-            <TrendingUp className="w-4 h-4" />
-            <span>Line</span>
+            <TrendingUp className={chartControlStyles.chartTypeToggle.icon} />
           </button>
         </div>
       </div>

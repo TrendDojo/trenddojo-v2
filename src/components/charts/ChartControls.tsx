@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { BarChart3 } from 'lucide-react';
+import { chartControlStyles } from '@/lib/chartStyles';
 
 interface ChartControlsProps {
   selectedPreset: string;
@@ -68,16 +69,19 @@ export function ChartControls({
         {/* Buttons grouped tightly */}
         <div className="flex gap-0.5">
           {PRESETS.map(preset => (
-            <Button
+            <button
               key={preset.id}
-              variant={selectedPreset === preset.id ? 'primary' : 'ghost'}
-              size="sm"
               onClick={() => onPresetChange(preset.id)}
-              className="px-2 py-1 min-w-[35px] text-xs"
+              className={cn(
+                chartControlStyles.presetButton.base,
+                selectedPreset === preset.id
+                  ? chartControlStyles.presetButton.active
+                  : chartControlStyles.presetButton.inactive
+              )}
               title={`${preset.intervalText} (~${preset.candles} candles)`}
             >
               {preset.label}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
