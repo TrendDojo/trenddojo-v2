@@ -8,6 +8,7 @@ import { alertStyles } from '@/lib/panelStyles';
 import { Search, TrendingUp, Clock, Plus, Zap, Layers, Hand, ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
 import { useSymbolSearch, useLatestPrice, useSymbolValidation } from '@/lib/market-data/client/useMarketData';
 import { useBrokerQuote } from '@/lib/market-data/client/useBrokerQuote';
+import { ChartWrapper } from '@/components/charts/ChartWrapper';
 
 interface NewPositionModalProps {
   isOpen: boolean;
@@ -207,25 +208,31 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full h-[85vh] overflow-hidden flex flex-col lg:flex-row">
         {/* Left Side - Chart Area (2/3 on desktop, full width on mobile) */}
         <div className="w-full lg:w-2/3 p-6 border-b lg:border-b-0 lg:border-r dark:border-slate-700 border-gray-200 flex flex-col">
-          <div
-            className="flex-1 min-h-[400px] rounded-lg flex items-center justify-center"
-            style={{
-              backgroundColor: typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
-                ? 'rgba(148, 163, 184, 0.03)' // Light tint in dark mode (same as chart)
-                : 'rgba(15, 23, 42, 0.03)' // Dark tint in light mode (same as chart)
-            }}
-          >
-            <div className="text-center">
-              <svg className="w-20 h-20 mx-auto mb-4 dark:text-gray-600 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <p className="text-lg font-medium dark:text-white text-gray-900 mb-2">
-                Chart View
-              </p>
-              <p className="text-sm dark:text-gray-400 text-gray-600">
-                Interactive chart will be displayed here
-              </p>
-            </div>
+          <div className="flex-1 min-h-[400px] rounded-lg">
+            {formData.symbol ? (
+              <ChartWrapper symbol={formData.symbol} />
+            ) : (
+              <div
+                className="h-full flex items-center justify-center rounded-lg"
+                style={{
+                  backgroundColor: typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
+                    ? 'rgba(148, 163, 184, 0.03)' // Light tint in dark mode (same as chart)
+                    : 'rgba(15, 23, 42, 0.03)' // Dark tint in light mode (same as chart)
+                }}
+              >
+                <div className="text-center">
+                  <svg className="w-20 h-20 mx-auto mb-4 dark:text-gray-600 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <p className="text-lg font-medium dark:text-white text-gray-900 mb-2">
+                    Select a Symbol
+                  </p>
+                  <p className="text-sm dark:text-gray-400 text-gray-600">
+                    Chart will appear once you select a symbol
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
