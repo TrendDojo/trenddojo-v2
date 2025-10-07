@@ -46,8 +46,8 @@ export const chartColors = {
 export const chartTheme = {
   // Background colors
   background: {
-    light: 'rgba(15, 23, 42, 0.03)',    // Dark tint in light mode
-    dark: 'rgba(148, 163, 184, 0.03)',  // Light tint in dark mode
+    light: 'rgba(15, 23, 42, 0.06)',    // Dark tint in light mode (increased contrast)
+    dark: 'rgba(148, 163, 184, 0.06)',  // Light tint in dark mode (increased contrast)
   },
 
   // Grid colors
@@ -119,7 +119,6 @@ export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 
   return {
     color,
     lineWidth: 2 as const,
-    lineType: 2 as const, // LineType.WithSteps = 2, Simple = 0
     // Area fill configuration
     topColor,
     bottomColor,

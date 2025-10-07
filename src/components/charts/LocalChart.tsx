@@ -388,6 +388,7 @@ export function LocalChart({
         // Get standardized color configs
         const candlestickConfig = getCandlestickConfig(isDarkMode);
         const lineConfig = getLineSeriesConfig(isDarkMode, 'neutral');
+        console.log('Line chart config:', lineConfig); // Debug: verify colors
         const chartLayout = getChartLayout(isDarkMode, textColor);
         const chartGrid = getChartGrid(isDarkMode);
         const crosshairConfig = getCrosshairConfig(isDarkMode);
@@ -795,8 +796,8 @@ export function LocalChart({
       </div>
 
       {/* Chart Container */}
-      <div className={`w-full rounded-lg relative ${fullHeight ? 'flex-1' : ''}`} style={fullHeight ? { minWidth: '100%' } : { height: '400px', minWidth: '100%' }}>
-        <div ref={chartContainerRef} className="w-full h-full rounded-lg overflow-hidden">
+      <div className={`w-full rounded-xl relative ${fullHeight ? 'flex-1' : ''}`} style={fullHeight ? { minWidth: '100%' } : { height: '400px', minWidth: '100%' }}>
+        <div ref={chartContainerRef} className="w-full h-full rounded-xl overflow-hidden">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">
               <Spinner size="md" text="Loading chart data..." />
