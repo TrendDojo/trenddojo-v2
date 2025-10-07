@@ -42,16 +42,34 @@ interface ChartData {
   value?: number;
 }
 
-export function LocalChart({ symbol, fullHeight = false }: { symbol: string; fullHeight?: boolean }) {
+interface PriceLevelProps {
+  stopLoss?: number;
+  takeProfit?: number;
+  onStopLossChange?: (price: number) => void;
+  onTakeProfitChange?: (price: number) => void;
+}
+
+export function LocalChart({
+  symbol,
+  fullHeight = false,
+  stopLoss,
+  takeProfit,
+  onStopLossChange,
+  onTakeProfitChange
+}: { symbol: string; fullHeight?: boolean } & PriceLevelProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
+  const mainSeriesRef = useRef<ISeriesApi<'Candlestick'> | ISeriesApi<'Line'> | null>(null);
+  const stopLossLineRef = useRef<any>(null);
+  const takeProfitLineRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'candles' | 'line'>('candles');
   const [selectedPreset, setSelectedPreset] = useState('3M'); // Default to 3 months
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const lastLoadRequestRef = useRef<string | null>(null);
+  const [isDraggingPrice, setIsDraggingPrice] = useState<'stopLoss' | 'takeProfit' | null>(null);
 
   // Track loaded data range
   const loadedDataRef = useRef<{
@@ -174,6 +192,61 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
       setIsLoadingMore(false);
     }
   };
+
+  // Handle mouse up to stop dragging
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (isDraggingPrice) {
+        setIsDraggingPrice(null);
+      }
+    };
+
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, [isDraggingPrice]);
+
+  // Update price lines when props change (from input fields)
+  useEffect(() => {
+    if (!mainSeriesRef.current) return;
+
+    // Update stop loss line
+    if (stopLoss && onStopLossChange) {
+      if (stopLossLineRef.current) {
+        stopLossLineRef.current.applyOptions({ price: stopLoss });
+      } else {
+        stopLossLineRef.current = mainSeriesRef.current.createPriceLine({
+          price: stopLoss,
+          color: '#f43f5e',
+          lineWidth: 2,
+          lineStyle: 2,
+          axisLabelVisible: true,
+          title: 'Stop Loss',
+        });
+      }
+    } else if (stopLossLineRef.current && !stopLoss) {
+      mainSeriesRef.current.removePriceLine(stopLossLineRef.current);
+      stopLossLineRef.current = null;
+    }
+
+    // Update take profit line
+    if (takeProfit && onTakeProfitChange) {
+      if (takeProfitLineRef.current) {
+        takeProfitLineRef.current.applyOptions({ price: takeProfit });
+      } else {
+        takeProfitLineRef.current = mainSeriesRef.current.createPriceLine({
+          price: takeProfit,
+          color: '#14b8a6',
+          lineWidth: 2,
+          lineStyle: 2,
+          axisLabelVisible: true,
+          title: 'Take Profit',
+        });
+      }
+    } else if (takeProfitLineRef.current && !takeProfit) {
+      mainSeriesRef.current.removePriceLine(takeProfitLineRef.current);
+      takeProfitLineRef.current = null;
+    }
+  }, [stopLoss, takeProfit, onStopLossChange, onTakeProfitChange]);
 
   // Main chart creation and data loading effect
   useEffect(() => {
@@ -479,6 +552,32 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
         }
         // Don't call fitContent() here as it resets rightOffset
 
+        // Store series reference for price line management
+        mainSeriesRef.current = mainSeries;
+
+        // Add price lines if stop loss or take profit are provided
+        if (stopLoss && onStopLossChange) {
+          stopLossLineRef.current = mainSeries.createPriceLine({
+            price: stopLoss,
+            color: '#f43f5e', // rose-500 (danger color)
+            lineWidth: 2,
+            lineStyle: 2, // Dashed
+            axisLabelVisible: true,
+            title: 'Stop Loss',
+          });
+        }
+
+        if (takeProfit && onTakeProfitChange) {
+          takeProfitLineRef.current = mainSeries.createPriceLine({
+            price: takeProfit,
+            color: '#14b8a6', // teal-500 (success color)
+            lineWidth: 2,
+            lineStyle: 2, // Dashed
+            axisLabelVisible: true,
+            title: 'Take Profit',
+          });
+        }
+
         // Handle scrolling to load more data
         visibleRangeHandler = (range: any) => {
           if (range === null || isLoadingMore) return;
@@ -563,6 +662,59 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
           });
           resizeObserver.observe(chartContainerRef.current);
         }
+
+        // Add mouse event handlers for dragging price lines
+        const handleMouseMove = (param: any) => {
+          if (!isDraggingPrice || !param.seriesData || !chart) return;
+
+          const price = param.seriesData.get(mainSeries);
+          if (!price) return;
+
+          // Get the price at the mouse position
+          const coordinate = param.point?.y;
+          if (coordinate === undefined) return;
+
+          const priceAtMouse = mainSeries.coordinateToPrice(coordinate);
+          if (priceAtMouse === null) return;
+
+          // Update the appropriate price line
+          if (isDraggingPrice === 'stopLoss' && stopLossLineRef.current) {
+            stopLossLineRef.current.applyOptions({ price: priceAtMouse });
+            onStopLossChange?.(priceAtMouse);
+          } else if (isDraggingPrice === 'takeProfit' && takeProfitLineRef.current) {
+            takeProfitLineRef.current.applyOptions({ price: priceAtMouse });
+            onTakeProfitChange?.(priceAtMouse);
+          }
+        };
+
+        const handleClick = (param: any) => {
+          if (!param.point || !chart) return;
+
+          const coordinate = param.point.y;
+          const priceAtClick = mainSeries.coordinateToPrice(coordinate);
+          if (priceAtClick === null) return;
+
+          // Check if clicking near stop loss line (within 10 pixels)
+          if (stopLoss && stopLossLineRef.current) {
+            const stopLossCoordinate = mainSeries.priceToCoordinate(stopLoss);
+            if (stopLossCoordinate !== null && Math.abs(coordinate - stopLossCoordinate) < 10) {
+              setIsDraggingPrice('stopLoss');
+              return;
+            }
+          }
+
+          // Check if clicking near take profit line
+          if (takeProfit && takeProfitLineRef.current) {
+            const takeProfitCoordinate = mainSeries.priceToCoordinate(takeProfit);
+            if (takeProfitCoordinate !== null && Math.abs(coordinate - takeProfitCoordinate) < 10) {
+              setIsDraggingPrice('takeProfit');
+              return;
+            }
+          }
+        };
+
+        chart.subscribeClick(handleClick);
+        chart.subscribeCrosshairMove(handleMouseMove);
 
         chartRef.current = chart;
         setIsLoading(false);
