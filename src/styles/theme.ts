@@ -1,16 +1,16 @@
 // TrendDojo Color Theme
-// Based on the homepage design with deep navy background and purple accent colors
+// Based on the homepage design with deep navy background and indigo accent colors
 
 export const trendDojoTheme = {
-  // Primary Brand Colors
+  // Primary Brand Colors (Indigo)
   primary: {
     50: '#f0f4ff',
-    100: '#e0e7ff', 
+    100: '#e0e7ff',
     200: '#c7d2fe',
     300: '#a5b4fc',
     400: '#818cf8',
-    500: '#6366f1', // Primary purple-blue
-    600: '#5b21b6', // Deep purple (main CTA button)
+    500: '#6366f1', // Primary indigo
+    600: '#5b21b6', // Legacy deep purple
     700: '#4c1d95',
     800: '#3730a3',
     900: '#312e81',
@@ -66,8 +66,8 @@ export const trendDojoTheme = {
 
   // Animation/Interactive Colors
   interactive: {
-    buttonPrimary: '#8b5cf6',      // Primary CTA button
-    buttonPrimaryHover: '#7c3aed', // Primary button hover
+    buttonPrimary: '#4f46e5',      // Primary CTA button (indigo-600)
+    buttonPrimaryHover: '#4338ca', // Primary button hover (indigo-700)
     buttonSecondary: 'transparent', // Secondary button (View Demo)
     buttonSecondaryBorder: '#e2e8f033', // Secondary button border
     buttonSecondaryHover: '#334155', // Secondary button hover
@@ -107,7 +107,7 @@ export const themeClasses = {
   borderLight: 'border-slate-500/20',
 
   // Buttons
-  btnPrimary: 'bg-purple-600 hover:bg-purple-700 text-white',
+  btnPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-white',
   btnSecondary: 'border border-slate-300/20 hover:border-slate-300/40 text-white hover:bg-slate-700/50',
 
   // Cards
@@ -127,7 +127,7 @@ export const cssVariables = `
   --color-text-primary: #ffffff;
   --color-text-secondary: #e2e8f0;
   --color-accent: #8b5cf6;
-  --color-purple-600: #9333ea;
-  --color-purple-700: #7c3aed;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
 }
 `;

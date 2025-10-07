@@ -724,6 +724,33 @@ function TablesSection() {
           </div>
         </div>
       </Card>
+
+      {/* Loading and Empty States */}
+      <Card>
+        <h2 className="text-xl font-semibold dark:text-white text-gray-900 mb-6">Loading & Empty States</h2>
+
+        <div className="space-y-6">
+          {/* Loading State */}
+          <div>
+            <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Loading Container (tableStyles.loadingContainer)</h3>
+            <div className={tableStyles.loadingContainer}>
+              <Spinner text="Loading data..." />
+            </div>
+          </div>
+
+          {/* Empty State */}
+          <div>
+            <h3 className="text-sm font-semibold dark:text-gray-300 text-gray-700 mb-3">Empty Container (tableStyles.emptyContainer)</h3>
+            <div className={tableStyles.emptyContainer}>
+              <div className="text-gray-500 dark:text-gray-400">
+                <Info className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                <h3 className="text-lg font-semibold mb-2">No data available</h3>
+                <p className="text-sm">Data will appear when available.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

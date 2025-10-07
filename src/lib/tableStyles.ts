@@ -3,6 +3,11 @@
  *
  * This file defines all table and filter styles in one place.
  * Changes here will automatically update all tables across the app.
+ *
+ * Loading/Empty States:
+ * - Use tableStyles.loadingContainer for spinner containers
+ * - Use tableStyles.emptyContainer for empty state messages
+ * - Both provide full height (60vh) and vertical centering
  */
 
 // ============================================
@@ -47,6 +52,10 @@ export const tableStyles = {
   tdDanger: "px-6 py-4 text-danger",
   tdWarning: "px-6 py-4 text-warning",
   tdMuted: "px-6 py-4 dark:text-gray-400 text-gray-600",
+
+  // Loading and empty state containers - vertically centered
+  loadingContainer: "flex items-center justify-center min-h-[60vh]",
+  emptyContainer: "flex items-center justify-center min-h-[60vh] border dark:border-slate-700 border-gray-200 rounded-lg",
 } as const;
 
 // ============================================

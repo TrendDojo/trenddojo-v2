@@ -16,15 +16,15 @@ module.exports = {
         
         // TrendDojo Custom Theme Colors
         'trenddojo': {
-          // Primary brand colors (purple-blue)
+          // Primary brand colors (indigo)
           'primary': {
             50: '#f0f4ff',
-            100: '#e0e7ff', 
+            100: '#e0e7ff',
             200: '#c7d2fe',
             300: '#a5b4fc',
             400: '#818cf8',
             500: '#6366f1',
-            600: '#5b21b6', // Main CTA button color
+            600: '#5b21b6', // Legacy deep purple
             700: '#4c1d95',
             800: '#3730a3',
             900: '#312e81',
