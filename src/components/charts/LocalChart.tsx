@@ -388,7 +388,6 @@ export function LocalChart({
         // Get standardized color configs
         const candlestickConfig = getCandlestickConfig(isDarkMode);
         const lineConfig = getLineSeriesConfig(isDarkMode, 'neutral');
-        console.log('Line chart config:', lineConfig); // Debug: verify colors
         const chartLayout = getChartLayout(isDarkMode, textColor);
         const chartGrid = getChartGrid(isDarkMode);
         const crosshairConfig = getCrosshairConfig(isDarkMode);
