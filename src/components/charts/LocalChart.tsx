@@ -44,33 +44,38 @@ interface ChartData {
 }
 
 interface PriceLevelProps {
+  entryPrice?: number;
+  exitPrice?: number;
   stopLoss?: number;
-  takeProfit?: number;
+  onEntryPriceChange?: (price: number) => void;
+  onExitPriceChange?: (price: number) => void;
   onStopLossChange?: (price: number) => void;
-  onTakeProfitChange?: (price: number) => void;
 }
 
 export function LocalChart({
   symbol,
   fullHeight = false,
+  entryPrice,
+  exitPrice,
   stopLoss,
-  takeProfit,
-  onStopLossChange,
-  onTakeProfitChange
+  onEntryPriceChange,
+  onExitPriceChange,
+  onStopLossChange
 }: { symbol: string; fullHeight?: boolean } & PriceLevelProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const mainSeriesRef = useRef<ISeriesApi<'Candlestick'> | ISeriesApi<'Area'> | null>(null);
+  const entryPriceLineRef = useRef<any>(null);
+  const exitPriceLineRef = useRef<any>(null);
   const stopLossLineRef = useRef<any>(null);
-  const takeProfitLineRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'candles' | 'line'>('candles');
   const [selectedPreset, setSelectedPreset] = useState('3M'); // Default to 3 months
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const lastLoadRequestRef = useRef<string | null>(null);
-  const [isDraggingPrice, setIsDraggingPrice] = useState<'stopLoss' | 'takeProfit' | null>(null);
+  const [isDraggingPrice, setIsDraggingPrice] = useState<'entry' | 'exit' | 'stopLoss' | null>(null);
 
   // Track loaded data range
   const loadedDataRef = useRef<{
@@ -210,6 +215,44 @@ export function LocalChart({
   useEffect(() => {
     if (!mainSeriesRef.current) return;
 
+    // Update entry price line
+    if (entryPrice && onEntryPriceChange) {
+      if (entryPriceLineRef.current) {
+        entryPriceLineRef.current.applyOptions({ price: entryPrice });
+      } else {
+        entryPriceLineRef.current = mainSeriesRef.current.createPriceLine({
+          price: entryPrice,
+          color: '#6366f1',
+          lineWidth: 2,
+          lineStyle: 2,
+          axisLabelVisible: true,
+          title: 'Target Entry',
+        });
+      }
+    } else if (entryPriceLineRef.current && !entryPrice) {
+      mainSeriesRef.current.removePriceLine(entryPriceLineRef.current);
+      entryPriceLineRef.current = null;
+    }
+
+    // Update exit price line
+    if (exitPrice && onExitPriceChange) {
+      if (exitPriceLineRef.current) {
+        exitPriceLineRef.current.applyOptions({ price: exitPrice });
+      } else {
+        exitPriceLineRef.current = mainSeriesRef.current.createPriceLine({
+          price: exitPrice,
+          color: '#14b8a6',
+          lineWidth: 2,
+          lineStyle: 2,
+          axisLabelVisible: true,
+          title: 'Target Exit',
+        });
+      }
+    } else if (exitPriceLineRef.current && !exitPrice) {
+      mainSeriesRef.current.removePriceLine(exitPriceLineRef.current);
+      exitPriceLineRef.current = null;
+    }
+
     // Update stop loss line
     if (stopLoss && onStopLossChange) {
       if (stopLossLineRef.current) {
@@ -228,26 +271,7 @@ export function LocalChart({
       mainSeriesRef.current.removePriceLine(stopLossLineRef.current);
       stopLossLineRef.current = null;
     }
-
-    // Update take profit line
-    if (takeProfit && onTakeProfitChange) {
-      if (takeProfitLineRef.current) {
-        takeProfitLineRef.current.applyOptions({ price: takeProfit });
-      } else {
-        takeProfitLineRef.current = mainSeriesRef.current.createPriceLine({
-          price: takeProfit,
-          color: '#14b8a6',
-          lineWidth: 2,
-          lineStyle: 2,
-          axisLabelVisible: true,
-          title: 'Take Profit',
-        });
-      }
-    } else if (takeProfitLineRef.current && !takeProfit) {
-      mainSeriesRef.current.removePriceLine(takeProfitLineRef.current);
-      takeProfitLineRef.current = null;
-    }
-  }, [stopLoss, takeProfit, onStopLossChange, onTakeProfitChange]);
+  }, [entryPrice, exitPrice, stopLoss, onEntryPriceChange, onExitPriceChange, onStopLossChange]);
 
   // Main chart creation and data loading effect
   useEffect(() => {
@@ -567,7 +591,29 @@ export function LocalChart({
         // Store series reference for price line management
         mainSeriesRef.current = mainSeries;
 
-        // Add price lines if stop loss or take profit are provided
+        // Add price lines if entry or exit prices are provided
+        if (entryPrice && onEntryPriceChange) {
+          entryPriceLineRef.current = mainSeries.createPriceLine({
+            price: entryPrice,
+            color: '#6366f1', // indigo-500 (primary color)
+            lineWidth: 2,
+            lineStyle: 2, // Dashed
+            axisLabelVisible: true,
+            title: 'Target Entry',
+          });
+        }
+
+        if (exitPrice && onExitPriceChange) {
+          exitPriceLineRef.current = mainSeries.createPriceLine({
+            price: exitPrice,
+            color: '#14b8a6', // teal-500 (success color)
+            lineWidth: 2,
+            lineStyle: 2, // Dashed
+            axisLabelVisible: true,
+            title: 'Target Exit',
+          });
+        }
+
         if (stopLoss && onStopLossChange) {
           stopLossLineRef.current = mainSeries.createPriceLine({
             price: stopLoss,
@@ -576,17 +622,6 @@ export function LocalChart({
             lineStyle: 2, // Dashed
             axisLabelVisible: true,
             title: 'Stop Loss',
-          });
-        }
-
-        if (takeProfit && onTakeProfitChange) {
-          takeProfitLineRef.current = mainSeries.createPriceLine({
-            price: takeProfit,
-            color: '#14b8a6', // teal-500 (success color)
-            lineWidth: 2,
-            lineStyle: 2, // Dashed
-            axisLabelVisible: true,
-            title: 'Take Profit',
           });
         }
 
@@ -690,12 +725,15 @@ export function LocalChart({
           if (priceAtMouse === null) return;
 
           // Update the appropriate price line
-          if (isDraggingPrice === 'stopLoss' && stopLossLineRef.current) {
+          if (isDraggingPrice === 'entry' && entryPriceLineRef.current) {
+            entryPriceLineRef.current.applyOptions({ price: priceAtMouse });
+            onEntryPriceChange?.(priceAtMouse);
+          } else if (isDraggingPrice === 'exit' && exitPriceLineRef.current) {
+            exitPriceLineRef.current.applyOptions({ price: priceAtMouse });
+            onExitPriceChange?.(priceAtMouse);
+          } else if (isDraggingPrice === 'stopLoss' && stopLossLineRef.current) {
             stopLossLineRef.current.applyOptions({ price: priceAtMouse });
             onStopLossChange?.(priceAtMouse);
-          } else if (isDraggingPrice === 'takeProfit' && takeProfitLineRef.current) {
-            takeProfitLineRef.current.applyOptions({ price: priceAtMouse });
-            onTakeProfitChange?.(priceAtMouse);
           }
         };
 
@@ -706,20 +744,29 @@ export function LocalChart({
           const priceAtClick = mainSeries.coordinateToPrice(coordinate);
           if (priceAtClick === null) return;
 
-          // Check if clicking near stop loss line (within 10 pixels)
-          if (stopLoss && stopLossLineRef.current) {
-            const stopLossCoordinate = mainSeries.priceToCoordinate(stopLoss);
-            if (stopLossCoordinate !== null && Math.abs(coordinate - stopLossCoordinate) < 10) {
-              setIsDraggingPrice('stopLoss');
+          // Check if clicking near entry price line (within 10 pixels)
+          if (entryPrice && entryPriceLineRef.current) {
+            const entryPriceCoordinate = mainSeries.priceToCoordinate(entryPrice);
+            if (entryPriceCoordinate !== null && Math.abs(coordinate - entryPriceCoordinate) < 10) {
+              setIsDraggingPrice('entry');
               return;
             }
           }
 
-          // Check if clicking near take profit line
-          if (takeProfit && takeProfitLineRef.current) {
-            const takeProfitCoordinate = mainSeries.priceToCoordinate(takeProfit);
-            if (takeProfitCoordinate !== null && Math.abs(coordinate - takeProfitCoordinate) < 10) {
-              setIsDraggingPrice('takeProfit');
+          // Check if clicking near exit price line
+          if (exitPrice && exitPriceLineRef.current) {
+            const exitPriceCoordinate = mainSeries.priceToCoordinate(exitPrice);
+            if (exitPriceCoordinate !== null && Math.abs(coordinate - exitPriceCoordinate) < 10) {
+              setIsDraggingPrice('exit');
+              return;
+            }
+          }
+
+          // Check if clicking near stop loss line
+          if (stopLoss && stopLossLineRef.current) {
+            const stopLossCoordinate = mainSeries.priceToCoordinate(stopLoss);
+            if (stopLossCoordinate !== null && Math.abs(coordinate - stopLossCoordinate) < 10) {
+              setIsDraggingPrice('stopLoss');
               return;
             }
           }

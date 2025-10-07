@@ -255,10 +255,12 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
             <LocalChart
               symbol={formData.symbol}
               fullHeight={true}
+              entryPrice={formData.limitPrice}
+              exitPrice={formData.takeProfit}
               stopLoss={formData.stopLoss}
-              takeProfit={formData.takeProfit}
+              onEntryPriceChange={(price) => setFormData({ ...formData, limitPrice: price })}
+              onExitPriceChange={(price) => setFormData({ ...formData, takeProfit: price })}
               onStopLossChange={(price) => setFormData({ ...formData, stopLoss: price })}
-              onTakeProfitChange={(price) => setFormData({ ...formData, takeProfit: price })}
             />
           ) : (
             <div
@@ -673,6 +675,21 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                 </div>
               </div>
 
+              {/* Stop Loss */}
+              <div>
+                <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">
+                  Stop Loss Price
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.stopLoss || ''}
+                  onChange={(e) => setFormData({ ...formData, stopLoss: parseFloat(e.target.value) || undefined })}
+                  placeholder="0.00"
+                  className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700 bg-white dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
               </div>
             )}
 
@@ -848,43 +865,6 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                   </div>
                 </div>
               )}
-
-              {/* Risk Management Section */}
-              <div className="border-t dark:border-slate-600 border-gray-200 pt-4">
-                <h3 className="text-sm font-medium dark:text-gray-300 text-gray-700 mb-3">
-                  Risk Management (Optional)
-                </h3>
-
-                {/* Stop Loss */}
-                <div className="mb-3">
-                  <label className="block text-sm dark:text-gray-400 text-gray-600 mb-1">
-                    Stop Loss Price
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.stopLoss || ''}
-                    onChange={(e) => setFormData({ ...formData, stopLoss: parseFloat(e.target.value) || undefined })}
-                    placeholder="140.00"
-                    className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700 bg-white dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                {/* Target Price */}
-                <div>
-                  <label className="block text-sm dark:text-gray-400 text-gray-600 mb-1">
-                    Target Price
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.takeProfit || ''}
-                    onChange={(e) => setFormData({ ...formData, takeProfit: parseFloat(e.target.value) || undefined })}
-                    placeholder="160.00"
-                    className="w-full px-3 py-2 rounded-lg border dark:border-slate-600 border-gray-300 dark:bg-slate-700 bg-white dark:text-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
 
               {/* Time in Force */}
               <div>
