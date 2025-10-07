@@ -29,7 +29,7 @@ interface ChartData {
   value?: number;
 }
 
-export function LocalChart({ symbol }: { symbol: string }) {
+export function LocalChart({ symbol, fullHeight = false }: { symbol: string; fullHeight?: boolean }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -579,9 +579,9 @@ export function LocalChart({ symbol }: { symbol: string }) {
 
   if (error) {
     return (
-      <div className="w-full">
+      <div className={`w-full ${fullHeight ? 'h-full flex flex-col' : ''}`}>
         <h3 className="text-lg font-semibold mb-2">Chart for {symbol}</h3>
-        <div className="flex flex-col items-center justify-center h-[400px] space-y-4">
+        <div className={`flex flex-col items-center justify-center space-y-4 ${fullHeight ? 'flex-1' : 'h-[400px]'}`}>
           <p className="text-red-500 text-center px-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
@@ -595,7 +595,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
   }
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className={`w-full ${fullHeight ? 'h-full flex flex-col' : ''}`}>
       {/* Chart Toolbar */}
       <div className="flex items-center gap-4 mb-3 px-2">
         {/* Preset controls */}
@@ -638,7 +638,7 @@ export function LocalChart({ symbol }: { symbol: string }) {
       </div>
 
       {/* Chart Container */}
-      <div className="w-full rounded-lg relative" style={{ height: '400px', minWidth: '100%' }}>
+      <div className={`w-full rounded-lg relative ${fullHeight ? 'flex-1' : ''}`} style={fullHeight ? { minWidth: '100%' } : { height: '400px', minWidth: '100%' }}>
         <div ref={chartContainerRef} className="w-full h-full rounded-lg overflow-hidden">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">

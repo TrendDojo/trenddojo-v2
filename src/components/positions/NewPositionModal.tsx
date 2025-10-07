@@ -209,9 +209,7 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
         {/* Left Side - Chart Area (2/3 on desktop, full width on mobile) */}
         <div className="w-full lg:w-2/3 p-6 border-b lg:border-b-0 lg:border-r dark:border-slate-700 border-gray-200 flex flex-col">
           {formData.symbol ? (
-            <div className="flex-1">
-              <LocalChart symbol={formData.symbol} />
-            </div>
+            <LocalChart symbol={formData.symbol} fullHeight={true} />
           ) : (
             <div
               className="flex-1 min-h-[400px] flex items-center justify-center rounded-lg"
