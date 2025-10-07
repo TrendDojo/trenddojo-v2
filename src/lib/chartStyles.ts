@@ -106,7 +106,7 @@ export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 
 
   return {
     color,
-    lineWidth: 2,
+    lineWidth: 2 as const,
   };
 }
 
@@ -118,7 +118,7 @@ export function getHistogramConfig(isDarkMode: boolean) {
     upColor: chartColors.volume.up,
     downColor: chartColors.volume.down,
     priceFormat: {
-      type: 'volume',
+      type: 'volume' as const,
     },
     priceScaleId: '',
   };

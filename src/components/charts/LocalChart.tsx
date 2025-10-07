@@ -4,7 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import { TrendingUp, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ChartControls, getPresetConfig } from './ChartControls';
-import { chartControlStyles } from '@/lib/chartStyles';
+import {
+  chartControlStyles,
+  getCandlestickConfig,
+  getLineSeriesConfig,
+  getHistogramConfig,
+  getChartLayout,
+  getChartGrid,
+  getCrosshairConfig,
+  chartColors,
+  chartTheme
+} from '@/lib/chartStyles';
 import { cn } from '@/lib/utils';
 import {
   createChart,
@@ -296,44 +306,45 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
         // Clear any existing chart before creating a new one
         cleanupChart();
 
-        // Get theme colors
+        // Get theme configuration from centralized chartStyles
         const isDarkMode = document.documentElement.classList.contains('dark');
-        const themeColors = {
-          buyColor: isDarkMode ? '#2dd4bf' : '#14b8a6',
-          buyBorderColor: isDarkMode ? '#2dd4bf' : '#14b8a6',
-          sellColor: isDarkMode ? '#fb7185' : '#f43f5e',
-          sellBorderColor: isDarkMode ? '#fb7185' : '#f43f5e',
-          backgroundColor: isDarkMode ? 'rgba(148, 163, 184, 0.03)' : 'rgba(15, 23, 42, 0.03)',
-          textColor: isDarkMode ? '#9ca3af' : '#4b5563',
-          gridColor: 'transparent',
-          borderColor: isDarkMode ? 'rgba(51, 65, 85, 0.3)' : 'rgba(209, 213, 219, 0.4)',
-          volumeColor: isDarkMode ? '#818cf8' : '#6366f1',
-          lineColor: isDarkMode ? '#6366f1' : '#4f46e5',
-        };
+        const textColor = isDarkMode ? '#9ca3af' : '#4b5563';
 
-        // Create the chart
+        // Get standardized color configs
+        const candlestickConfig = getCandlestickConfig(isDarkMode);
+        const lineConfig = getLineSeriesConfig(isDarkMode, 'neutral');
+        const chartLayout = getChartLayout(isDarkMode, textColor);
+        const chartGrid = getChartGrid(isDarkMode);
+        const crosshairConfig = getCrosshairConfig(isDarkMode);
+
+        // Extract colors for volume bars
+        const buyColor = isDarkMode ? chartColors.buy.dark : chartColors.buy.light;
+        const sellColor = isDarkMode ? chartColors.sell.dark : chartColors.sell.light;
+        const borderColor = isDarkMode ? chartTheme.border.dark : chartTheme.border.light;
+
+        // Create the chart with standardized configuration
         const chart = createChart(chartContainerRef.current, {
           width: chartContainerRef.current.clientWidth,
           height: 400,
           layout: {
-            background: { type: ColorType.Solid, color: themeColors.backgroundColor },
-            textColor: themeColors.textColor,
+            background: { type: ColorType.Solid, color: chartLayout.background.color },
+            textColor: chartLayout.textColor,
             fontSize: 14,
           },
           grid: {
             vertLines: {
-              color: themeColors.borderColor,  // Using theme border color
+              color: chartGrid.vertLines.color,
               style: 1,  // Dotted
               visible: true
             },
             horzLines: {
-              color: themeColors.borderColor,  // Using theme border color
+              color: chartGrid.horzLines.color,
               style: 1,  // Dotted
               visible: true
             },
           },
           rightPriceScale: {
-            borderColor: themeColors.borderColor,
+            borderColor: borderColor,
             borderVisible: true,
             scaleMargins: {
               top: 0.1,
@@ -342,7 +353,7 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
             visible: true,
           },
           timeScale: {
-            borderColor: themeColors.borderColor,
+            borderColor: borderColor,
             borderVisible: true,
             timeVisible: true,
             secondsVisible: false,
@@ -356,15 +367,8 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
         let volumeSeries: ISeriesApi<'Histogram'> | null = null;
 
         if (chartType === 'candles') {
-          // v5 API - uses addSeries with CandlestickSeries type
-          mainSeries = chart.addSeries(CandlestickSeries, {
-            upColor: themeColors.buyColor,
-            downColor: themeColors.sellColor,
-            borderUpColor: themeColors.buyBorderColor,
-            borderDownColor: themeColors.sellBorderColor,
-            wickUpColor: themeColors.buyColor,
-            wickDownColor: themeColors.sellColor,
-          });
+          // v5 API - uses addSeries with standardized candlestick config
+          mainSeries = chart.addSeries(CandlestickSeries, candlestickConfig);
 
           const chartData: CandlestickData<Time>[] = loadedDataRef.current.allData
             .filter(item => !isNaN(item.open)) // Filter out placeholder points
@@ -383,10 +387,9 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
 
           mainSeries.setData(chartData);
         } else {
-          // v5 API - uses addSeries with LineSeries type
+          // v5 API - uses addSeries with standardized line config
           mainSeries = chart.addSeries(LineSeries, {
-            color: themeColors.lineColor,
-            lineWidth: 2,
+            ...lineConfig,
             priceLineVisible: false,
             lastValueVisible: true,
             crosshairMarkerVisible: true,
@@ -409,12 +412,10 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
 
         // Add volume histogram if volume data exists
         if (loadedDataRef.current.allData.some(item => item.volume)) {
-          // v5 API - uses addSeries with HistogramSeries type
+          // v5 API - uses addSeries with standardized histogram config
+          const histogramConfig = getHistogramConfig(isDarkMode);
           volumeSeries = chart.addSeries(HistogramSeries, {
-            color: themeColors.volumeColor,
-            priceFormat: {
-              type: 'volume' as const,
-            },
+            ...histogramConfig,
             priceScaleId: 'volume',
           });
 
@@ -435,8 +436,8 @@ export function LocalChart({ symbol, fullHeight = false }: { symbol: string; ful
                 time: timestamp,
                 value: item.volume || 0,
                 color: item.close >= item.open
-                  ? `${themeColors.buyColor}66`
-                  : `${themeColors.sellColor}66`
+                  ? chartColors.volume.up
+                  : chartColors.volume.down
               };
             });
 
