@@ -117,7 +117,7 @@ export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 
   }
 
   return {
-    color,
+    lineColor: color,       // AreaSeries uses lineColor, not color
     lineWidth: 2 as const,
     // Area fill configuration
     topColor,
