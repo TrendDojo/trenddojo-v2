@@ -94,19 +94,36 @@ export function getCandlestickConfig(isDarkMode: boolean) {
  * Get line series configuration
  */
 export function getLineSeriesConfig(isDarkMode: boolean, type: 'buy' | 'sell' | 'neutral' = 'neutral') {
+  // Use primary color (indigo) for line charts
+  const primaryColor = isDarkMode ? '#6366f1' : '#4f46e5'; // indigo-500 : indigo-600
+
   let color: string;
+  let topColor: string;
+  let bottomColor: string;
 
   if (type === 'buy') {
     color = isDarkMode ? chartColors.buy.dark : chartColors.buy.light;
+    topColor = `${color}66`; // 40% opacity
+    bottomColor = `${color}00`; // 0% opacity (transparent)
   } else if (type === 'sell') {
     color = isDarkMode ? chartColors.sell.dark : chartColors.sell.light;
+    topColor = `${color}66`;
+    bottomColor = `${color}00`;
   } else {
-    color = isDarkMode ? chartColors.neutral.dark : chartColors.neutral.light;
+    // Use primary color for neutral/default line charts
+    color = primaryColor;
+    topColor = isDarkMode ? '#6366f166' : '#4f46e566'; // indigo with 40% opacity
+    bottomColor = isDarkMode ? '#6366f100' : '#4f46e500'; // transparent
   }
 
   return {
     color,
     lineWidth: 2 as const,
+    lineType: 2 as const, // LineType.WithSteps = 2, Simple = 0
+    // Area fill configuration
+    topColor,
+    bottomColor,
+    lineStyle: 0 as const, // Solid line
   };
 }
 

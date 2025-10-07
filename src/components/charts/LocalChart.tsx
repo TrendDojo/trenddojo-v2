@@ -29,6 +29,7 @@ import {
   // v5 requires importing the series types
   CandlestickSeries,
   LineSeries,
+  AreaSeries,
   HistogramSeries
 } from 'lightweight-charts';
 
@@ -60,7 +61,7 @@ export function LocalChart({
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const mainSeriesRef = useRef<ISeriesApi<'Candlestick'> | ISeriesApi<'Line'> | null>(null);
+  const mainSeriesRef = useRef<ISeriesApi<'Candlestick'> | ISeriesApi<'Area'> | null>(null);
   const stopLossLineRef = useRef<any>(null);
   const takeProfitLineRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +85,7 @@ export function LocalChart({
     fromDate: string,
     toDate: string,
     chart: IChartApi,
-    series: ISeriesApi<'Candlestick'> | ISeriesApi<'Line'>,
+    series: ISeriesApi<'Candlestick'> | ISeriesApi<'Area'>,
     volumeSeries?: ISeriesApi<'Histogram'> | null
   ) => {
     if (isLoadingMore) return;
@@ -437,7 +438,7 @@ export function LocalChart({
         });
 
         // Create series based on chart type
-        let mainSeries: ISeriesApi<'Candlestick'> | ISeriesApi<'Line'>;
+        let mainSeries: ISeriesApi<'Candlestick'> | ISeriesApi<'Area'>;
         let volumeSeries: ISeriesApi<'Histogram'> | null = null;
 
         if (chartType === 'candles') {
@@ -461,8 +462,8 @@ export function LocalChart({
 
           mainSeries.setData(chartData);
         } else {
-          // v5 API - uses addSeries with standardized line config
-          mainSeries = chart.addSeries(LineSeries, {
+          // v5 API - uses AreaSeries for line with fill
+          mainSeries = chart.addSeries(AreaSeries, {
             ...lineConfig,
             priceLineVisible: false,
             lastValueVisible: true,
