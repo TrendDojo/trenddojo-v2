@@ -79,8 +79,14 @@ CREATE TABLE IF NOT EXISTS market.sync_state (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create read-only role for dev/staging
-CREATE ROLE market_reader WITH LOGIN PASSWORD 'change_this_password';
+-- Create read-only role for dev/staging (skip if already exists)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'market_reader') THEN
+        CREATE ROLE market_reader WITH LOGIN PASSWORD 'change_this_password';
+    END IF;
+END
+$$;
 GRANT CONNECT ON DATABASE postgres TO market_reader;
 GRANT USAGE ON SCHEMA market TO market_reader;
 GRANT SELECT ON ALL TABLES IN SCHEMA market TO market_reader;

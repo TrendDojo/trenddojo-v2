@@ -65,6 +65,7 @@
     "market-vacuum": "tsx scripts/import-market-data.ts vacuum",
     "polygon-download": "tsx scripts/polygon-download.ts",
     "polygon-2h": "tsx scripts/polygon-download-2h.ts",
+    "migrate-to-postgres": "tsx scripts/market-data/migrate-to-postgres.ts",
     "cache:updater": "tsx src/lib/market-data/cache/cache-updater.ts",
     "cache:update-once": "tsx src/lib/market-data/cache/cache-updater.ts --once",
     "cache:status": "curl http://localhost:3011/api/market-data/cache-status",

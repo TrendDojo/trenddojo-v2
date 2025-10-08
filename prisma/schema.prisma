@@ -171,6 +171,61 @@ model stock_fundamentals {
   lastUpdated     DateTime @default(now())
 }
 
+// ============================================
+// MARKET DATA MODELS (Shared across environments)
+// ============================================
+
+/// Historical daily price data (OHLCV) - shared read-only across all environments
+model daily_prices {
+  symbol         String
+  date           String   // ISO format: YYYY-MM-DD
+  open           Decimal  @db.Decimal(15, 6)
+  high           Decimal  @db.Decimal(15, 6)
+  low            Decimal  @db.Decimal(15, 6)
+  close          Decimal  @db.Decimal(15, 6)
+  volume         BigInt
+  adjustedClose  Decimal  @db.Decimal(15, 6) @map("adjusted_close")
+  dataSource     String   @default("polygon") @map("data_source")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@id([symbol, date])
+  @@index([symbol])
+  @@index([date])
+  @@index([symbol, date])
+  @@map("daily_prices")
+}
+
+/// Stock metadata (company name, sector, industry, etc.)
+model stock_metadata {
+  symbol       String    @id
+  companyName  String    @map("company_name")
+  exchange     String?
+  sector       String?
+  industry     String?
+  marketCap    BigInt?   @map("market_cap")
+  description  String?
+  website      String?
+  ceo          String?
+  employees    Int?
+  country      String?
+  phone        String?
+  address      String?
+  city         String?
+  state        String?
+  zip          String?
+  isActive     Boolean   @default(true) @map("is_active")
+  listingDate  String?   @map("listing_date")
+  ipoDate      String?   @map("ipo_date")
+  delistDate   String?   @map("delist_date")
+  lastUpdated  DateTime  @default(now()) @map("last_updated")
+
+  @@index([exchange])
+  @@index([sector])
+  @@index([industry])
+  @@index([isActive])
+  @@map("stock_metadata")
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model strategies {
   id                  String      @id

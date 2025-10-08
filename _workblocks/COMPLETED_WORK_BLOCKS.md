@@ -2,6 +2,61 @@
 
 *Work blocks are moved here when completed. Include completion date, duration, and outcome.*
 
+## WB-2025-10-08-001: Chart UI Enhancements - Visual Polish & Draggable Price Lines
+**State**: completed
+**Timeframe**: NOW
+**Created**: 2025-10-08 08:00
+**Completed**: 2025-10-08 13:00
+**Duration**: 5 hours
+**Outcome**: Success - Complete chart enhancement with draggable price lines
+**Dependencies**: None
+**Tags**: #ui #charts #trading #price-lines #visual-polish
+
+### Goal
+Enhance chart UI with visual improvements, standardized controls, and interactive draggable price lines for Target Entry, Target Exit, and Stop Loss on the position creation modal.
+
+### Tasks Completed
+- [x] Replace hardcoded spinners with living theme Spinner component
+- [x] Standardize chart controls across symbol page and modal
+- [x] Create chartControlStyles in living theme (centralized styling)
+- [x] Fix color inconsistency (green line → indigo line in AreaSeries)
+- [x] Increase chart corner radius (lg → xl, 8px → 12px)
+- [x] Increase background contrast (3% → 6% opacity)
+- [x] Make line chart brighter and wider (indigo-400/500, 3px width)
+- [x] Reduce gradient opacity (40% → 20% for subtlety)
+- [x] Match volume bars to line color in line mode
+- [x] Move modal title and progress indicators above chart
+- [x] Implement three draggable price lines (entry, exit, stop loss)
+- [x] Add bidirectional sync (chart lines ↔ input fields)
+- [x] Move Stop Loss field from Step 2 to Step 1
+- [x] Remove lg button size from living theme
+- [x] Update Create Position button to sm size
+
+### Technical Implementation
+**Chart Styling System**:
+- Created `chartControlStyles` in `/src/lib/chartStyles.ts`
+- Standardized timeframe buttons and chart type toggles
+- All chart instances now use identical control styling
+
+**Draggable Price Lines**:
+- Used lightweight-charts v5 `createPriceLine()` API
+- Three price lines: entryPriceLineRef, exitPriceLineRef, stopLossLineRef
+- Bidirectional updates: dragging line updates form, changing input updates line
+- Color coding: teal for entry/exit, rose for stop loss
+- Implemented `isDraggingPrice` state to track which line is being dragged
+
+**Color Bug Fix**:
+- AreaSeries requires `lineColor` property (NOT `color`)
+- Updated `getLineSeriesConfig()` return value to use correct property
+
+### Notes
+- 10 commits total, all pushed to origin/main
+- Fixed fundamental issue with AreaSeries configuration
+- Living theme system properly used throughout
+- Chart controls now consistent across entire app
+- Draggable price lines provide excellent UX for position planning
+- Modal layout improved with title/progress above chart
+
 ## WB-2025-01-19-001: Trading Strategy Implementation - MVP
 **State**: completed
 **Timeframe**: NOW

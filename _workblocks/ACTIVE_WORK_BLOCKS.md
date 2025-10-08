@@ -358,6 +358,125 @@ function getUpdateFrequency(symbol: string): number {
 4. **Phase 4**: Add crypto sources (Coinbase, Binance)
 5. **Phase 5**: Add forex sources
 
+## WB-2025-10-08-002: SQLite → PostgreSQL Market Data Migration
+**State**: doing
+**Timeframe**: NOW
+**Created**: 2025-10-08 13:30
+**Updated**: 2025-10-08 13:30
+**Dependencies**: WB-2025-01-25-001 (Market Data Infrastructure)
+**Tags**: #database #migration #postgresql #market-data #infrastructure
+
+### Goal
+Migrate 4.3M market data records from local SQLite database to production PostgreSQL, establishing a unified data source for all environments (dev/staging/prod).
+
+### Current State Analysis
+**Development (SQLite)**:
+- Database: `/data/market/historical_prices.db` (760MB)
+- Symbols: 4,797
+- Records: 4,299,279 daily prices
+- Date range: 2020-09-25 to 2025-01-24
+- Schema: `daily_prices` table with OHLCV data
+- Status: ✅ Working perfectly for local dev
+
+**Production (PostgreSQL)**:
+- Status: ❌ Not deployed
+- Schema: `market.*` namespace planned
+- Access: Production writes, dev/staging read-only
+- Vercel Cron: Not configured
+- Migration script: Does not exist
+
+### Architecture Target
+**Single Source of Truth**:
+```
+Production PostgreSQL (market.* schema)
+    ↓ (read-only)
+    ├─→ Development (connects to prod DB)
+    ├─→ Staging (connects to prod DB)
+    └─→ Production (writes to market.*)
+
+User Data (public.* schema)
+    ├─→ Development (local PostgreSQL)
+    ├─→ Staging (separate PostgreSQL)
+    └─→ Production (separate PostgreSQL)
+```
+
+### Tasks
+- [ ] **Phase 1: PostgreSQL Schema Setup**
+  - [ ] Create production PostgreSQL database on Supabase/Vercel
+  - [ ] Create `market` schema for shared data
+  - [ ] Run Prisma migrations to create `market.daily_prices` table
+  - [ ] Create `market.stock_metadata` table
+  - [ ] Set up read-only role for dev/staging environments
+  - [ ] Configure connection pooling (PgBouncer)
+
+- [ ] **Phase 2: Data Migration Script**
+  - [ ] Create `scripts/market-data/migrate-to-postgres.ts`
+  - [ ] Implement batch transfer (1000 records at a time)
+  - [ ] Add progress tracking and logging
+  - [ ] Handle duplicate detection and skipping
+  - [ ] Verify data integrity after migration
+  - [ ] Create rollback capability
+
+- [ ] **Phase 3: Environment Configuration**
+  - [ ] Add MARKET_DATABASE_URL to .env.production
+  - [ ] Add MARKET_DATABASE_URL to .env.development (read-only)
+  - [ ] Add MARKET_DATABASE_URL to .env.staging (read-only)
+  - [ ] Update Vercel environment variables
+  - [ ] Document connection string formats
+  - [ ] Test connections from all environments
+
+- [ ] **Phase 4: Application Updates**
+  - [ ] Update MarketDatabase service to use PostgreSQL
+  - [ ] Add environment detection (SQLite for local, PostgreSQL for deployed)
+  - [ ] Test API endpoints with PostgreSQL data
+  - [ ] Verify chart loading from PostgreSQL
+  - [ ] Performance testing (<10ms queries maintained)
+
+- [ ] **Phase 5: Automated Sync Setup**
+  - [ ] Move Polygon download script to Vercel Cron
+  - [ ] Configure hourly sync (0 * * * *)
+  - [ ] Add error handling and retry logic
+  - [ ] Set up monitoring and alerts
+  - [ ] Test the complete sync workflow
+
+### Migration Steps
+1. Export SQLite data to JSON/CSV
+2. Create PostgreSQL schema and tables
+3. Batch import data with progress tracking
+4. Verify record counts match (4,299,279 records)
+5. Test queries performance (<10ms)
+6. Update app to use PostgreSQL
+7. Deploy and verify
+
+### Success Criteria
+- ✅ All 4,797 symbols migrated successfully
+- ✅ All 4.3M records transferred with data integrity
+- ✅ Query performance maintained (<10ms)
+- ✅ Dev/staging can read from production market data
+- ✅ Vercel Cron updating data hourly
+- ✅ Zero downtime during migration
+- ✅ Rollback plan tested and documented
+
+### Technical Decisions
+**Database Host**: Vercel Postgres (already used for user data)
+**Schema Separation**: `market.*` for shared data, `public.*` for user data
+**Access Control**: Separate connection strings (read-only vs read-write)
+**Migration Tool**: Custom TypeScript script with batching
+**Sync Frequency**: Hourly during market hours, 4x/day off-hours
+
+### Benefits of This Architecture
+- **Zero data staleness** between environments
+- **Single API quota** (no duplicate Polygon calls)
+- **Better testing** with real production market data
+- **Cost efficient** (one set of data, multiple consumers)
+- **Scalable** (can add more symbols without env-specific syncs)
+
+### Notes
+- Keep SQLite for local development option (offline work)
+- Add feature flag: USE_LOCAL_SQLITE for developers
+- Document both connection methods in README
+- Migration can happen gradually (add new symbols to PostgreSQL only)
+
 ## WB-2025-09-28-003: Paper Trading MVP Launch Plan Implementation
 **State**: pending
 **Timeframe**: LATER
