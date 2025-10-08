@@ -10,8 +10,8 @@
  * - Progress tracking and reporting
  */
 
+import { PrismaClient } from '@prisma/client';
 import { PolygonProvider } from '../providers/PolygonProvider';
-import { MarketDatabase } from '../database/MarketDatabase';
 import { DailyPrice } from '../database/types';
 
 export interface DownloadOptions {
@@ -41,12 +41,12 @@ export interface DownloadResult {
 
 export class PriceDownloader {
   private provider: PolygonProvider;
-  private db: MarketDatabase;
+  private prisma: PrismaClient;
   private progressCallback?: (progress: DownloadProgress) => void;
 
   constructor(apiKey?: string) {
     this.provider = new PolygonProvider(apiKey);
-    this.db = new MarketDatabase();
+    this.prisma = new PrismaClient();
   }
 
   /**
@@ -75,8 +75,6 @@ export class PriceDownloader {
     console.log(`📈 Symbols: ${symbols.length}`);
     console.log(`📅 Date Range: ${startDate} to ${endDate}`);
     console.log('');
-
-    await this.db.initialize();
 
     let successCount = 0;
     let failCount = 0;
@@ -145,13 +143,26 @@ export class PriceDownloader {
       });
     }
 
-    const stats = this.db.getStats();
-    console.log(`\n📈 Database Status:`);
-    console.log(`   Total Symbols: ${stats.totalSymbols.toLocaleString()}`);
-    console.log(`   Total Records: ${stats.totalRecords.toLocaleString()}`);
-    console.log(`   Date Range: ${stats.earliestDate} to ${stats.latestDate}`);
+    // Get database stats from PostgreSQL (optional - don't fail job if this errors)
+    try {
+      const [allSymbols, dbRecordCount, dateRange] = await Promise.all([
+        this.prisma.daily_prices.findMany({ distinct: ['symbol'], select: { symbol: true } }),
+        this.prisma.daily_prices.count(),
+        this.prisma.daily_prices.aggregate({
+          _min: { date: true },
+          _max: { date: true }
+        })
+      ]);
 
-    this.db.close();
+      console.log(`\n📈 Database Status:`);
+      console.log(`   Total Symbols: ${allSymbols.length.toLocaleString()}`);
+      console.log(`   Total Records: ${dbRecordCount.toLocaleString()}`);
+      console.log(`   Date Range: ${dateRange._min.date} to ${dateRange._max.date}`);
+    } catch (statsError) {
+      console.warn(`\n⚠️  Database stats unavailable (non-critical):`, statsError instanceof Error ? statsError.message : statsError);
+    }
+
+    await this.prisma.$disconnect();
 
     return {
       success: successCount,
@@ -182,16 +193,20 @@ export class PriceDownloader {
           const validBars = this.validatePriceData(bars);
 
           if (validBars.length > 0) {
-            this.db.insertPrices(validBars, { skipDuplicates: true });
-
-            // Update sync status
-            this.db.updateSyncStatus({
-              symbol,
-              earliestDate: validBars[0].date,
-              latestDate: validBars[validBars.length - 1].date,
-              recordCount: validBars.length,
-              syncStatus: 'complete',
-              dataSource: 'polygon'
+            // Insert into PostgreSQL using Prisma
+            await this.prisma.daily_prices.createMany({
+              data: validBars.map(bar => ({
+                symbol: bar.symbol,
+                date: bar.date,
+                open: bar.open.toString(),
+                high: bar.high.toString(),
+                low: bar.low.toString(),
+                close: bar.close.toString(),
+                volume: BigInt(Math.round(bar.volume)),
+                adjustedClose: bar.adjustedClose.toString(),
+                dataSource: bar.dataSource || 'polygon'
+              })),
+              skipDuplicates: true
             });
 
             return { success: true, recordCount: validBars.length };

@@ -104,6 +104,37 @@ Each interval has specific range options that ensure adequate candle count:
 - 4 Hour bars: 10D (60 candles), 1M (180 candles), 2M (360 candles)
 - Daily bars: 1M (22 candles), 3M (66 candles), 6M (132 candles), 1Y (252 candles)
 
+## 🧪 Testing
+
+### Cron Job Testing
+**Test Vercel market data cron locally before deploying:**
+
+```bash
+# Quick test with 5 default symbols (AAPL, MSFT, GOOGL, AMZN, TSLA)
+npm run test:cron
+
+# Test with specific symbols
+tsx scripts/test-cron-sync.ts AAPL MSFT
+
+# Test against production database
+DATABASE_URL="postgresql://..." npm run test:cron
+```
+
+**What it tests:**
+- Exact same code path as production Vercel cron
+- Polygon API connectivity
+- Database write operations
+- Data validation and error handling
+- Fast feedback (~10 seconds for 5 symbols)
+
+**When to use:**
+- Before deploying cron changes
+- After updating PriceDownloader or SymbolUniverseManager
+- Testing new Polygon API keys
+- Debugging sync issues
+
+**Script location:** `/scripts/test-cron-sync.ts`
+
 ## 🔍 Debugging
 
 ### Server Issues

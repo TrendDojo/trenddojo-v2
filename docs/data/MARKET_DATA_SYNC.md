@@ -229,20 +229,39 @@ Configurable in `PriceDownloader`:
 - Duration >10 minutes (performance degradation)
 - Repeated failures for same symbols (delisted stocks)
 
-### Health Check
+### Database Statistics
+Check market data stats anytime (useful for monitoring and debugging):
+
 ```bash
-curl https://www.trenddojo.com/api/market-data/cache-status
+# Production
+curl https://www.trenddojo.com/api/market-data/stats
+
+# Local (with server running)
+curl http://localhost:3002/api/market-data/stats
 ```
 
-Returns:
+**Response:**
 ```json
 {
-  "totalSymbols": 8234,
-  "totalRecords": 10245678,
-  "lastSync": "2025-10-02T14:00:00Z",
-  "status": "healthy"
+  "success": true,
+  "stats": {
+    "totalSymbols": 8234,
+    "totalRecords": 4299279,
+    "dateRange": {
+      "earliest": "2020-01-02",
+      "latest": "2025-01-24"
+    },
+    "lastSync": "2025-01-24T15:30:00.000Z",
+    "status": "healthy"
+  },
+  "timestamp": "2025-01-24T16:00:00.000Z"
 }
 ```
+
+**Endpoint**: `/api/market-data/stats`
+- Queries sequentially to avoid connection pooling issues
+- Shows total symbols, records, date range, and last sync time
+- Useful for verifying cron job is working
 
 ## Cost Analysis
 
