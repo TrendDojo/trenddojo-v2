@@ -153,9 +153,11 @@ export default function PositionDetailPage() {
   useEffect(() => {
     if (!position?.symbol) return;
 
+    const symbol = position.symbol; // Capture symbol for type safety
+
     async function fetchPrice() {
       try {
-        const response = await fetch(`/api/market-data/quote/${position.symbol}`);
+        const response = await fetch(`/api/market-data/quote/${symbol}`);
         if (response.ok) {
           const data = await response.json();
           setPosition(prev => {

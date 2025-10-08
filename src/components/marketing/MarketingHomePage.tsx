@@ -111,12 +111,12 @@ export default function MarketingHomePage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/signup">
-                <Button variant="primary" size="lg">
+                <Button variant="primary" size="md">
                   Start Free Trial
                 </Button>
               </Link>
               <Link href="/features">
-                <Button variant="ghost" size="lg" className="border border-white/20 hover:border-white/40 text-white hover:bg-white/10 dark:border-white/20 dark:hover:border-white/40 dark:text-white dark:hover:bg-white/10">
+                <Button variant="ghost" size="md" className="border border-white/20 hover:border-white/40 text-white hover:bg-white/10 dark:border-white/20 dark:hover:border-white/40 dark:text-white dark:hover:bg-white/10">
                   View Features
                 </Button>
               </Link>
@@ -305,7 +305,7 @@ export default function MarketingHomePage() {
               systematic risk management and disciplined execution.
             </p>
             <Link href="/signup">
-              <Button variant="secondary" size="lg" className="bg-white hover:bg-gray-100 text-trenddojo-purple-700 border-0 shadow-lg">
+              <Button variant="secondary" size="md" className="bg-white hover:bg-gray-100 text-trenddojo-purple-700 border-0 shadow-lg">
                 Get Started Free
               </Button>
             </Link>

@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 // GET /api/positions/[id] - Get single position with all details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session: any = await auth()
@@ -20,10 +20,11 @@ export async function GET(
     }
 
     const userId = session.user.id
+    const { id } = await params
 
     const position = await prisma.positions.findFirst({
       where: {
-        id: params.id,
+        id: id,
         strategies: {
           portfolios: {
             userId: userId,

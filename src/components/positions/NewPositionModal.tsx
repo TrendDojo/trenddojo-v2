@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/utils';
-import { alertStyles } from '@/lib/panelStyles';
+import { alertStyles, getAlertClasses } from '@/lib/panelStyles';
 import { Search, TrendingUp, Clock, Plus, Zap, Layers, Hand, ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
 import { useSymbolSearch, useLatestPrice, useSymbolValidation } from '@/lib/market-data/client/useMarketData';
 import { useBrokerQuote } from '@/lib/market-data/client/useBrokerQuote';
@@ -635,7 +635,7 @@ export function NewPositionModal({ isOpen, onClose, accountType, onSubmit, prefi
                 </select>
 
                 {!strategiesLoading && strategies.length === 0 && (
-                  <div className={cn(alertStyles.base, alertStyles.warning, "mt-2")}>
+                  <div className={cn(getAlertClasses('warning'), "mt-2")}>
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <div className="text-sm">
                       <p className="font-medium">No strategies found</p>

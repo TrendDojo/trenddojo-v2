@@ -44,21 +44,24 @@ export class DataRouter {
    * Get user's data preferences
    */
   private async getUserPreferences(userId: string): Promise<UserDataPreferences> {
-    // Try to get from database
-    const prefs = await prisma.user_data_preferences.findMany({
-      where: { userId: userId }
-    });
+    // TODO: Implement user_data_preferences table in Prisma schema
+    // For now, return default preferences
 
-    if (prefs.length > 0) {
-      // Convert DB records to preferences object
-      return {
-        userId,
-        quotes: prefs.find(p => p.preferenceType === 'quotes')?.primarySource || 'alpaca',
-        charts: prefs.find(p => p.preferenceType === 'charts')?.primarySource || 'polygon',
-        fundamentals: prefs.find(p => p.preferenceType === 'fundamentals')?.primarySource || 'yahoo',
-        fallbackSources: prefs[0]?.fallbackSources || ['yahoo', 'cached']
-      };
-    }
+    // Try to get from database (disabled until table exists)
+    // const prefs = await prisma.user_data_preferences.findMany({
+    //   where: { userId: userId }
+    // });
+
+    // if (prefs.length > 0) {
+    //   // Convert DB records to preferences object
+    //   return {
+    //     userId,
+    //     quotes: prefs.find(p => p.preferenceType === 'quotes')?.primarySource || 'alpaca',
+    //     charts: prefs.find(p => p.preferenceType === 'charts')?.primarySource || 'polygon',
+    //     fundamentals: prefs.find(p => p.preferenceType === 'fundamentals')?.primarySource || 'yahoo',
+    //     fallbackSources: prefs[0]?.fallbackSources || ['yahoo', 'cached']
+    //   };
+    // }
 
     // Default preferences
     return {
@@ -93,15 +96,16 @@ export class DataRouter {
     }
 
     // Check if user has premium data subscriptions
-    const dataSources = await prisma.user_data_sources.findMany({
-      where: { userId: userId, isActive: true }
-    });
+    // TODO: Implement user_data_sources table in Prisma schema
+    // const dataSources = await prisma.user_data_sources.findMany({
+    //   where: { userId: userId, isActive: true }
+    // });
 
-    if (dataSources) {
-      for (const source of dataSources) {
-        available.add(source.source);
-      }
-    }
+    // if (dataSources) {
+    //   for (const source of dataSources) {
+    //     available.add(source.source);
+    //   }
+    // }
 
     return available;
   }

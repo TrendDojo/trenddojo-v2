@@ -6,7 +6,7 @@ import { buttonStyles, getButtonClasses } from "@/lib/buttonStyles";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md';
   loading?: boolean;
   fullWidth?: boolean;
 }

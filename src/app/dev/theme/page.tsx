@@ -1102,10 +1102,6 @@ function ButtonsBadgesSection() {
                 <Zap className="w-4 h-4 mr-2 inline" />
                 Medium
               </Button>
-              <Button variant="primary" size="lg">
-                <Zap className="w-5 h-5 mr-2 inline" />
-                Large
-              </Button>
             </div>
           </div>
 
