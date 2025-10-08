@@ -17,6 +17,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - External monitoring/alerting
 - Automated database backups
 
+## [0.5.0] - 2025-10-09
+### Added
+- Market data stats API endpoint (`/api/market-data/stats`)
+- Production-ready Vercel cron job for hourly market data sync
+- Test script for local cron job verification (`npm run test:cron`)
+
+### Fixed
+- Next.js 15 compatibility: Route handler params now use async/await
+- Build errors from missing Prisma tables (commented out future features)
+- Button component size prop (removed unsupported "lg" size)
+- Alert styles usage (now uses `getAlertClasses` helper)
+- Removed temp files from build process
+
+### Changed
+- PriceDownloader migrated from SQLite to Prisma/PostgreSQL
+- Stats queries wrapped in try-catch to prevent job failures
+- Sequential database queries in stats endpoint to avoid connection pooling issues
+
 ## [HOTFIX] - 2025-09-30
 ### Fixed
 - Critical: CORS headers missing from screener-clean API endpoint
